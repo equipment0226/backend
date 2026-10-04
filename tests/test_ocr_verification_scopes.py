@@ -72,12 +72,11 @@ class OcrScopeTests(unittest.IsolatedAsyncioTestCase):
                 'source_quotes': {source['id']: ['성명: 가상인'] for source in sources}}
         def one_negative(messages, schema, **kwargs):
             wire = json.loads(messages[1]['content'])
-            checks = []
+            checks = {}
             by_id = {source['id']: source for source in wire['sources']}
             for row in wire['items']:
                 mismatch = '기관 14 발급' in by_id[row['sources'][0]]['text']
-                checks.append({'i': row['i'], 'v': 'mismatch' if mismatch else 'supported',
-                               'e': row['evidence'][0], 'r': 'person' if mismatch else 'match'})
+                checks[str(row['i'])] = 'person' if mismatch else 'match'
             return reply(checks)
         with patch.object(model_client, 'generate', new=AsyncMock(side_effect=one_negative)):
             result = await verify.run_local_verification_batched('ocr', {'sources': sources, 'items': [item]})

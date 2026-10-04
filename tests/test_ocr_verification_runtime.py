@@ -29,6 +29,8 @@ def reply(checks):
 
 def answer(messages,schema,**kwargs):
     sent=json.loads(messages[1]['content'])
+    if schema['properties']['checks']['type'] == 'object':
+        return reply({str(item['i']): 'match' for item in sent['items']})
     return reply([{'i':item['i'],'v':'supported','e':item['evidence'][0],'r':'match'} for item in sent['items']])
 
 
@@ -51,15 +53,21 @@ class CompactOcrRuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('typed-fact-long-identifier',args.args[0][1]['content'])
         self.assertNotIn('document-original-long-identifier',args.args[0][1]['content'])
         self.assertEqual(args.kwargs['local_context_tokens'],8192)
-        self.assertLessEqual(args.kwargs['max_tokens'],400)
+        self.assertLessEqual(args.kwargs['max_tokens'],110)
+        self.assertEqual(args.args[1]['properties']['checks']['type'], 'object')
         self.assertEqual(result['execution']['eval_count'],150)
 
     async def test_wrong_item_quote_duplicate_coverage_and_unsupported_number_never_pass(self):
         original=payload(2)
         valid=[{'i':1,'v':'supported','e':'E1','r':'match'},{'i':2,'v':'supported','e':'E2','r':'match'}]
-        variants=[([dict(valid[0],e='E2'),valid[1]],original),([valid[0],valid[0]],original)]
+        # Multi-source inputs deliberately retain explicit evidence selection;
+        # exercise wrong-citation and duplicate-ID rejection in that protocol.
+        multichoice=copy.deepcopy(original)
+        for row in multichoice['items']:
+            row['source_ids']=[source['id'] for source in multichoice['sources']]
+        variants=[([dict(valid[0],e='E2'),valid[1]],multichoice),([valid[0],valid[0]],multichoice)]
         changed=copy.deepcopy(original);changed['items'][0]['value']=9999999
-        variants.append((valid,changed))
+        variants.append(({'1': 'match', '2': 'match'},changed))
         for checks,data in variants:
             with self.subTest(checks=checks),patch.object(model_client,'generate',new=AsyncMock(return_value=reply(checks))):
                 result=await verification.run_local_verification('ocr',data)
@@ -67,11 +75,41 @@ class CompactOcrRuntimeTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_semantic_mismatch_remains_visible_despite_exact_numeric_witness(self):
         original=payload(1)
-        with patch.object(model_client,'generate',new=AsyncMock(return_value=reply([{'i':1,'v':'mismatch','e':'E1','r':'period'}]))):
+        with patch.object(model_client,'generate',new=AsyncMock(return_value=reply({'1':'period'}))):
             result=await verification.run_local_verification('ocr',original)
         self.assertFalse(result['passed'])
         self.assertEqual(result['status'],'needs_review')
         self.assertIn('기간',result['findings'][0]['reason'])
+
+    async def test_indexed_keys_must_cover_every_item_exactly_once(self):
+        original = payload(2)
+        variants = [reply({'1':'match'}), reply({'1':'match','2':'match','3':'match'}),
+                    reply({'1':'match','2':'not_a_verdict'}),
+                    {'done':True,'done_reason':'stop','message':{'content':'{"checks":{"1":"match","1":"match","2":"match"}}'}}]
+        for response in variants:
+            with self.subTest(response=response), patch.object(model_client,'generate',new=AsyncMock(return_value=response)):
+                result = await verification.run_local_verification('ocr', original)
+            self.assertFalse(result['passed'])
+            self.assertEqual(result['checked_item_ids'], [])
+
+    async def test_indexed_uncertainty_is_not_a_confident_mismatch_or_support(self):
+        with patch.object(model_client,'generate',new=AsyncMock(return_value=reply({'1':'unclear'}))):
+            result = await verification.run_local_verification('ocr', payload(1))
+        self.assertFalse(result['passed'])
+        self.assertEqual(result['status'], 'needs_review')
+        self.assertEqual(result['findings'][0]['status'], 'uncertain')
+        self.assertIsNone(result['findings'][0]['source_id'])
+        self.assertEqual(result['findings'][0]['quote'], '')
+
+    async def test_multisource_evidence_keeps_explicit_choice_protocol(self):
+        original = payload(1)
+        original['sources'].append(dict(original['sources'][0], id='second-original'))
+        original['items'][0]['source_ids'].append('second-original')
+        with patch.object(model_client,'generate',new=AsyncMock(side_effect=answer)) as generate:
+            result = await verification.run_local_verification('ocr', original)
+        self.assertTrue(result['passed'])
+        self.assertEqual(generate.call_args.args[1]['properties']['checks']['type'], 'array')
+        self.assertEqual(result['findings'][0]['source_id'], original['sources'][0]['id'])
 
     async def test_context_budget_splits_without_losing_any_sources_or_items(self):
         original=payload(6,padding='전체 원문 보존 '*100)
