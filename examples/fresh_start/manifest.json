@@ -1,0 +1,106 @@
+{
+  "synthetic": true,
+  "name": "김새봄",
+  "as_of": "2026-10-04",
+  "court_id": "CT01",
+  "automatic_case_creation": false,
+  "expected": {
+    "monthly_net_income": 2800000,
+    "debt_total": 60000000,
+    "assets_total": 1200000
+  },
+  "documents": [
+    {
+      "catalog_id": "D01",
+      "title": "주민등록표등본",
+      "file": "documents/01_주민등록표등본_가상자료.pdf",
+      "sha256": "883c2bf782cff6fde2394df15b0ed0f28ebc985857260ec1b08e544062e60e90"
+    },
+    {
+      "catalog_id": "D03",
+      "title": "가족관계증명서",
+      "file": "documents/02_가족관계증명서_가상자료.pdf",
+      "sha256": "81a0d9352bc9e5f04d3f7f9263b61bb01c0a77e4e7056904373d333f82c0a690"
+    },
+    {
+      "catalog_id": "D35",
+      "title": "계좌통합조회결과",
+      "file": "documents/03_계좌통합조회결과_가상자료.pdf",
+      "sha256": "3a8bf81b0dd6ea40098b7cbcf80b55f45d19c39779608bfba0078e71048be818"
+    },
+    {
+      "catalog_id": "D38",
+      "title": "부채증명서",
+      "file": "documents/04_부채증명서_가상자료.pdf",
+      "sha256": "6db28532091cbb430f5a8010667b73ce02eb2618d57b81819f07acd7e3470577"
+    },
+    {
+      "catalog_id": "D06",
+      "title": "근로소득원천징수영수증",
+      "file": "documents/05_근로소득원천징수영수증_가상자료.pdf",
+      "sha256": "0e320508a2ee99597722431672ce948a125569b56db9f93603559c2d7b89f326"
+    },
+    {
+      "catalog_id": "D08",
+      "title": "재직증명서",
+      "file": "documents/06_재직증명서_가상자료.pdf",
+      "sha256": "eed820e1fdcf45808c95e02295f0ea08ea8f28d67e6721d7c78e24c9ed2ed67e"
+    },
+    {
+      "catalog_id": "D09",
+      "title": "건강보험자격득실확인서",
+      "file": "documents/07_건강보험자격득실확인서_가상자료.pdf",
+      "sha256": "5dae72264bf62f907687cb570dca4f5af0bae31106cc98d631d5fe749cd37f3e"
+    },
+    {
+      "catalog_id": "D11",
+      "title": "연금산정용가입내역확인서",
+      "file": "documents/08_연금산정용가입내역확인서_가상자료.pdf",
+      "sha256": "0102e6383ca5b29a87e7fb1960dc6cf840f48b504d4cfb62322b6b1049e5d2b0"
+    },
+    {
+      "catalog_id": "D28",
+      "title": "지적전산자료조회결과서",
+      "file": "documents/09_지적전산자료조회결과서_가상자료.pdf",
+      "sha256": "bc36c08c89541d7b954a1bb7de01f18e8ba5be1dc8d33ab2fbc0f87bfc1f7fbe"
+    },
+    {
+      "catalog_id": "D29",
+      "title": "지방세세목별과세증명서",
+      "file": "documents/10_지방세세목별과세증명서_가상자료.pdf",
+      "sha256": "f801bb42ff179c01d6de24718f3b696c123e4d29953732e1156e79a7f590e2c3"
+    },
+    {
+      "catalog_id": "D39",
+      "title": "보험가입및해약환급금확인",
+      "file": "documents/11_보험가입및해약환급금확인_가상자료.pdf",
+      "sha256": "6b5aa9d8cb5ef84623c6804d4e924c963c20aca4e89f319aa4b388d6387081c5"
+    },
+    {
+      "catalog_id": "SUPPORT-HOUSING",
+      "title": "무상거주확인",
+      "file": "documents/12_무상거주확인_가상자료.pdf",
+      "sha256": "3987f9ecda46dc3e5580fcc9f2abfed73e1a7585e45eb3dede668c99cc8b7185"
+    },
+    {
+      "catalog_id": "SUPPORT-HISTORY",
+      "title": "채무발생및생활비진술",
+      "file": "documents/13_채무발생및생활비진술_가상자료.pdf",
+      "sha256": "5ce9dc8dd27dac6fc310fe33ef8b68d8462e4449f2457c95aaefda198de4b350"
+    },
+    {
+      "catalog_id": "D36",
+      "title": "예금계좌 거래내역",
+      "file": "documents/14_예금계좌거래내역_가상자료.pdf",
+      "period": "2025-10-04 ~ 2026-10-04",
+      "sha256": "5de7c8de1b03198f9ba90023e07fe9b36836c71b73d45c2a1c1ad8170bc83827"
+    },
+    {
+      "catalog_id": "D07",
+      "title": "급여명세서",
+      "file": "documents/15_급여명세서_스캔가상자료.pdf",
+      "period": "2025-10-04 ~ 2026-10-04",
+      "sha256": "13a334d3db5d4a5861ae48f5b53b9828a30c88be71f4848d138b65430e7e2013"
+    }
+  ]
+}

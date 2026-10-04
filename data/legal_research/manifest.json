@@ -1,0 +1,125 @@
+{
+  "sources": [
+    {
+      "id": "AXP01",
+      "title": "대법원 2010.11.30.자 2010마1179 결정: 편파변제와 청산가치",
+      "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=150036",
+      "source_type": "precedent",
+      "required_text": [
+        "2010마1179"
+      ],
+      "start_after": "개인회생",
+      "retrieved_at": "2026-10-03T13:24:49.841852+00:00",
+      "status": "downloaded",
+      "sha256": "f594b65d598c16f1f20791cdb6efac8002057300321b4c97016c542d60bf49d9",
+      "text_sha256": "6d75075673de7ea1d7b094b88591ac850a25dbd7f367f87fcd8b6cd848df4c65",
+      "raw_path": ".local/corpus/raw/AXP01-f594b65d598c16f1.html",
+      "text_path": "data/legal_research/AXP01.txt",
+      "page_count": 1,
+      "bytes": 73400,
+      "final_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=150036",
+      "applicability_status": "source_snapshot_not_case_outcome_prediction"
+    },
+    {
+      "id": "AXP02",
+      "title": "대법원 2015.9.1.자 2015마657 결정: 보정 시정기회와 배우자재산",
+      "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=179701",
+      "source_type": "precedent",
+      "required_text": [
+        "2015마657"
+      ],
+      "start_after": "개인회생",
+      "retrieved_at": "2026-10-03T13:24:49.974531+00:00",
+      "status": "downloaded",
+      "sha256": "e1b3a25ba3397034b67e3cb98d3768c354218e6d98ede7d9e60465e0f790be3a",
+      "text_sha256": "2fabb551982388034840fb20e91b0840654e993aee69c771a7fd2bd01488a31a",
+      "raw_path": ".local/corpus/raw/AXP02-e1b3a25ba3397034.html",
+      "text_path": "data/legal_research/AXP02.txt",
+      "page_count": 1,
+      "bytes": 73713,
+      "final_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=179701",
+      "applicability_status": "source_snapshot_not_case_outcome_prediction"
+    },
+    {
+      "id": "AXP03",
+      "title": "대법원 2014.10.1.자 2014마1255 결정: 변제계획 수행가능성과 폐지",
+      "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=177702",
+      "source_type": "precedent",
+      "required_text": [
+        "2014마1255"
+      ],
+      "start_after": "개인회생",
+      "retrieved_at": "2026-10-03T13:24:50.029790+00:00",
+      "status": "downloaded",
+      "sha256": "30106be279b72843abf51693df1493a13c627a31905eeac03acf3dcfa6c9a60e",
+      "text_sha256": "5e3a6a9dde580970cc394c821b44b3c0331073a0b5e83bab5071bfba9567e6c1",
+      "raw_path": ".local/corpus/raw/AXP03-30106be279b72843.html",
+      "text_path": "data/legal_research/AXP03.txt",
+      "page_count": 1,
+      "bytes": 71342,
+      "final_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=177702",
+      "applicability_status": "source_snapshot_not_case_outcome_prediction"
+    },
+    {
+      "id": "AXC06",
+      "title": "광주회생법원 실무준칙",
+      "url": "https://gjb.scourt.go.kr/gjb/info/info_01/practice_rule_gjb.pdf?v=1",
+      "court_id": "CT06",
+      "source_type": "court_rule",
+      "required_text": [
+        "개인회생"
+      ],
+      "retrieved_at": "2026-10-03T13:24:50.071674+00:00",
+      "status": "downloaded",
+      "sha256": "0f17f9da6653417e1f7bb13cb6c84a489bffb7c1ecaf39839e5d2578cf1389d6",
+      "text_sha256": "914d62b8d387ddb5e150f247c3148c133649e399f8428502d9dc49dfa1f30cb7",
+      "raw_path": ".local/corpus/raw/AXC06-0f17f9da6653417e.pdf",
+      "text_path": "data/legal_research/AXC06.txt",
+      "page_count": 155,
+      "bytes": 1890236,
+      "final_url": "https://gjb.scourt.go.kr/gjb/info/info_01/practice_rule_gjb.pdf?v=1",
+      "applicability_status": "source_snapshot_not_case_outcome_prediction"
+    },
+    {
+      "id": "AXB03",
+      "title": "부산회생법원 자료제출목록 2026-07-01 시행",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=",
+      "court_id": "CT03",
+      "source_type": "court_guide",
+      "required_text": [
+        "부산회생법원 자료제출목록",
+        "2026."
+      ],
+      "retrieved_at": "2026-10-03T13:24:53.237052+00:00",
+      "status": "downloaded",
+      "sha256": "4cf94623b5eaf054b0295aa160a276938ed3de2deb905827bab30e1889919156",
+      "text_sha256": "098f5439732b975ad3330fa7bc4e7531ef82f1bdc8093283d3d01606d10838c8",
+      "raw_path": ".local/corpus/raw/AXB03-4cf94623b5eaf054.pdf",
+      "text_path": "data/legal_research/AXB03.txt",
+      "page_count": 4,
+      "bytes": 174042,
+      "final_url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=",
+      "applicability_status": "source_snapshot_not_case_outcome_prediction"
+    },
+    {
+      "id": "AXP04",
+      "title": "대법원 2019.8.20.자 2018마7459 결정: 변경계획 완납 후 면책 유지",
+      "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=225433",
+      "source_type": "precedent",
+      "required_text": [
+        "2018마7459"
+      ],
+      "start_after": "개인회생",
+      "retrieved_at": "2026-10-03T13:55:05.198238+00:00",
+      "status": "downloaded",
+      "sha256": "80bb0d2d1364085b5509e3edef3176a53463c423baf160b13705953aaa4e45ae",
+      "text_sha256": "b33f9a31d15a2435fd18e5572e28cd37ef50acc2ea7f1d90ae3d70a54b82537b",
+      "raw_path": ".local/corpus/raw/AXP04-80bb0d2d1364085b.html",
+      "text_path": "data/legal_research/AXP04.txt",
+      "page_count": 1,
+      "bytes": 67899,
+      "final_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=225433",
+      "applicability_status": "source_snapshot_not_case_outcome_prediction"
+    }
+  ]
+}

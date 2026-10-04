@@ -1,0 +1,52 @@
+[
+  {
+    "file": "참조원본/02_기본기획/TalkFile_빚오프 AI 상세 기획서 2.docx",
+    "sha256": "e13e54f9df8d7c4775f6506c862ffe450cc2991de3025b27176a720096c4dd24",
+    "source_id": 1
+  },
+  {
+    "file": "참조원본/99_다른주제_TRIZ/triz-report 30.html",
+    "sha256": "c66c1b63a923196759f77b70cc8d400266f80e42c4900ae7c2c0e198cd2c4bac",
+    "source_id": 2
+  },
+  {
+    "file": "참조원본/01_초기아이디어/Item_Meeting_Concept_v1.0.pptx",
+    "sha256": "d4c3b89611c3ebd91edd601eabdbf4774b8296250e69366788c525071aa04e65",
+    "source_id": 3
+  },
+  {
+    "file": "참조원본/02_기본기획/TalkFile_빚오프 단계별 도식 모음.docx",
+    "sha256": "055987f1e8de1cb4ba92e865e1c1afeea3a1c184b5c7d908dabf886cc8afe222",
+    "source_id": 4
+  },
+  {
+    "file": "참조원본/03_실무검토/TalkFile_피드백.docx",
+    "sha256": "894d1ad50feed2a9f5ecaf1395d43abd1b3dc03c1c8f72a7a9e98ac0ec405885",
+    "source_id": 5
+  },
+  {
+    "file": "참조원본/04_UI시연/TalkFile_빚오프_업무시스템_샘플.html",
+    "sha256": "65f6e77fd74a7fd5e2afebf216a37f868f483d78f84fe4c6119932f583c663cb",
+    "source_id": 6
+  },
+  {
+    "file": "참조원본/02_기본기획/TalkFile_빚오프_Agent_구조_기획서_1페이지-3.pdf",
+    "sha256": "a8e0b44a5afec4a74da4809d464773b9e6a4de614cb28977ea6c9ce3ce19f4ff",
+    "source_id": 7
+  },
+  {
+    "file": "참조원본/04_UI시연/TalkFile_debt-off-control.html",
+    "sha256": "f10ac9485b091a69c51fc61510b1acbbc4b21bb28ee1cf0df5a95a99ce95db38",
+    "source_id": 8
+  },
+  {
+    "file": "참조원본/03_실무검토/TalkFile_보정권고_개인정보_블러.pdf",
+    "sha256": "4a88b420bb94a9c7dd812f517db133deaaa73717ed220bccfb7b4c649e5e890d",
+    "source_id": 10
+  },
+  {
+    "file": "참조원본/05_이전통합패키지/debtoff_project_package.zip",
+    "sha256": "fd67e55ec7506f2a4dfceec895f33b22ec4f692c7ab98b229c3dc4837ca47748",
+    "source_id": "S07"
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "version": "client-guide-2026-10-03-v1",
+  "reviewed_at": "2026-10-03",
+  "guide": {
+    "title": "개인회생, 한 단계씩 준비하세요",
+    "intro": "개인회생은 정기적으로 수입을 얻을 가능성이 있는 사람이 법원이 정한 계획에 따라 일정 기간 빚을 갚고, 남은 빚의 면제를 받을 수 있는 제도입니다. 소득·재산·빚과 생활 형편을 함께 살피며, 신청만으로 모든 빚이 없어지거나 결과가 보장되지는 않습니다.",
+    "terms": [
+      {"term": "개시", "description": "법원이 개인회생 절차를 시작하는 결정"},
+      {"term": "인가", "description": "법원이 빚을 갚는 계획을 승인하는 결정"},
+      {"term": "면책", "description": "법이 정한 범위에서 남은 빚을 갚을 책임을 면제하는 결정"}
+    ],
+    "steps": [
+      {"title": "상담과 자료 준비", "description": "채무가 늘어난 과정과 현재 생활을 알려주세요. 사건과 법원에 맞는 서류를 요청합니다."},
+      {"title": "서류 확인과 보완", "description": "내 사건에서 기관·계좌·기간·발급 옵션을 확인해 제출하세요. 누락되거나 잘못된 자료는 다시 안내합니다."},
+      {"title": "변제계획 준비", "description": "확인된 소득·생계비·재산·채무로 계획을 계산합니다. 쟁점이 있으면 담당자가 검토합니다."},
+      {"title": "법원 심사와 보정", "description": "신청 후 법원은 자료를 심사하고 추가 설명이나 서류를 요구할 수 있습니다. 문서 작성 완료 표시는 법원 접수나 인가를 뜻하지 않습니다."},
+      {"title": "인가 후 이행과 면책", "description": "인가된 계획을 이행하고 면책 요건을 확인합니다. 개시결정이나 인가결정만으로 모든 채무가 즉시 없어지는 것은 아닙니다."}
+    ],
+    "documents": [
+      {"title": "소득과 생활비", "description": "급여·사업소득, 실제 지출과 부양 상황을 확인할 자료를 준비합니다."},
+      {"title": "재산과 채무", "description": "예금·보험·보증금 등 재산과 채권자별 채무를 빠짐없이 확인합니다."},
+      {"title": "개별 사건 자료", "description": "재산 처분, 최근 차입, 과거 절차 등은 상황에 따라 추가 소명이 필요합니다. 요청 목록을 기준으로 준비하세요."}
+    ],
+    "source_ids": ["LW579", "LW589", "LW614", "EASYLAW-GUIDE"]
+  },
+  "faqs": [
+    {"id": "eligibility", "category": "신청 준비", "question": "개인회생을 신청할 수 있는지 어떻게 확인하나요?", "answer": "계속 얻을 수 있는 소득과 채무액, 재산 및 개별 사정을 함께 확인합니다. 상담에서 현재 상황을 알려주시면 필요한 자료와 검토 항목을 안내합니다. 이 안내만으로 신청 가능 여부가 확정되지는 않습니다.", "keywords": ["자격", "신청", "가능", "소득", "조건"], "source_ids": ["LW579"]},
+    {"id": "documents", "category": "서류 제출", "question": "어떤 서류를 제출해야 하나요?", "answer": "내 사건의 서류 요청 목록을 먼저 확인하세요. 같은 서류도 기관·계좌·기간이 다르면 각각 필요할 수 있습니다. 공통 서류 외에 법원과 사건 내용에 따라 추가 자료가 필요합니다.", "keywords": ["서류", "제출", "준비", "필요", "계좌"], "source_ids": ["LW589", "EASYLAW-GUIDE"]},
+    {"id": "freshness", "category": "서류 제출", "question": "예전에 발급한 서류도 사용할 수 있나요?", "answer": "서류 종류와 법원 요구에 따라 발급일·대상 기간·상세 여부가 다릅니다. 요청 카드의 기간과 발급 옵션을 확인하세요. 이미 제출한 자료가 요청 범위를 충족하면 다시 요청하지 않도록 대조합니다.", "keywords": ["기간", "발급", "오래", "예전", "상세"], "source_ids": ["EASYLAW-GUIDE"]},
+    {"id": "replacement", "category": "서류 제출", "question": "잘못된 서류를 올렸거나 자료가 부족하면 어떻게 하나요?", "answer": "검증 결과에 따라 필요한 기관·계좌·기간과 보완 이유를 알림으로 안내합니다. 요청 카드에 맞는 자료를 다시 제출하세요. 기존 제출 이력은 확인할 수 있습니다.", "keywords": ["잘못", "부족", "누락", "재요청", "다시", "보완"], "source_ids": [], "kind": "service_guide"},
+    {"id": "approval", "category": "진행 단계", "question": "문서가 작성되면 법원에서 승인된 건가요?", "answer": "아닙니다. 문서 작성은 신청 준비입니다. 개시는 절차를 시작하는 결정, 인가는 갚는 계획을 승인하는 결정, 면책은 법이 정한 범위에서 남은 빚을 갚을 책임을 면제하는 결정입니다. 작성 완료 표시를 법원 승인으로 보지 마세요.", "keywords": ["인가", "승인", "개시", "작성", "완료", "면책"], "source_ids": ["LW614", "EASYLAW-GUIDE"]},
+    {"id": "correction", "category": "진행 단계", "question": "법원이 보정을 요구하면 신청이 끝난 건가요?", "answer": "보정 요구는 추가 자료나 설명을 보완하라는 요청입니다. 결정 원문에 적힌 요구와 기한을 확인하여 담당자와 대응해야 합니다. 보정 요구 자체를 곧바로 최종 기각이나 인가로 판단하지 않습니다.", "keywords": ["보정", "법원", "기한", "기각", "반려"], "source_ids": ["LW595", "EASYLAW-GUIDE"]},
+    {"id": "privacy", "category": "포털 이용", "question": "내 서류와 상담 내용은 공개되나요?", "answer": "로그인한 고객은 본인에게 연결된 사건만 확인합니다. 상담 답변 연결은 내부에서 처리하며 외부 추론 서비스로 보내지 않습니다. 후기를 공개할 때에는 별도 동의가 필요하고 실명·연락처·계좌 등은 적지 않아야 합니다.", "keywords": ["개인정보", "공개", "보안", "비밀", "후기"], "source_ids": [], "kind": "service_guide"},
+    {"id": "contact", "category": "포털 이용", "question": "담당 직원에게 직접 문의할 수 있나요?", "answer": "로그인 후 직원 연결을 선택하고 전달할 내용을 확인해 보내세요. 본인 사건의 메시지와 직원 알림에 남습니다. 문자나 외부 메신저 발송을 뜻하지 않으며 답변은 사건 메시지에서 확인할 수 있습니다.", "keywords": ["직원", "연결", "상담", "문의", "사람", "담당"], "source_ids": [], "kind": "service_guide"}
+  ],
+  "sources": [
+    {"id": "LW579", "title": "채무자회생법 제579조 · 소득 및 채무 범위", "url": "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1023847839"},
+    {"id": "LW589", "title": "채무자회생법 제589조 · 신청서와 첨부서류", "url": "https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=058900000&languageType=KO&lsNm=%EC%B1%84%EB%AC%B4%EC%9E%90+%ED%9A%8C%EC%83%9D+%EB%B0%8F+%ED%8C%8C%EC%82%B0%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&paras=1"},
+    {"id": "LW595", "title": "채무자회생법 제595조 · 개시신청 기각", "url": "https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=059500000&languageType=KO&lsNm=%EC%B1%84%EB%AC%B4%EC%9E%90+%ED%9A%8C%EC%83%9D+%EB%B0%8F+%ED%8C%8C%EC%82%B0%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&paras=1"},
+    {"id": "LW614", "title": "채무자회생법 제614조 · 변제계획 인가", "url": "https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=061400000&languageType=KO&lsNm=%EC%B1%84%EB%AC%B4%EC%9E%90+%ED%9A%8C%EC%83%9D+%EB%B0%8F+%ED%8C%8C%EC%82%B0%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&paras=1"},
+    {"id": "EASYLAW-GUIDE", "title": "찾기쉬운 생활법령 · 개인회생 신청서 및 첨부서류", "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=1286", "currency_note": "생활법령 안내에는 향후 개정 공지가 포함될 수 있습니다. 실제 적용 법령은 별도 시행일 확인이 필요합니다."}
+  ]
+}

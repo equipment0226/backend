@@ -1,0 +1,472 @@
+{
+  "name": "Debtoff local consultation to review (configure credentials first)",
+  "active": false,
+  "nodes": [
+    {
+      "id": "read-setup-first",
+      "name": "Read setup first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "parameters": {
+        "content": "## 로컬 AX 예제 · 비활성\n1. docs/ax-pipeline.md를 읽습니다.\n2. Webhook Header Auth를 설정합니다.\n3. HTTP 노드 세 곳에 API 직원 Bearer 토큰을 Credentials로 선택합니다.\n4. API 기본주소는 같은 PC의 127.0.0.1:8000입니다.\n5. POST 자동 재시도 금지: 접수 idempotency 키는 아직 없습니다.\n6. 기존 run_id 재조회는 existing_run_id로 입력합니다.\n7. 실제 n8n import/실행 검증은 미실시입니다.\n8. 법률 판단·초안 승인·외부 발송은 이 예제에 없습니다.",
+        "height": 350,
+        "width": 480
+      },
+      "position": [
+        0,
+        -340
+      ]
+    },
+    {
+      "id": "consultation-webhook",
+      "name": "Consultation webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "debtoff-local-intake",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "position": [
+        0,
+        100
+      ],
+      "webhookId": "debtoff-local-intake"
+    },
+    {
+      "id": "validate-input",
+      "name": "Validate input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body || {};\nconst existing = String(body.existing_run_id || '').trim();\nconst text = String(body.text || '').trim();\nif (existing && !/^intake-[a-zA-Z0-9-]+$/.test(existing)) throw new Error('Invalid existing_run_id');\nif (!existing && (text.length < 20 || text.length > 50000)) throw new Error('text must be 20 to 50000 characters');\nreturn [{json:{text, existing_run_id:existing, api_base:'http://127.0.0.1:8000'}}];"
+      },
+      "position": [
+        220,
+        100
+      ]
+    },
+    {
+      "id": "resume-existing-run",
+      "name": "Resume existing run",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "boolean-condition",
+              "leftValue": "={{ Boolean($json.existing_run_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "position": [
+        440,
+        100
+      ]
+    },
+    {
+      "id": "use-existing-run-id",
+      "name": "Use existing run id",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "return [{json:{run_id:$input.first().json.existing_run_id,status:'resumed'}}];"
+      },
+      "position": [
+        660,
+        -20
+      ]
+    },
+    {
+      "id": "start-intake",
+      "name": "Start intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Validate input').first().json.api_base + '/api/intake-runs' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 15000
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({text: $('Validate input').first().json.text}) }}"
+      },
+      "position": [
+        660,
+        220
+      ],
+      "retryOnFail": false,
+      "notes": "Select Header Auth credential: Authorization = Bearer <staff token>. Do not automatically retry this POST."
+    },
+    {
+      "id": "track-run",
+      "name": "Track run",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const row = $input.first().json;\nif (!row.run_id) throw new Error('Backend did not return run_id');\nreturn [{json:{run_id:row.run_id,status:row.status,started_at:new Date().toISOString()}}];"
+      },
+      "position": [
+        880,
+        100
+      ]
+    },
+    {
+      "id": "respond-accepted",
+      "name": "Respond accepted",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({run_id:$json.run_id,status:$json.status,polling:true}) }}",
+        "options": {
+          "responseCode": 202
+        }
+      },
+      "position": [
+        1100,
+        100
+      ]
+    },
+    {
+      "id": "wait-before-poll",
+      "name": "Wait before poll",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 10,
+        "unit": "seconds"
+      },
+      "position": [
+        1320,
+        100
+      ],
+      "webhookId": "debtoff-local-wait"
+    },
+    {
+      "id": "poll-intake",
+      "name": "Poll intake",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Validate input').first().json.api_base + '/api/intake-runs/' + $('Track run').first().json.run_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "position": [
+        1540,
+        100
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "notes": "Select the same API staff Header Auth credential."
+    },
+    {
+      "id": "continue-polling",
+      "name": "Continue polling",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "boolean-condition",
+              "leftValue": "={{ ['queued','running'].includes($json.status) && Date.now() - Date.parse($('Track run').first().json.started_at) < 360000 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "position": [
+        1760,
+        100
+      ]
+    },
+    {
+      "id": "completed",
+      "name": "Completed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "boolean-condition",
+              "leftValue": "={{ $json.status === 'completed' && Boolean($json.result && $json.result.case_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "position": [
+        1980,
+        200
+      ]
+    },
+    {
+      "id": "read-case",
+      "name": "Read case",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Validate input').first().json.api_base + '/api/cases/' + $json.result.case_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "position": [
+        2200,
+        80
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 1000,
+      "notes": "Select the same API staff Header Auth credential. No approval is performed."
+    },
+    {
+      "id": "review-ready",
+      "name": "Review ready",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const c = $input.first().json;\nconst draft = (c.drafts || []).filter(d => !d.stale).slice(-1)[0];\nreturn [{json:{case_id:c.id,case_version:c.version,draft_id:draft?.id || null,draft_status:draft?.status || 'not_generated',missing_fields:draft?.missing_fields || [],download_path:draft ? '/api/cases/'+c.id+'/drafts/'+draft.id+'/download?format=docx' : null,next_step:'Open the staff UI and have the lawyer review the draft. This workflow does not approve it.'}}];"
+      },
+      "position": [
+        2420,
+        80
+      ]
+    },
+    {
+      "id": "stop-with-status",
+      "name": "Stop with status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "parameters": {
+        "jsCode": "const r = $input.first().json;\nreturn [{json:{run_id:$('Track run').first().json.run_id,status:r.status,polling_stopped:true,error:r.error || null,next_step:['queued','running'].includes(r.status) ? 'Polling deadline reached. The backend may still be running; resume with existing_run_id.' : 'Inspect the backend error and preserved consultation. Do not blindly retry the intake POST.'}}];"
+      },
+      "position": [
+        2200,
+        320
+      ]
+    }
+  ],
+  "connections": {
+    "Consultation webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate input": {
+      "main": [
+        [
+          {
+            "node": "Resume existing run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resume existing run": {
+      "main": [
+        [
+          {
+            "node": "Use existing run id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Start intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Use existing run id": {
+      "main": [
+        [
+          {
+            "node": "Track run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start intake": {
+      "main": [
+        [
+          {
+            "node": "Track run",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Track run": {
+      "main": [
+        [
+          {
+            "node": "Respond accepted",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond accepted": {
+      "main": [
+        [
+          {
+            "node": "Wait before poll",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait before poll": {
+      "main": [
+        [
+          {
+            "node": "Poll intake",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Poll intake": {
+      "main": [
+        [
+          {
+            "node": "Continue polling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue polling": {
+      "main": [
+        [
+          {
+            "node": "Wait before poll",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completed": {
+      "main": [
+        [
+          {
+            "node": "Read case",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop with status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read case": {
+      "main": [
+        [
+          {
+            "node": "Review ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "saveManualExecutions": false
+  },
+  "pinData": {},
+  "tags": []
+}

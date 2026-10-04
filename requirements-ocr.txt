@@ -1,0 +1,5 @@
+# Optional offline Korean scan OCR. Install via python scripts/setup_ocr.py.
+# Workspace installation is isolated from the API's base Python dependencies.
+rapidocr==3.9.2
+onnxruntime==1.24.4
+opencv-python==5.0.0.93

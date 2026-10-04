@@ -1,0 +1,126 @@
+{
+  "synthetic": true,
+  "name": "이하늘",
+  "as_of": "2026-10-04",
+  "court_id": "CT01",
+  "automatic_case_creation": false,
+  "expected": {
+    "monthly_net_income": 3200000,
+    "monthly_gross_income": 3550000,
+    "monthly_deductions": 350000,
+    "annual_net_income": 38400000,
+    "annual_gross_income": 42600000,
+    "annual_deductions": 4200000,
+    "debt_principal": 69000000,
+    "debt_interest": 3000000,
+    "debt_total": 72000000,
+    "assets_total": 2400000,
+    "bank_balance": 2400000,
+    "living_expenses": 1600000,
+    "household_size": 1,
+    "housing_deposit": 0,
+    "housing_cost": 0,
+    "insurance_surrender": 0,
+    "employment_type": "급여소득자"
+  },
+  "intentionally_missing": [
+    "실제 주민등록번호",
+    "실제 연락처",
+    "서명·날인",
+    "최종 법률 판단"
+  ],
+  "documents": [
+    {
+      "catalog_id": "D01",
+      "title": "주민등록표등본",
+      "file": "documents/01_주민등록표등본_가상자료.pdf",
+      "sha256": "9cef0697697517ce4fa2dcd1cbef14c8dd7be0b8d1e0b28e18f5a18c5676a797"
+    },
+    {
+      "catalog_id": "D03",
+      "title": "가족관계증명서",
+      "file": "documents/02_가족관계증명서_가상자료.pdf",
+      "sha256": "0f68b20be7c4ece16c2af0e4506a56db0a804f43869323a67cb10c818879b9d7"
+    },
+    {
+      "catalog_id": "D35",
+      "title": "계좌통합조회결과",
+      "file": "documents/03_계좌통합조회결과_가상자료.pdf",
+      "sha256": "ecebf7c27b40a8b7267ae56f8567f4bd2b5ad47b5d0ac92843b221235af76753"
+    },
+    {
+      "catalog_id": "D38",
+      "title": "부채증명서",
+      "file": "documents/04_부채증명서_가상자료.pdf",
+      "sha256": "578858d3e0ce02c52e479d09fae6fe029199dcfce657eeb85597cd35a84074f8"
+    },
+    {
+      "catalog_id": "D06",
+      "title": "근로소득원천징수영수증",
+      "file": "documents/05_근로소득원천징수영수증_가상자료.pdf",
+      "sha256": "e24b35fa2e8c5f57c10a3a858ad75b48cedff6213c2119bad73c41cbc80bd34a"
+    },
+    {
+      "catalog_id": "D08",
+      "title": "재직증명서",
+      "file": "documents/06_재직증명서_가상자료.pdf",
+      "sha256": "37e5635b649de25fe03b76ebb9a5e26ff4fdcff914ef376fee9b88d25d497cd4"
+    },
+    {
+      "catalog_id": "D09",
+      "title": "건강보험자격득실확인서",
+      "file": "documents/07_건강보험자격득실확인서_가상자료.pdf",
+      "sha256": "95b90e24c56cceadcee3434452380418ef4eda0ea4c97338aebff12ace83a815"
+    },
+    {
+      "catalog_id": "D11",
+      "title": "연금산정용가입내역확인서",
+      "file": "documents/08_연금산정용가입내역확인서_가상자료.pdf",
+      "sha256": "45babb8aab94999440a41c35d451a9e30cce9051d80ecc9d605d78f11d62e135"
+    },
+    {
+      "catalog_id": "D28",
+      "title": "지적전산자료조회결과서",
+      "file": "documents/09_지적전산자료조회결과서_가상자료.pdf",
+      "sha256": "b01b2e8853adc27f3c5e968ea0f502d54b02dfadb211f5a1e0a33c91e51cfe10"
+    },
+    {
+      "catalog_id": "D29",
+      "title": "지방세세목별과세증명서",
+      "file": "documents/10_지방세세목별과세증명서_가상자료.pdf",
+      "sha256": "e29b6b86b50bb59661d6facda8e8eacfa640536f98e47fa8701fa9e766f5f459"
+    },
+    {
+      "catalog_id": "D39",
+      "title": "보험가입및해약환급금확인",
+      "file": "documents/11_보험가입및해약환급금확인_가상자료.pdf",
+      "sha256": "955f78c108625bacd40e745e4ef81022fef298073e65149d22e74d7ba0f716c8"
+    },
+    {
+      "catalog_id": "SUPPORT-HOUSING",
+      "title": "무상거주확인",
+      "file": "documents/12_무상거주확인_가상자료.pdf",
+      "sha256": "6d5524cba4b391ba44270daaea6ed56180c4e6e05135599871956dc44940498a"
+    },
+    {
+      "catalog_id": "SUPPORT-HISTORY",
+      "title": "채무발생및생활비진술",
+      "file": "documents/13_채무발생및생활비진술_가상자료.pdf",
+      "sha256": "2512c2ea5f90d8d3e7f5fd652b7df758dfc0728a5f0a121a51ea70ba4d089d19"
+    },
+    {
+      "catalog_id": "D36",
+      "title": "예금계좌 거래내역",
+      "file": "documents/14_예금계좌거래내역_가상자료.pdf",
+      "period": "2025-10-04 ~ 2026-10-04",
+      "sha256": "f3998e46570c9432d04cdad0777225f102ecb012a7156b259630ad358ea83795"
+    },
+    {
+      "catalog_id": "D07",
+      "title": "급여명세서",
+      "file": "documents/15_급여명세서_스캔가상자료.pdf",
+      "period": "2025-10-04 ~ 2026-10-04",
+      "sha256": "e4487906c6ae4fbb5ef3a6afd3d3877198ea08b297d07762f4526a137c727b7c"
+    }
+  ]
+}

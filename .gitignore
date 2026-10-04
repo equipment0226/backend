@@ -1,0 +1,15 @@
+.env
+.env.*
+!.env.example
+.local/
+.work/
+.venv/
+__pycache__/
+*.pyc
+*.log
+*.sqlite*
+*.db
+node_modules/
+dist/
+reports/
+data/runtime/

@@ -1,0 +1,149 @@
+{
+  "synthetic": true,
+  "name": "김가온",
+  "court_id": "CT01",
+  "as_of": "2026-10-03",
+  "monthly_income": 2800000,
+  "gross_income": 3100000,
+  "monthly_deductions": 300000,
+  "living_expenses": 1500000,
+  "household_size": 1,
+  "assets_total": 12000000,
+  "lease_deposit": 10000000,
+  "bank_balance": 1200000,
+  "insurance_surrender": 800000,
+  "bank_debt_total": 78000000,
+  "principal_total": 75000000,
+  "interest_total": 3000000,
+  "family_debt_candidate": 2000000,
+  "total_debt_after_family_review": 80000000,
+  "creditors": [
+    {
+      "name": "예시은행A",
+      "principal": 35000000,
+      "interest": 1400000,
+      "secured": false
+    },
+    {
+      "name": "예시카드B",
+      "principal": 25000000,
+      "interest": 1000000,
+      "secured": false
+    },
+    {
+      "name": "예시저축C",
+      "principal": 15000000,
+      "interest": 600000,
+      "secured": false
+    }
+  ],
+  "transactions": [
+    {
+      "date": "2026-07-25",
+      "description": "급여 예시테크",
+      "deposit": 2800000,
+      "withdrawal": 0,
+      "balance": 4000000
+    },
+    {
+      "date": "2026-07-26",
+      "description": "월세",
+      "deposit": 0,
+      "withdrawal": 550000,
+      "balance": 3450000
+    },
+    {
+      "date": "2026-07-27",
+      "description": "생활비 합계",
+      "deposit": 0,
+      "withdrawal": 950000,
+      "balance": 2500000
+    },
+    {
+      "date": "2026-07-28",
+      "description": "채무 상환 합계",
+      "deposit": 0,
+      "withdrawal": 1300000,
+      "balance": 1200000
+    },
+    {
+      "date": "2026-08-25",
+      "description": "급여 예시테크",
+      "deposit": 2800000,
+      "withdrawal": 0,
+      "balance": 4000000
+    },
+    {
+      "date": "2026-08-26",
+      "description": "월세",
+      "deposit": 0,
+      "withdrawal": 550000,
+      "balance": 3450000
+    },
+    {
+      "date": "2026-08-27",
+      "description": "생활비 합계",
+      "deposit": 0,
+      "withdrawal": 950000,
+      "balance": 2500000
+    },
+    {
+      "date": "2026-08-28",
+      "description": "채무 상환 합계",
+      "deposit": 0,
+      "withdrawal": 1300000,
+      "balance": 1200000
+    },
+    {
+      "date": "2026-09-25",
+      "description": "급여 예시테크",
+      "deposit": 2800000,
+      "withdrawal": 0,
+      "balance": 4000000
+    },
+    {
+      "date": "2026-09-26",
+      "description": "월세",
+      "deposit": 0,
+      "withdrawal": 550000,
+      "balance": 3450000
+    },
+    {
+      "date": "2026-09-27",
+      "description": "생활비 합계",
+      "deposit": 0,
+      "withdrawal": 950000,
+      "balance": 2500000
+    },
+    {
+      "date": "2026-09-28",
+      "description": "채무 상환 합계",
+      "deposit": 0,
+      "withdrawal": 1300000,
+      "balance": 1200000
+    }
+  ],
+  "expected_rules": [
+    "WF01",
+    "WF02",
+    "WF04",
+    "WF05",
+    "WF12"
+  ],
+  "intended_findings": [
+    "가족채무 누락 2000000원 확인",
+    "금융기관 채무 78000000원과 가족채무 분리",
+    "급여 3개월은 1년 요청에 기간부족",
+    "다른사람 문서는 격리"
+  ],
+  "submission_order": [
+    "00_상담회의록_가상자료.txt",
+    "documents/01_급여명세서_가상자료.pdf",
+    "documents/02_계좌거래내역_가상자료.pdf",
+    "documents/03_부채증명서_가상자료.pdf",
+    "documents/04_주민등록_가족관계_가상자료.pdf",
+    "documents/05_임대차계약서_가상자료.pdf",
+    "documents/06_보험해약환급금_가상자료.pdf",
+    "documents/07_가족대납_가상자료.pdf"
+  ]
+}

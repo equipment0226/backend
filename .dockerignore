@@ -1,0 +1,11 @@
+.git
+.local
+.work
+.env
+.env.*
+models
+**/__pycache__
+tests
+docs
+reports
+data/runtime

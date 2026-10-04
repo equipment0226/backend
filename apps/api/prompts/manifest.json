@@ -1,0 +1,8 @@
+{
+  "version": "prompt-registry-v1",
+  "prompts": [
+    {"id":"intake","version":"1.0.0","file":"intake.txt","title":"상담 회의록의 인물·지역·유형·팩터 선택","caller":"ax_engine.analyze_intake","output_schema":"IntakeSelection","max_output_tokens":600},
+    {"id":"case_evidence","version":"1.0.0","file":"case_evidence.txt","title":"제출자료의 문서 종류·팩터 선택","caller":"ax_engine._run_model","output_schema":"CaseSelection","max_output_tokens":220},
+    {"id":"legacy_review","version":"1.0.0","file":"legacy_review.txt","title":"이전 검토 제안 경로","caller":"agent_engine.run_analysis","output_schema":"Analysis","max_output_tokens":256}
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "kr-rehab-2026-v1",
+  "version": "2026-10-03.1",
+  "effective_from": "2026-10-02",
+  "valid_through": "2026-12-31",
+  "reviewed_at": "2026-10-03",
+  "legal_review_status": "source_grounded_requires_case_lawyer_approval",
+  "unsecured_debt_limit": 1000000000,
+  "secured_debt_limit": 1500000000,
+  "normal_max_months": 36,
+  "exception_max_months": 60,
+  "median_income_2026": {"1": 2564238, "2": 4199292, "3": 5359036, "4": 6494738, "5": 7556719, "6": 8555952, "7": 9515150},
+  "median_increment_above_7": 959198,
+  "seoul_base_living_ratio": "0.60",
+  "seoul_present_value_annual_rate": "0.05",
+  "rounding": {"living_cost": "ROUND_HALF_UP integer KRW", "present_value": "Decimal precision 40; comparison before flooring; display floor", "creditor_distribution": "integer quotient and largest remainders, stable creditor ID tie-break; case review required"},
+  "covered": ["고정 월평균 급여소득", "일반 무담보 원금·이자", "일반 우선권 채권 우선 전액 변제", "검토된 개별 자산 평가·공제", "인가 전 적립회차를 반영한 현가", "36개월 기본 및 근거 있는 기간 예외"],
+  "excluded": ["영업소득 산정", "별제권 예정부족액·유보액 자동 결정", "미확정·분쟁 채권", "인가/면책 확률 및 법원의 판단", "자동 면제재산 인정", "법원별 미확보 세부 추가생계비 자동 인정"],
+  "sources": [
+    {"id": "statute-579", "title": "채무자회생법 제579조 · 법률 제21490호", "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202", "effective_date": "2026-10-02", "locator": "제579조 채무한도·급여소득·가용소득"},
+    {"id": "statute-611", "title": "채무자회생법 제611조", "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202", "effective_date": "2026-10-02", "locator": "제1항 우선채권 전액, 제5항 3년·특별사정 5년"},
+    {"id": "statute-614", "title": "채무자회생법 제614조", "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202", "effective_date": "2026-10-02", "locator": "제1항 비용·수행가능성·청산가치, 제2항 이의 시 추가요건"},
+    {"id": "median-2026", "title": "LH 공식 2026 기준 중위소득표", "url": "https://apply.lh.or.kr/lhapply/cm/cntnts/cntntsView.do?cntntsId=1201331&mi=1201583", "effective_date": "2026-01-01", "locator": "임대가이드 2026년 기준 중위소득 1~8인"},
+    {"id": "seoul-living-2026", "title": "서울회생법원 2026년도 생계비 검토위원회 의결사항 안내", "url": "https://slb.scourt.go.kr/dcboard/new/DcNewsViewAction.work?cbub_code=000221&gubun=41&pageIndex=1&searchWord=&seqnum=19158", "effective_date": "2026-01-01", "locator": "추가생계비는 중위소득 60% 초과 부분. 첨부 세부 한도는 자동 반영하지 않음"},
+    {"id": "seoul-manual", "title": "서울회생법원 회생위원 직무편람 제5판", "url": "https://slb.scourt.go.kr/rel/information/qna/member_manual.pdf", "locator": "인쇄 160~164쪽(PDF196~200쪽): 변제기간, 원금우선, 연5% 월복리 현가 및 인가전 적립회차", "legal_currency": "2024 설명자료; 사건별 최신 실무·개별결정 대조 필요"},
+    {"id": "engine-rounding", "title": "시스템 1원 보전 안분 정책", "url": null, "locator": "법원 공통 규정으로 주장하지 않는 명시적 코드 정책; 변호사 계산안 승인 대상"}
+  ]
+}

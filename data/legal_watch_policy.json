@@ -1,0 +1,303 @@
+{
+  "schema_version": 1,
+  "enabled": true,
+  "interval_hours": 24,
+  "max_sources": 20,
+  "max_http_requests_per_day": 40,
+  "max_attempts_per_source": 2,
+  "timeout_seconds": 20,
+  "note": "공식 공개 원문만 조건부 수집. 동적 현행 조문 주소 사용; 고정 법령판 URL은 현행성 감시로 사용하지 않음. 의미가 바뀐 법원 규칙·미지원 조문은 검토 보류. 검증된 수치 외에는 스크랩 결과를 실행 규칙으로 승격하지 않음.",
+  "source_ids": [
+    "LW579",
+    "LW611",
+    "LW589",
+    "LW595",
+    "LW614",
+    "C01",
+    "C02",
+    "C03",
+    "AXC06",
+    "AXB03",
+    "L08"
+  ],
+  "sources": [
+    {
+      "id": "LW579",
+      "title": "현행 채무자회생법 제579조 채무한도·소득",
+      "url": "https://www.law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1023847839",
+      "source_type": "statute",
+      "article": 579,
+      "adapter": "statute_579",
+      "baseline_source_id": "L13",
+      "court_id": null,
+      "required_text": [
+        "제579조("
+      ],
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "3230826041f83483a59db8ee3efc0fe05dc1cadc805e88b884c8dbcac69a2218",
+      "baseline_raw_sha256": "64e9de5af9fdb38f39722cbeede9f574a894567ef526c0f058057ff2020eb3f5",
+      "baseline_url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": "2026-10-02",
+      "approved_shape_sha256": "b74b2da215ef2423c84dfaa066eb93faff8a4ad7385e9395b10492ae4a5fa13b",
+      "baseline_values": {
+        "secured_debt_limit": 1500000000,
+        "unsecured_debt_limit": 1000000000
+      }
+    },
+    {
+      "id": "LW611",
+      "title": "현행 채무자회생법 제611조 변제계획 기간",
+      "url": "https://law.go.kr/LSW/lsLinkCommonInfo.do?chrClsCd=010202&lsJoLnkSeq=1024710777",
+      "source_type": "statute",
+      "article": 611,
+      "adapter": "statute_611",
+      "baseline_source_id": "L13",
+      "court_id": null,
+      "required_text": [
+        "제611조("
+      ],
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "72631da42289269b7df47357bb14ac368f2ac8deb9ea31f514bba48b2cce57f0",
+      "baseline_raw_sha256": "64e9de5af9fdb38f39722cbeede9f574a894567ef526c0f058057ff2020eb3f5",
+      "baseline_url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": "2026-10-02",
+      "approved_shape_sha256": "5176391b07c507e7f51472082c7ed5ceb1b3a7c1788b13709be9ea6d95a6ae32",
+      "baseline_values": {
+        "normal_max_months": 36,
+        "exception_max_months": 60
+      }
+    },
+    {
+      "id": "LW589",
+      "title": "현행 채무자회생법 제589조",
+      "url": "https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=058900000&languageType=KO&lsNm=%EC%B1%84%EB%AC%B4%EC%9E%90+%ED%9A%8C%EC%83%9D+%EB%B0%8F+%ED%8C%8C%EC%82%B0%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&paras=1",
+      "source_type": "statute",
+      "article": 589,
+      "baseline_source_id": "L13",
+      "court_id": null,
+      "required_text": [
+        "제589조("
+      ],
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "9f4c3e5aa033c062afedb18661c09439258462a666d5b1b35ac706f77e1cd64f",
+      "baseline_raw_sha256": "64e9de5af9fdb38f39722cbeede9f574a894567ef526c0f058057ff2020eb3f5",
+      "baseline_url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": "2026-10-02"
+    },
+    {
+      "id": "LW595",
+      "title": "현행 채무자회생법 제595조",
+      "url": "https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=059500000&languageType=KO&lsNm=%EC%B1%84%EB%AC%B4%EC%9E%90+%ED%9A%8C%EC%83%9D+%EB%B0%8F+%ED%8C%8C%EC%82%B0%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&paras=1",
+      "source_type": "statute",
+      "article": 595,
+      "baseline_source_id": "L13",
+      "court_id": null,
+      "required_text": [
+        "제595조("
+      ],
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "1c2546f0a3c6b9affa8955217fde5e111129e154784855b5cc5bf50a688621e5",
+      "baseline_raw_sha256": "64e9de5af9fdb38f39722cbeede9f574a894567ef526c0f058057ff2020eb3f5",
+      "baseline_url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": "2026-10-02"
+    },
+    {
+      "id": "LW614",
+      "title": "현행 채무자회생법 제614조",
+      "url": "https://www.law.go.kr/LSW/LsiJoLinkP.do?docType=JO&joNo=061400000&languageType=KO&lsNm=%EC%B1%84%EB%AC%B4%EC%9E%90+%ED%9A%8C%EC%83%9D+%EB%B0%8F+%ED%8C%8C%EC%82%B0%EC%97%90+%EA%B4%80%ED%95%9C+%EB%B2%95%EB%A5%A0&paras=1",
+      "source_type": "statute",
+      "article": 614,
+      "baseline_source_id": "L13",
+      "court_id": null,
+      "required_text": [
+        "제614조("
+      ],
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "4943a5e226e362ffff93d3eb3911127a32b3fdf89e0641cfc8663f46c2d0902c",
+      "baseline_raw_sha256": "64e9de5af9fdb38f39722cbeede9f574a894567ef526c0f058057ff2020eb3f5",
+      "baseline_url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": "2026-10-02"
+    },
+    {
+      "id": "C01",
+      "title": "부산회생법원 실무준칙",
+      "url": "https://bsb.scourt.go.kr/bsb/info/info_01/practice_rule_bsb.pdf?v=2",
+      "locator": "2026-08-28 편집본; 제402호(인쇄204~206), 제406·407호",
+      "checked_at": "2026-09-30",
+      "verification": "관련 본문·일부 페이지 이미지 대조",
+      "limitation": "자료제출목록 2026-07-01 HWP와 생계비 세부표의 완전한 대조는 별도 필요.",
+      "source_type": "court_rule",
+      "court_id": "CT03",
+      "required_text": [
+        "개인회생"
+      ],
+      "baseline_source_id": "C01",
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "71c0eab980f823ffe5af46d112932a2f173be6082466d5a42900f4f83ff531a2",
+      "baseline_raw_sha256": "ed867c71d2f33a5fe317ec1f18a5332712022e6e4bb44de8b27886aac4afd9b9",
+      "baseline_url": "https://bsb.scourt.go.kr/bsb/info/info_01/practice_rule_bsb.pdf?v=2",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": null
+    },
+    {
+      "id": "C02",
+      "title": "수원회생법원 실무준칙",
+      "url": "https://swb.scourt.go.kr/swb/info/info_02/practice_rule_swb.pdf?v=2",
+      "locator": "2026-04-14 편집본; 제402호 인쇄193~195(파일99~100쪽), 제405호",
+      "checked_at": "2026-09-30",
+      "verification": "제402호 본문·이미지 대조",
+      "limitation": "영업소득자·대체서류·추가요구를 확인; 별도 최신 공지/생계비 표 전수 확인 전.",
+      "source_type": "court_rule",
+      "court_id": "CT02",
+      "required_text": [
+        "개인회생"
+      ],
+      "baseline_source_id": "C02",
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "a6bb5e963f8674b363e8a1b80fa06c5e5c601214d240d391a2fa7b4b90abb2ad",
+      "baseline_raw_sha256": "8ee177eacec1e6ada9219706c3d6e8630d2c4dbe951c3b08778796c76883238b",
+      "baseline_url": "https://swb.scourt.go.kr/swb/info/info_02/practice_rule_swb.pdf?v=2",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": null
+    },
+    {
+      "id": "C03",
+      "title": "서울회생법원 실무준칙",
+      "url": "https://slb.scourt.go.kr/rel/information/qna/practice_rule.pdf",
+      "locator": "2026-09-23 부칙; 인쇄372쪽 / 파일392쪽",
+      "checked_at": "2026-09-30",
+      "verification": "시행일·적용례 이미지 확인",
+      "limitation": "2026-10-01 이후 최초 접수 사건 적용. 전체 신구조문 대조 미완료. 일부 파싱/이미지 위치 불일치로 조항별 원본 고정 필요.",
+      "source_type": "court_rule",
+      "court_id": "CT01",
+      "required_text": [
+        "개인회생"
+      ],
+      "baseline_source_id": "C03",
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "ec0671bf92813dbf8dea216fd49f07ac2b3de44dfc817bbd5b8966f082afdceb",
+      "baseline_raw_sha256": "6ee82cf4665deac3b34954f7b715fe491aad36d4ca2460f45d435c3fc34f4f3d",
+      "baseline_url": "https://slb.scourt.go.kr/rel/information/qna/practice_rule.pdf",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": null
+    },
+    {
+      "id": "AXC06",
+      "title": "광주회생법원 실무준칙",
+      "url": "https://gjb.scourt.go.kr/gjb/info/info_01/practice_rule_gjb.pdf?v=1",
+      "court_id": "CT06",
+      "source_type": "court_rule",
+      "required_text": [
+        "개인회생"
+      ],
+      "baseline_source_id": "AXC06",
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "51ac5dc6c8c7bbd2fa96e2b71ebac7b53ef474b0a421da02ce0c55cd154998a1",
+      "baseline_raw_sha256": "0f17f9da6653417e1f7bb13cb6c84a489bffb7c1ecaf39839e5d2578cf1389d6",
+      "baseline_url": "https://gjb.scourt.go.kr/gjb/info/info_01/practice_rule_gjb.pdf?v=1",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": null
+    },
+    {
+      "id": "AXB03",
+      "title": "부산회생법원 자료제출목록 2026-07-01 시행",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=",
+      "court_id": "CT03",
+      "source_type": "court_guide",
+      "required_text": [
+        "부산회생법원 자료제출목록",
+        "2026."
+      ],
+      "baseline_source_id": "AXB03",
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "d0a5407d173bfa44aadd1e4b98929e2b8578871ffd6bc0dd45ebb1c94b8b6ec5",
+      "baseline_raw_sha256": "4cf94623b5eaf054b0295aa160a276938ed3de2deb905827bab30e1889919156",
+      "baseline_url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": null
+    },
+    {
+      "id": "L08",
+      "title": "생활법령: 개인회생 신청서 작성·첨부서류",
+      "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=1286",
+      "locator": "2026-09-15 기준 안내; 처리지침 제4조 제1항: 관공서 서류 원칙 2개월 이내",
+      "checked_at": "2026-09-30",
+      "verification": "본문 확인",
+      "limitation": "발급 신선도와 증명 대상 기간은 다름; 특별한 사정의 예외를 보존한다.",
+      "source_type": "government_guide",
+      "start_after": "본문 영역",
+      "required_text": [
+        "개인회생절차개시",
+        "개인회생절차 개시"
+      ],
+      "baseline_source_id": "L08",
+      "court_id": null,
+      "affected_tasks": [
+        "document_selection",
+        "legal_calculation",
+        "legal_strategy",
+        "document_drafting"
+      ],
+      "baseline_semantic_sha256": "48c348491719fb68dfa46c601bcdf6282fad53b943aae4309599dc02244870bd",
+      "baseline_raw_sha256": "062e83e2b43e7b5786fef074b2dbaccb79499510f4d01b0fa6503a67a43bea2f",
+      "baseline_url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=1286",
+      "baseline_checked_at": "2026-10-03",
+      "baseline_effective_date": null
+    }
+  ]
+}

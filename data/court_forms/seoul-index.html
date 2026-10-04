@@ -1,0 +1,576 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+ 
+<!DOCTYPE html>
+ 
+
+<html lang="ko">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scarable=no">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/css/reset.css?vsersion=2">
+    <link rel="stylesheet" type="text/css" href="/css/layout.css">
+    <link rel="stylesheet" type="text/css" href="/css/form.css"> 
+	<link rel="stylesheet" type="text/css" href="/css/sub.css">
+	
+    	
+    		<link rel="stylesheet" type="text/css" href="/css/sub_rel.css?v=1">
+    	
+   	
+	<script src="/js/jquery-1.9.0.min.js"></script>
+	<script src="/js/jquery-ui.min.js"></script>
+	    
+	<!-- 고등법원, 가정 법원, 지방법원별로 적용할 CSS가 있을 경우 CSS 파일을 추가한다. -->
+	 
+	     
+	     
+	    
+	    
+	       <link rel="stylesheet" type="text/css" href="/css/district.css">             
+	    
+    
+
+
+    <!--[if lt IE 9]>
+    <script src="/js/html5shiv.js"></script>
+    <script src="/js/respond.min.js"></script>
+    <![endif] -->
+    <script src="/js/common.js?version=12"></script>
+       	
+    
+
+        
+
+
+  
+
+
+
+
+
+
+
+<!-- local head  -->
+
+
+
+<title>
+
+
+ 개인회생
+
+
+
+
+
+ - 민원서식 양식모음 | 서울회생법원</title>
+        <script type="text/javascript">
+        $(document).ready( function() {
+
+            $("#header").load("/rel/inc/head.jsp");
+            
+            $("#lnbWrap").load("/rel/inc/minwon_left.jsp", function(responseTxt, statusTxt, xhr){
+                if(statusTxt == "success")
+                    //alert("External content loaded successfully!");
+                    newSideMenu3(4, 6, 1);
+                if(statusTxt == "error")
+                    alert("Error: " + xhr.status + ": " + xhr.statusText);
+            });
+            
+            $("#relSys").load("/common/include/relSys.jsp");
+            $("#footSitemapWrap").load("/rel/inc/footSitemapWrap.jsp");
+            $("#footer").load("/rel/inc/foot.jsp"); 
+            $("#mobileMenuWrap").load("/rel/inc/mobileMenuWrap.jsp"); 
+            
+        });
+        
+        function fn_egov_select_brdMstr(pageNo){
+            var frm = document.frm;
+            frm.pageIndex.value = pageNo;
+            var param = '?gubun=' + "25"; 
+            frm.action = "/rel/information/min/MinListAction.work"+param+";jsessionid=AhzdAyVHnWLNalnoIkc9C0IV152kgM3P1q11xj3qgibd088sTrdXVWFSNlBNC7TG.DJEUWS06_servlet_DCWWW";
+            frm.submit();            
+        }
+        
+
+        function fn_search(){
+                var frm = document.frm; 
+
+                document.frm.pageIndex.value = "1";
+                var param = '?gubun=' + "25"; 
+                frm.action = "/rel/information/min/MinListAction.work"+param+";jsessionid=AhzdAyVHnWLNalnoIkc9C0IV152kgM3P1q11xj3qgibd088sTrdXVWFSNlBNC7TG.DJEUWS06_servlet_DCWWW";
+                frm.submit();
+        }
+            
+        function fn_keywordSearch(){
+                if(event.keyCode==13){
+                    fn_search();
+                }
+        }
+        
+       
+        function gubun_search(gubun){               
+            var frm = document.frm;
+            var param = '?gubun=' + gubun.value;                              
+            frm.action = "/rel/information/min/MinListAction.work"+param+";jsessionid=AhzdAyVHnWLNalnoIkc9C0IV152kgM3P1q11xj3qgibd088sTrdXVWFSNlBNC7TG.DJEUWS06_servlet_DCWWW";
+            //if(frm.pageIndex.value=="") document.frm.pageIndex.value = "1";
+            document.frm.pageIndex.value = "1";
+            frm.submit();           
+        }
+        
+        
+        function gubun_list(gubun){             
+            var frm = document.frm;
+            var param = '?gubun=' + gubun;                            
+            frm.action = "/rel/information/min/MinListAction.work"+param+";jsessionid=AhzdAyVHnWLNalnoIkc9C0IV152kgM3P1q11xj3qgibd088sTrdXVWFSNlBNC7TG.DJEUWS06_servlet_DCWWW";
+            document.frm.pageIndex.value = "1";
+            frm.submit();           
+        }
+        
+        $(document).ready(function(){
+               $(".s"+ "25").css("color","red");                   
+        });
+     
+      
+        
+        
+       
+ 
+</script>
+ </head>
+
+ <body>
+    <div id="wrap">
+        <!-- Header 영역 시작 -->
+        <header id="header"></header>
+        <!-- Header 영역  끝-->
+        <!-- content 영역 시작 -->
+        <div id="content">
+            <!-- Navigation 바 시작-->
+            <div class="subNavOuterWrap">
+                <div class="subNavInnerWrap">
+                    <div class="subNav">
+                        <a href="/rel/main.work" title="메인화면이동"><span class="homeIcon">Home</span></a> 
+                        <span> 민원 </span> 
+                        &gt; <span class="currentPage">민원서식 양식모음</span> 
+                        <a href="javascript:print_preview();" title="새창열림"><span class="printIcon"> 프린트</span></a>
+                    </div>
+                </div>
+            </div>
+            <!-- Navigation 바 끝-->
+            <!-- inner 바 끝-->
+            <div class="inner">
+                <!-- LNB 시작 -->
+                <div id="lnbWrap" class="lnbWrap"></div>
+                <!-- LNB 끝 -->
+                <!-- subWrap 영역 시작  -->
+                <div class="subWrap" id="container">
+                    <!-- subContent 영역 시작  -->
+                    <div class="subContent">
+                        <!-- print_preview_html 영역 시작  -->
+                        <div id="print_preview_html">
+                            <h3 class="subTitle">민원서식 양식모음</h3>
+                            <!-- contentIn -->
+                            <div class="contentIn">
+                        
+                                <form name="frm" method="post" action="" onsubmit="return false;" >
+                                    <input type="hidden" name="pageSize" value="5"/>        
+                                    <input type="hidden" name="pageIndex"  value=""/>        
+                                        
+                                    <div class="tableResult">                           
+                                        <div class="tableSearch">
+                                            
+                                                 
+                                                 
+                                            <div class="breakDiv">
+                                            <label for="selectBub">법원 선택</label>
+                                                <select class="graySelect"  title="게시물 출력 분류 선택" name="bub_cd" id="selectBub"  onChange="gubun_search(document.getElementById('selectBub'))">
+                
+                                                    <option value="0" >전체</option>
+                                                    <option value="25" selected="selected">개인회생</option>
+                                                    <option value="24" >개인파산</option>
+                                                    <option value="79" >법인회생</option>
+                                                    <option value="80" >법인파산</option>
+                                                    <option value="78" >일반회생</option>
+                                                </select>
+                                                <!-- 
+                                                <a class="redBtn" href="javascript:gubun_search(document.getElementById('selectBub'));">선택</a>
+                                                 -->
+                                            </div>
+                                            <div class="breakDiv">
+                                                <label for="searchWord">검색어 입력</label>
+                                                <input class="grayInput" type="text" name="searchWord" id="searchWord" onkeypress="javascript:fn_keywordSearch()" value="">
+                                                <a class="redBtn" href="javascript:fn_search();">검색</a>
+                                            </div>
+                                        </div>                          
+                                    </div>
+                                </form>
+                                 
+                                <div class="selBox">
+                                    <a href="javascript:gubun_list('0')"><span class="s0">전체</span></a> |
+                                    <a href="javascript:gubun_list('25')"><span class="s25">개인회생</span></a> |
+                                    <a href="javascript:gubun_list('24')"><span class="s24">개인파산</span></a> |   
+                                    <a href="javascript:gubun_list('79')"><span class="s79">법인회생</span></a> |   
+                                    <a href="javascript:gubun_list('80')"><span class="s80">법인파산</span></a> |
+                                    <a href="javascript:gubun_list('78')"><span class="s78">일반회생</span></a> 
+                                </div>
+                                
+                    
+                                    
+                                          
+                                <!-- Table  -->     
+                                <table class="tableHorH">
+                                    <thead>
+                                    <!-- 
+                                        <tr>
+                                            
+                                            <th scope="col" width="100%">테스트</th>
+                                            
+                                        </tr>
+                                         -->
+                                    </thead>
+                                    <tbody>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1782801689250_154129.hwp&amp;downFile=(2026. 7. 1. 시행) 부산회생법원 자료제출목록.hwp&amp;seqnum=151">
+                                            [개인회생] (부산회생법원)  부산회생법원 자료제출목록-신청서 필수 첨부자료(26. 7. 1. 시행)</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1689038442920_102042.hwp&amp;downFile=[개인회생] (부산회생법원) 변경 변제계획 수정안 제출서(2023. 7. 1. 시행).hwp&amp;seqnum=146">
+                                            [개인회생] (부산회생법원) 변경 변제계획 수정안 제출서</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1689038514296_102154.hwp&amp;downFile=[개인회생] (부산회생법원) 변경 채권자목록 및 변제계획안 수정허가신청서 표지(2023. 7. 1. 시행).hwp&amp;seqnum=147">
+                                            [개인회생] (부산회생법원) 변경 채권자목록 및 변제계획안 수정허가신청서 표지</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1689038555060_102235.hwp&amp;downFile=[개인회생] (부산회생법원) 변경 채권자목록 수정허가신청서(2023. 7. 1. 시행).hwp&amp;seqnum=148">
+                                            [개인회생] (부산회생법원) 변경 채권자목록 수정허가신청서</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1772611282535_170122.hwp&amp;downFile=제증명 교부신청서(개인회생,개인파산 및 면책).hwp&amp;seqnum=150">
+                                            [개인회생] (부산회생법원) 제증명 교부신청서(개인회생,개인파산 및 면책)</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1769589524997_173844.hwp&amp;downFile=[별지 2]회생, 파산 재판기록 열람복사 등 신청서 (2026).hwp&amp;seqnum=138">
+                                            [개인회생] (서울회생법원) 재판기록 열람복사/출력복제 신청서</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1671686991279_142951.hwp&amp;downFile=(서울회생법원)개인회생사건관련 제증명 신청서.hwp&amp;seqnum=122">
+                                            [개인회생] (서울회생법원)제증명 신청서</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1667978372493_161932.hwp&amp;downFile=[개인회생] 변경 주택담보대출 채무재조정프로그램 신청서 및 안내문.hwp&amp;seqnum=133">
+                                            [개인회생] (서울회생법원)주택담보대출채권 채무재조정 프로그램 지원신청서 및 안내문</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1671525590643_173950.hwp&amp;downFile=(즉시)항고장.hwp&amp;seqnum=127">
+                                            [개인회생] (즉시)항고장</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                      
+                                      
+                                        
+                                        
+                                            <tr>
+                                                
+                                                        <td class="">
+                                            <a href="https://file.scourt.go.kr/AttachDownload?path=004&amp;file=1672210973936_160253.hwp&amp;downFile=(대구지방법원)개인회생절차 개시신청서(청년개인회생사건용).hwp&amp;seqnum=123">
+                                            [개인회생] a-1-1 (대구지방법원) 개인회생절차 개시신청서(청년회생사건용)</a>&nbsp;
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 -->
+                                            
+                                            <!-- 070821 LJH 작성기재례 추가 e-->
+                                                    
+                                                    
+                                                </td>       
+                                            </tr>
+                                        
+                                        
+                                        
+                                    </tbody>
+                                </table>
+            
+                                <!-- //Table  -->
+                                    
+                                <!-- pagelist -->
+                                <div class="paginationWrap tableLine">
+                                    <ul class="pagination">
+                                         <li class=prev2><a href="?pageIndex=1" onclick="fn_egov_select_brdMstr(1);return false; " title="처음 페이지">이전</a></li><li class=prev><a href="?pageIndex=1" onclick="fn_egov_select_brdMstr(1);return false; " title="이전 페이지">이전</a></li><li><a class="active" href="#" title="현재페이지">1</a></li><li><a href="?pageIndex=2" onclick="fn_egov_select_brdMstr(2);return false; ">2</a></li><li><a href="?pageIndex=3" onclick="fn_egov_select_brdMstr(3);return false; ">3</a></li><li><a href="?pageIndex=4" onclick="fn_egov_select_brdMstr(4);return false; ">4</a></li><li><a href="?pageIndex=5" onclick="fn_egov_select_brdMstr(5);return false; ">5</a></li><li class=next><a href="?pageIndex=6" onclick="fn_egov_select_brdMstr(6);return false; " title="다음 페이지">다음</a></li><li class=next2><a href="?pageIndex=6" onclick="fn_egov_select_brdMstr(6);return false; " title="마지막 페이지">다음</a></li>
+
+                                    </ul>
+                                </div>
+                                <!-- //pagelist -->
+                            </div>
+                
+                        </div>
+                        <!-- print_preview_html 영역 끝  -->
+                    </div>
+                    <!-- subContent 영역 끝  -->
+                </div>          
+                <!-- subWrap 영역 끝  -->     
+            </div>
+            <!-- inner 바 끝-->
+  
+            <!-- 관련 시스템 영역 시작 -->
+            <div id="relSys" class="relatedSystemWrap"></div>
+            <!-- 관련 시스템 영역 끝 -->
+            <!-- 하단 사이트맵 시작 -->
+            <div id="footSitemapWrap"  class="footSitemapWrap"></div>
+            <!-- 하단 사이트맵 끝 -->
+            <!-- footer 영역 시작 -->
+            <div id="footer"></div>
+            <!-- footer 영역 끝 --> 
+            <!-- 프린트 화면 팝업 시작 -->
+            
+
+
+
+
+
+
+<!-- Quick menu 사건검색 링크값 설정 -->
+
+<!-- 2013.03.13 박보람 지방법원 홈페이지 웹 접근성 개선 2단계 사업에서 퀵메뉴가 빠지므로 조건문 추가 -->
+<!-- 2013.04.10 안인균 조건문 2단계 해당 법원 추가 -->
+<!-- 2013.09.13 노현석 조건문 3단계 해당 법원 추가 -->
+
+
+
+
+<script type="text/javascript">
+//<![CDATA[
+        //일반 프린트 script
+        function print_preview_new(){
+                left = (document.body.clientWidth - 625) / 2;
+                height = (document.body.clientHeight - 50);
+                document.print_preview.print_html.value = print_preview_html.innerHTML;
+                
+                var ppp=window.open('/common/print/print_new.jsp','print', config='height='+height +',width=920, scrollbars=yes, left='+ left +', top = 50');
+        }
+
+        //iframe을 사용하는 페이지(기능뱅크) 프린트 script
+        function print_preview_iframe_new(){
+                left = (document.body.clientWidth - 625) / 2;
+                height = (document.body.clientHeight - 50);
+                document.print_preview.print_html_iframe_01.value = print_preview_html.innerHTML;
+                document.print_preview.print_html_iframe_02.value = preview.preview.innerHTML;
+                var ppp=window.open('/common/print/print2_new.jsp','print', config='height='+height +',width=920, scrollbars=yes, left='+ left +', top = 50');
+        }
+
+        //일반 프린트 script
+        function print_preview(){
+                left = (document.body.clientWidth - 625) / 2;
+                height = (document.body.clientHeight - 50);
+                document.print_preview.print_html.value = print_preview_html.innerHTML;
+                var ppp=window.open('/common/print/print_new.jsp','print', config='height='+height +',width=920, scrollbars=yes, left='+ left +', top = 50');
+        }
+
+        //iframe을 사용하는 페이지(기능뱅크) 프린트 script
+        function print_preview_iframe(){
+                left = (document.body.clientWidth - 625) / 2;
+                height = (document.body.clientHeight - 50);
+                document.print_preview.print_html_iframe_01.value = print_preview_html.innerHTML;
+                document.print_preview.print_html_iframe_02.value = preview.preview.innerHTML;
+                var ppp=window.open('/common/print/print2.jsp','print', config='height='+height +',width=655, scrollbars=yes, left='+ left +', top = 50');
+        }
+
+        //전국법원위치정보-등기소 새창
+        function goIROS(gubun){
+                var cmd="";
+                if (gubun=='1'){                        //구분 1 : (부동산)등기소
+                        cmd='PINFSrchRegtC';
+                }else if(gubun='2'){                    //구분 2 : 법인 등기소
+                        cmd='PINFSrchCorpRegtC';
+                }
+                var win =window.open("http://www.iros.go.kr/pos1/pfrontservlet?cmd="+cmd,"regt_url","scrollbars=yes, resizable=no,width=1024, height=768, left=0, top=0");
+        }
+
+        //미리보는 소송 새창
+        function goSosong(){
+        
+                var CurrWin=window.open('/popup/ani_pop.jsp?gubun=2','movie2','scrollbars=no,status=no,left=0,top=0,width=640,height=720');
+        }
+
+        //홈페이지 개선의견 footer Link
+        function open_improve(){
+                var url = "http://www.scourt.go.kr/impro/ImproveWrite.work?BUB_NAME=rel&BUB_CODE=000221";
+                window.open(url,'','width=550,height=553');
+        }
+//]]>
+</script>
+
+<form name="print_preview" method="post" action="">
+        <input type="hidden" name="print_html" value=''/>
+        <input type="hidden" name="print_html_iframe_01" value=''/>
+        <input type="hidden" name="print_html_iframe_02" value=''/>
+</form>
+
+
+
+
+
+
+
+
+            <!-- 프린트 화면 팝업 끝 -->  
+        </div>
+    </div>
+    <!-- mobileMenuWrap 영역 시작 -->
+    <div id="mobileMenuWrap" class="mobileMenuWrap"></div>
+    <div class="mobile_dim"></div>
+    <!-- mobileMenuWrap 영역 끝 --> 
+ </body>
+</html><!-- This page is generated by CMS -->

@@ -1,0 +1,49 @@
+{
+  "version": "official-statement-evidence-v1",
+  "verified_at": "2026-10-03",
+  "purpose": "확인된 상담·증빙 사실로 구체적 진술서를 구성하는 작성 기준. 인가 예측이나 고객 사실의 증거가 아니다.",
+  "official_form": {
+    "id": "D5105-pdf",
+    "title": "대법원 개인회생 진술서 D5105",
+    "path": "data/court_forms/originals/D5105.pdf",
+    "sha256": "a5b0427bd9a13809e0bda0b374e3e87aefebf0a6511f1ce2d2d4e26f60353f2a",
+    "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745819546800_145226.pdf&downFile=%EC%A7%84%EC%88%A0%EC%84%9C%28D5105%29.pdf&seqnum=",
+    "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=6",
+    "locators": [
+      {"page": 1, "section": "I 경력 / II 현재의 주거상황", "consider": "학력·최근 직장과 주거형태·보증금·월세 및 관련 증빙"},
+      {"page": 2, "section": "III 부채 상황 1·2", "consider": "소송·지급명령·압류 등 진행과 명령 사본, 채무 부담의 실제 원인"},
+      {"page": 2, "section": "III 부채 상황 3", "quote": "개인회생절차 개시의 신청에 이르게 된 사정에 관하여 구체적으로 기재", "consider": "채무가 누적된 경위와 신청에 이른 구체 사정. 부족한 지면은 별지 사용"},
+      {"page": 3, "section": "IV 과거 면책절차 등의 이용 상황", "consider": "과거 절차의 종류·법원·사건·진행상황과 증빙. 자료가 없다는 이유로 이용 이력이 없다고 단정하지 않음"}
+    ]
+  },
+  "paragraph_topics": {
+    "debt_origin": {
+      "required_considerations": ["최초 채무의 시기·목적·실제 사용처", "소득·가족·주거 등 당시 형편과 차입의 관계", "진술을 뒷받침하는 상담 또는 서류 출처"],
+      "missing_policy": "알 수 없는 시기·금액·가족·건강 사유는 창작하지 않고 추가 확인 항목으로 남긴다."
+    },
+    "debt_progression": {
+      "required_considerations": ["소득 감소·지출 증가·연체 등 확인된 변화의 시간 순서", "추가 차입·돌려막기·보증·재산 처분이 있으면 거래와 잔액·사용처", "소송·압류·과거 절차와 신청 계기의 확인된 사실", "특정 채권자 변제·배우자 재산 등 쟁점은 자료와 계산 반영 상태를 구분"],
+      "missing_policy": "확인되지 않은 불리한 사실을 없다고 단정하지 않고, 기존 자료와 상충하면 보정·검토 항목으로 남긴다."
+    },
+    "repayment_basis": {
+      "required_considerations": ["현재 계속적 수입의 근거와 수입 변동 가능성", "실제 부양·주거 등 생계비와 추가 지출 근거", "검증 계산상 월 가용소득·변제기간·청산가치와 계획 수행가능성", "소명 자료·보정 응답 및 남은 불확실성"],
+      "missing_policy": "계산 수치만으로 계속 고용·향후 수입·성실 이행의 확약을 창작하지 않는다. 재산 매각이 필요한 계획은 가용소득만 변제 서식의 해당없음 표시와 충돌 여부를 별도 검토한다."
+    }
+  },
+  "current_law_anchors": [
+    {"source_id": "LW579", "article": "제579조 제2호·제3호", "principle": "급여 또는 영업 수입의 계속적 취득 가능성", "quote": "정기적이고 확실한 수입을 얻을 가능성이 있는 개인"},
+    {"source_id": "LW614", "article": "제614조 제1항 제2호·제4호", "principle": "계획 수행가능성과 청산가치 보장", "quote": "변제계획이 공정하고 형평에 맞으며 수행가능할 것"},
+    {"source_id": "LW595", "article": "제595조 제2호·제7호", "principle": "허위·미제출 자료와 절차상 불성실 여부를 실제 자료·응답으로 검토"}
+  ],
+  "precedents": [
+    {"source_id": "AXP01", "case_number": "2010마1179", "date": "2010-11-30", "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=150036", "outcome": "remand", "quote": "이를 포함한 총재산의 청산가치 이상을 변제에 투입하도록 할 수도 있다.", "use": "처분대금·사용처·부인대상 재산 및 청산가치 반영의 소명 필요성을 검토", "limits": "파기환송이며 인가 사례가 아니다. 과거 판결의 5년 문구를 현행 변제기간으로 적용하지 않는다."},
+    {"source_id": "AXP02", "case_number": "2015마657", "date": "2015-09-01", "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=179701", "outcome": "remand", "quote": "이를 시정할 기회를 제공하지 아니한 채 곧바로 그 신청을 기각하는 것은 허용되지 않는다", "use": "보정 응답 내용과 자료, 재산 귀속 다툼을 구체적으로 기록", "limits": "파기환송이며 인가 사례가 아니다. 배우자 재산 자동 제외나 자동 절반 산입의 근거로 쓰지 않는다."},
+    {"source_id": "AXP03", "case_number": "2014마1255", "date": "2014-10-01", "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=177702", "outcome": "remand", "use": "인가 후 미납 사유·현재 수입 지출·장래 수행가능성 및 계획 변경 여부를 검토", "limits": "인가 후 폐지 판단에 관한 파기환송으로, 최초 개시신청 성공이나 승인 문안이 아니다."},
+    {"source_id": "AXP04", "case_number": "2018마7459", "date": "2019-08-20", "url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=225433", "outcome": "discharge_affirmed", "use": "확정된 변경계획 이행 후 면책 판단의 절차와 한계를 구분", "limits": "면책 유지 결정이며 최초 개시·인가된 신청서 또는 진술서 견본이 아니다."}
+  ],
+  "approval_samples": {
+    "verified_initial_commencement_or_plan_approval_documents": 0,
+    "statement": "현재 수집 자료에는 실제 개시·인가된 신청서·진술서 원본 성공 견본이 없다. 파기환송과 변제 완료 후 면책을 승인 문안 사례로 표시하지 않는다."
+  },
+  "prohibited_inferences": ["없는 개인 사실·고용 전망·건강·부양 사정을 만들어 문장을 늘리지 않음", "자료에 없는 반성·성실 이행 약속을 고객 진술로 창작하지 않음", "승인 확률·인가 보장·다른 사건의 결과를 해당 사건 결과로 주장하지 않음", "법령·공식 서식의 안내를 고객 개인 사실의 증거로 사용하지 않음"]
+}

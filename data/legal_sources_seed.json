@@ -1,0 +1,190 @@
+{
+  "version": 1,
+  "note": "공식 공개 원문 수집 대상. 등록부의 과거 확인표시는 수집 성공이나 현행성 검증으로 승계하지 않음. 본문에 표시된 시행일을 추출해도 해당 사건 적용 여부는 미확정.",
+  "sources": [
+    {
+      "id": "L01",
+      "source_type": "statute",
+      "required_text": [
+        "제3조("
+      ],
+      "derive_from": "L13",
+      "article": 3,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L02",
+      "source_type": "statute",
+      "required_text": [
+        "제579조("
+      ],
+      "derive_from": "L13",
+      "article": 579,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L03",
+      "source_type": "statute",
+      "required_text": [
+        "제614조("
+      ],
+      "derive_from": "L13",
+      "article": 614,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L05",
+      "source_type": "statute",
+      "required_text": [
+        "제564조("
+      ],
+      "derive_from": "L13",
+      "article": 564,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L06",
+      "source_type": "statute",
+      "required_text": [
+        "제595조("
+      ],
+      "derive_from": "L13",
+      "article": 595,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L07",
+      "source_type": "statute",
+      "required_text": [
+        "제611조("
+      ],
+      "derive_from": "L13",
+      "article": 611,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L08",
+      "source_type": "government_guide",
+      "start_after": "본문 영역",
+      "required_text": [
+        "개인회생절차개시",
+        "개인회생절차 개시"
+      ]
+    },
+    {
+      "id": "L09",
+      "source_type": "court_guide",
+      "court_id": "CT01",
+      "start_after": "개인회생제도란",
+      "required_text": [
+        "급여소득자",
+        "영업소득자"
+      ]
+    },
+    {
+      "id": "L10",
+      "source_type": "court_guide",
+      "court_id": "CT01",
+      "start_after": "개인파산이란",
+      "required_text": [
+        "면책불허가",
+        "면책 불허가"
+      ]
+    },
+    {
+      "id": "L11",
+      "source_type": "statute",
+      "required_text": [
+        "제625조("
+      ]
+    },
+    {
+      "id": "L12",
+      "title": "채무자회생법 제589조: 신청서 및 첨부서류 (공식 조문 조회)",
+      "source_type": "statute",
+      "required_text": [
+        "제589조("
+      ],
+      "derive_from": "L13",
+      "article": 589,
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202"
+    },
+    {
+      "id": "L13",
+      "title": "채무자 회생 및 파산에 관한 법률 · 법률 제21490호 본문",
+      "url": "https://www.law.go.kr/LSW/lsInfoR.do?lsiSeq=290631&efYd=20261002&chrClsCd=010202",
+      "source_type": "statute",
+      "required_text": [
+        "제589조(",
+        "제579조("
+      ]
+    },
+    {
+      "id": "C01",
+      "source_type": "court_rule",
+      "court_id": "CT03",
+      "required_text": [
+        "개인회생"
+      ]
+    },
+    {
+      "id": "C02",
+      "source_type": "court_rule",
+      "court_id": "CT02",
+      "required_text": [
+        "개인회생"
+      ]
+    },
+    {
+      "id": "C03",
+      "source_type": "court_rule",
+      "court_id": "CT01",
+      "required_text": [
+        "개인회생"
+      ]
+    },
+    {
+      "id": "J01",
+      "source_type": "court_jurisdiction",
+      "court_id": "CT01",
+      "required_text": [
+        "관할"
+      ]
+    },
+    {
+      "id": "J02",
+      "source_type": "court_jurisdiction",
+      "court_id": "CT02",
+      "required_text": [
+        "관할구역",
+        "수원시",
+        "오산시",
+        "군포시"
+      ],
+      "min_body_chars": 80,
+      "require_all_text": true
+    },
+    {
+      "id": "I01",
+      "source_type": "government_service",
+      "required_text": [
+        "소득금액",
+        "소득 금액"
+      ]
+    },
+    {
+      "id": "I02",
+      "source_type": "government_service",
+      "required_text": [
+        "자격득실"
+      ]
+    },
+    {
+      "id": "I09",
+      "source_type": "government_service",
+      "required_text": [
+        "주민등록"
+      ]
+    }
+  ]
+}

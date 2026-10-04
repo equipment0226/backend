@@ -1,0 +1,11 @@
+{
+  "version": "2026-10-03",
+  "sources": [
+    {"id":"AXP01","title":"대법원 2010.11.30.자 2010마1179 결정: 편파변제와 청산가치","url":"https://www.law.go.kr/LSW/precInfoP.do?precSeq=150036","source_type":"precedent","required_text":["2010마1179"],"start_after":"개인회생"},
+    {"id":"AXP02","title":"대법원 2015.9.1.자 2015마657 결정: 보정 시정기회와 배우자재산","url":"https://www.law.go.kr/LSW/precInfoP.do?precSeq=179701","source_type":"precedent","required_text":["2015마657"],"start_after":"개인회생"},
+    {"id":"AXP03","title":"대법원 2014.10.1.자 2014마1255 결정: 변제계획 수행가능성과 폐지","url":"https://www.law.go.kr/LSW/precInfoP.do?precSeq=177702","source_type":"precedent","required_text":["2014마1255"],"start_after":"개인회생"},
+    {"id":"AXP04","title":"대법원 2019.8.20.자 2018마7459 결정: 변경계획 완납 후 면책 유지","url":"https://www.law.go.kr/LSW/precInfoP.do?precSeq=225433","source_type":"precedent","required_text":["2018마7459"],"start_after":"개인회생"},
+    {"id":"AXC06","title":"광주회생법원 실무준칙","url":"https://gjb.scourt.go.kr/gjb/info/info_01/practice_rule_gjb.pdf?v=1","court_id":"CT06","source_type":"court_rule","required_text":["개인회생"]},
+    {"id":"AXB03","title":"부산회생법원 자료제출목록 2026-07-01 시행","url":"https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=","court_id":"CT03","source_type":"court_guide","required_text":["부산회생법원 자료제출목록","2026."]}
+  ]
+}

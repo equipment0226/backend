@@ -1,0 +1,3196 @@
+{
+  "templates": [
+    {
+      "title": "개인회생절차 개시신청서",
+      "pages": [
+        0,
+        1
+      ],
+      "fields": [
+        {
+          "key": "client_name",
+          "label": "신청인 성명",
+          "page": 0,
+          "rect": [
+            180,
+            154,
+            307,
+            172
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "resident_id",
+          "label": "주민등록번호",
+          "page": 0,
+          "rect": [
+            396,
+            154,
+            522,
+            172
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "registered_address",
+          "label": "주민등록상 주소",
+          "page": 0,
+          "rect": [
+            180,
+            176,
+            438,
+            194
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "address",
+          "label": "현주소",
+          "page": 0,
+          "rect": [
+            180,
+            198,
+            438,
+            216
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "service_address",
+          "label": "송달장소",
+          "page": 0,
+          "rect": [
+            180,
+            220,
+            330,
+            238
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "phone",
+          "label": "휴대전화",
+          "page": 0,
+          "rect": [
+            396,
+            242,
+            522,
+            260
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "lawyer_name",
+          "label": "대리인 성명",
+          "page": 0,
+          "rect": [
+            185,
+            279,
+            522,
+            297
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "lawyer_address",
+          "label": "대리인 주소",
+          "page": 0,
+          "rect": [
+            185,
+            300,
+            435,
+            318
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "lawyer_phone",
+          "label": "대리인 전화",
+          "page": 0,
+          "rect": [
+            185,
+            322,
+            522,
+            342
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "lawyer_email",
+          "label": "대리인 이메일",
+          "page": 0,
+          "rect": [
+            185,
+            346,
+            314,
+            362
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "months",
+          "label": "변제기간(개월)",
+          "page": 0,
+          "rect": [
+            386,
+            779,
+            413,
+            797
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_deposit",
+          "label": "월 변제예정액",
+          "page": 0,
+          "rect": [
+            455,
+            779,
+            490,
+            797
+          ],
+          "required": true,
+          "font_size": 6,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "refund_bank",
+          "label": "환급은행",
+          "page": 1,
+          "rect": [
+            396,
+            195,
+            451,
+            213
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "refund_account",
+          "label": "환급계좌",
+          "page": 1,
+          "rect": [
+            59,
+            214,
+            199,
+            233
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "court_prefix",
+          "label": "제출법원(법원 앞 부분)",
+          "page": 1,
+          "rect": [
+            350,
+            718,
+            471,
+            737
+          ],
+          "required": true,
+          "font_size": 12,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        }
+      ],
+      "id": "D5100",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-3",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=3",
+        "title": "개인회생절차 개시신청서(2021.4.20.시행)(D5100).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745801014647_094334.pdf&downFile=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%A0%88%EC%B0%A8+%EA%B0%9C%EC%8B%9C%EC%8B%A0%EC%B2%AD%EC%84%9C%282021.4.20.%EC%8B%9C%ED%96%89%29%28D5100%29.pdf&seqnum=",
+        "id": "D5100-pdf",
+        "path": "data/court_forms/originals/D5100.pdf",
+        "sha256": "2449f207014269b2d9921002e12269eaa230747bc883e1d8c6edfa7c04bdb3a3",
+        "bytes": 84010,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "2449f207014269b2",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "재산목록",
+      "pages": [
+        0
+      ],
+      "fields": [
+        {
+          "key": "cash",
+          "label": "현금",
+          "page": 0,
+          "rect": [
+            157,
+            202,
+            218,
+            221
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_balance",
+          "label": "예금 총액",
+          "page": 0,
+          "rect": [
+            157,
+            225,
+            218,
+            264
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_name",
+          "label": "금융기관명",
+          "page": 0,
+          "rect": [
+            334,
+            225,
+            360,
+            241
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_account",
+          "label": "계좌번호",
+          "page": 0,
+          "rect": [
+            318,
+            246,
+            387,
+            259
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "insurance_surrender",
+          "label": "보험해약환급금",
+          "page": 0,
+          "rect": [
+            157,
+            272,
+            218,
+            311
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "insurance_name",
+          "label": "보험회사",
+          "page": 0,
+          "rect": [
+            326,
+            275,
+            360,
+            289
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "vehicle_value",
+          "label": "자동차 가액",
+          "page": 0,
+          "rect": [
+            157,
+            319,
+            218,
+            340
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "housing_deposit",
+          "label": "임차보증금 반환예상액",
+          "page": 0,
+          "rect": [
+            157,
+            348,
+            218,
+            406
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "address",
+          "label": "임차물건",
+          "page": 0,
+          "rect": [
+            318,
+            347,
+            537,
+            362
+          ],
+          "required": true,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "lease_terms",
+          "label": "보증금 및 월세",
+          "page": 0,
+          "rect": [
+            318,
+            364,
+            537,
+            385
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "real_estate_value",
+          "label": "부동산 순가액",
+          "page": 0,
+          "rect": [
+            157,
+            413,
+            218,
+            498
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "retirement_value",
+          "label": "예상퇴직금 가액",
+          "page": 0,
+          "rect": [
+            157,
+            655,
+            218,
+            674
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "assets_total",
+          "label": "재산 합계",
+          "page": 0,
+          "rect": [
+            157,
+            706,
+            218,
+            727
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "exempt_value",
+          "label": "면제재산 신청금액",
+          "page": 0,
+          "rect": [
+            157,
+            734,
+            218,
+            753
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "liquidation_value",
+          "label": "청산가치",
+          "page": 0,
+          "rect": [
+            157,
+            760,
+            218,
+            780
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        }
+      ],
+      "id": "D5101",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-5",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=5",
+        "title": "재산목록(D5101).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745821426969_152346.pdf&downFile=%EC%9E%AC%EC%82%B0%EB%AA%A9%EB%A1%9D%28D5101%29.pdf&seqnum=",
+        "id": "D5101-pdf",
+        "path": "data/court_forms/originals/D5101.pdf",
+        "sha256": "dfb60a11eca8baf0b3dbfff3f6147f1290711670cdb3b5f06a16f950a169b519",
+        "bytes": 147437,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "dfb60a11eca8baf0",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "수입 및 지출에 관한 목록",
+      "pages": [
+        0,
+        1
+      ],
+      "fields": [
+        {
+          "key": "employer",
+          "label": "직장명",
+          "page": 0,
+          "rect": [
+            362,
+            212,
+            530,
+            230
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "job_title",
+          "label": "직위",
+          "page": 0,
+          "rect": [
+            362,
+            236,
+            530,
+            254
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "income_label",
+          "label": "수입 명목",
+          "page": 0,
+          "rect": [
+            60,
+            310,
+            112,
+            333
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "income_period_label",
+          "label": "수입 기간구분",
+          "page": 0,
+          "rect": [
+            118,
+            310,
+            184,
+            333
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "monthly_income",
+          "label": "월 수입 금액",
+          "page": 0,
+          "rect": [
+            190,
+            310,
+            269,
+            333
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "annual_income",
+          "label": "연간 환산 금액",
+          "page": 0,
+          "rect": [
+            275,
+            310,
+            355,
+            333
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "income_seizure",
+          "label": "압류·가압류 여부",
+          "page": 0,
+          "rect": [
+            362,
+            310,
+            530,
+            333
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "annual_income",
+          "label": "연 수입",
+          "page": 0,
+          "rect": [
+            275,
+            394,
+            355,
+            412
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "monthly_income",
+          "label": "월평균 수입",
+          "page": 0,
+          "rect": [
+            454,
+            394,
+            508,
+            412
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "household_size",
+          "label": "생계비 가구수",
+          "page": 0,
+          "rect": [
+            155,
+            479,
+            175,
+            497
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "median_income",
+          "label": "기준 중위소득",
+          "page": 0,
+          "rect": [
+            307,
+            479,
+            350,
+            497
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "median_percent",
+          "label": "중위소득 적용비율",
+          "page": 0,
+          "rect": [
+            417,
+            479,
+            438,
+            497
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "recognized_living_cost",
+          "label": "예상 생계비",
+          "page": 0,
+          "rect": [
+            477,
+            479,
+            524,
+            497
+          ],
+          "required": true,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "additional_cost_reason",
+          "label": "추가생계비 사유",
+          "page": 1,
+          "rect": [
+            62,
+            402,
+            531,
+            539
+          ],
+          "required": false,
+          "font_size": 10,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        }
+      ],
+      "id": "D5103",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-4",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+        "title": "수입 및 지출에 관한 목록(D5103).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745819280743_144800.pdf&downFile=%EC%88%98%EC%9E%85+%EB%B0%8F+%EC%A7%80%EC%B6%9C%EC%97%90+%EA%B4%80%ED%95%9C+%EB%AA%A9%EB%A1%9D%28D5103%29.pdf&seqnum=",
+        "id": "D5103-pdf",
+        "path": "data/court_forms/originals/D5103.pdf",
+        "sha256": "d0cfca8e9b6994c1e061827c9d532b4c79e8ef7eb6bb0a48a69fbe5e350cdb04",
+        "bytes": 159473,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "d0cfca8e9b6994c1",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "진술서",
+      "pages": [
+        0,
+        1,
+        2
+      ],
+      "fields": [
+        {
+          "key": "employer",
+          "label": "최근 직장명",
+          "page": 0,
+          "rect": [
+            247,
+            269,
+            334,
+            287
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "job_title",
+          "label": "최근 직위",
+          "page": 0,
+          "rect": [
+            416,
+            269,
+            518,
+            287
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "housing_deposit",
+          "label": "임차보증금",
+          "page": 0,
+          "rect": [
+            314,
+            604,
+            399,
+            622
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "housing_cost",
+          "label": "월 임대료",
+          "page": 0,
+          "rect": [
+            314,
+            623,
+            359,
+            641
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "landlord",
+          "label": "임차계약 상대방 성명",
+          "page": 0,
+          "rect": [
+            323,
+            641,
+            384,
+            659
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "statement",
+          "label": "부채 경위 및 신청에 이른 사정",
+          "page": 1,
+          "rect": [
+            61,
+            414,
+            528,
+            745
+          ],
+          "required": true,
+          "font_size": 10,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "prior_proceedings",
+          "label": "과거 절차 상세",
+          "page": 2,
+          "rect": [
+            61,
+            365,
+            525,
+            640
+          ],
+          "required": true,
+          "font_size": 10,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        }
+      ],
+      "id": "D5105",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-6",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=6",
+        "title": "진술서(D5105).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745819546800_145226.pdf&downFile=%EC%A7%84%EC%88%A0%EC%84%9C%28D5105%29.pdf&seqnum=",
+        "id": "D5105-pdf",
+        "path": "data/court_forms/originals/D5105.pdf",
+        "sha256": "a5b0427bd9a13809e0bda0b374e3e87aefebf0a6511f1ce2d2d4e26f60353f2a",
+        "bytes": 116486,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "a5b0427bd9a13809",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "변제계획안(가용소득만으로 변제)",
+      "pages": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "fields": [
+        {
+          "key": "client_name",
+          "label": "채무자 성명",
+          "page": 0,
+          "rect": [
+            124,
+            206,
+            310,
+            224
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "case_number",
+          "label": "사건번호",
+          "page": 0,
+          "rect": [
+            131,
+            179,
+            341,
+            197
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "lawyer_name",
+          "label": "대리인 성명",
+          "page": 0,
+          "rect": [
+            124,
+            232,
+            310,
+            250
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "court_prefix",
+          "label": "제출법원",
+          "page": 0,
+          "rect": [
+            350,
+            641,
+            477,
+            661
+          ],
+          "required": true,
+          "font_size": 12,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "client_name",
+          "label": "채무자 성명",
+          "page": 1,
+          "rect": [
+            210,
+            109,
+            296,
+            127
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "employer",
+          "label": "급여 지급처",
+          "page": 1,
+          "rect": [
+            192,
+            327,
+            280,
+            345
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "start_year",
+          "label": "변제 시작 연도",
+          "page": 1,
+          "rect": [
+            77,
+            224,
+            108,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "start_month",
+          "label": "변제 시작 월",
+          "page": 1,
+          "rect": [
+            136,
+            224,
+            150,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "start_day",
+          "label": "변제 시작 일",
+          "page": 1,
+          "rect": [
+            176,
+            224,
+            194,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "end_year",
+          "label": "변제 종료 연도",
+          "page": 1,
+          "rect": [
+            244,
+            224,
+            274,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "end_month",
+          "label": "변제 종료 월",
+          "page": 1,
+          "rect": [
+            306,
+            224,
+            322,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "end_day",
+          "label": "변제 종료 일",
+          "page": 1,
+          "rect": [
+            346,
+            224,
+            362,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "months",
+          "label": "변제기간 개월",
+          "page": 1,
+          "rect": [
+            409,
+            224,
+            431,
+            242
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_income",
+          "label": "월평균 수입",
+          "page": 1,
+          "rect": [
+            423,
+            327,
+            474,
+            345
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "household_size",
+          "label": "채무자·피부양자 수",
+          "page": 1,
+          "rect": [
+            255,
+            386,
+            296,
+            404
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "base_living_cost",
+          "label": "기준 중위소득 60%",
+          "page": 1,
+          "rect": [
+            437,
+            406,
+            500,
+            424
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "recognized_living_cost",
+          "label": "조정된 생계비",
+          "page": 1,
+          "rect": [
+            442,
+            425,
+            511,
+            443
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_income",
+          "label": "월평균 수입",
+          "page": 1,
+          "rect": [
+            60,
+            525,
+            123,
+            549
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "recognized_living_cost",
+          "label": "월평균 생계비",
+          "page": 1,
+          "rect": [
+            128,
+            525,
+            189,
+            549
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_disposable_income",
+          "label": "월평균 가용소득",
+          "page": 1,
+          "rect": [
+            196,
+            525,
+            258,
+            549
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_trustee_fee",
+          "label": "회생위원 보수",
+          "page": 1,
+          "rect": [
+            264,
+            525,
+            324,
+            549
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_creditor_capacity",
+          "label": "월 실제 가용소득",
+          "page": 1,
+          "rect": [
+            329,
+            525,
+            391,
+            549
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "months",
+          "label": "변제횟수",
+          "page": 1,
+          "rect": [
+            398,
+            525,
+            458,
+            549
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 실제 가용소득",
+          "page": 1,
+          "rect": [
+            464,
+            525,
+            525,
+            549
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_creditor_capacity",
+          "label": "월 변제예정액",
+          "page": 3,
+          "rect": [
+            402,
+            258,
+            486,
+            276
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액",
+          "page": 3,
+          "rect": [
+            152,
+            278,
+            242,
+            296
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "months",
+          "label": "변제개월",
+          "page": 3,
+          "rect": [
+            404,
+            395,
+            429,
+            413
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "months",
+          "label": "변제횟수",
+          "page": 3,
+          "rect": [
+            121,
+            415,
+            162,
+            433
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "client_name",
+          "label": "채무자 성명",
+          "page": 6,
+          "rect": [
+            212,
+            109,
+            274,
+            127
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "monthly_disposable_income",
+          "label": "월 가용소득",
+          "page": 6,
+          "rect": [
+            139,
+            189,
+            207,
+            225
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_trustee_fee",
+          "label": "월 보수",
+          "page": 6,
+          "rect": [
+            307,
+            189,
+            368,
+            225
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "monthly_creditor_capacity",
+          "label": "월 실제 가용소득",
+          "page": 6,
+          "rect": [
+            138,
+            239,
+            207,
+            284
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "months",
+          "label": "변제횟수",
+          "page": 6,
+          "rect": [
+            299,
+            239,
+            326,
+            284
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 실제 가용소득",
+          "page": 6,
+          "rect": [
+            462,
+            239,
+            533,
+            284
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocation_principal_total",
+          "label": "확정 원금 합계",
+          "page": 6,
+          "rect": [
+            153,
+            593,
+            211,
+            617
+          ],
+          "required": true,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocation_monthly_total",
+          "label": "월 변제예정액 합계",
+          "page": 6,
+          "rect": [
+            282,
+            593,
+            341,
+            617
+          ],
+          "required": true,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액 합계",
+          "page": 6,
+          "rect": [
+            411,
+            593,
+            469,
+            617
+          ],
+          "required": true,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocation_principal_total",
+          "label": "채권 원금 총계 G",
+          "page": 6,
+          "rect": [
+            179,
+            626,
+            273,
+            651
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocation_monthly_total",
+          "label": "월 변제예정액 총계 H",
+          "page": 6,
+          "rect": [
+            304,
+            626,
+            404,
+            651
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액 총계 I",
+          "page": 6,
+          "rect": [
+            431,
+            626,
+            531,
+            651
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "principal_repayment_percent",
+          "label": "원금 변제율(소수 둘째자리 반올림)",
+          "page": 6,
+          "rect": [
+            156,
+            660,
+            176,
+            676
+          ],
+          "required": true,
+          "font_size": 6,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "liquidation_value",
+          "label": "청산가치",
+          "page": 6,
+          "rect": [
+            101,
+            724,
+            171,
+            773
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액",
+          "page": 6,
+          "rect": [
+            284,
+            718,
+            360,
+            747
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "present_value",
+          "label": "총 변제액 현재가치",
+          "page": 6,
+          "rect": [
+            284,
+            751,
+            360,
+            777
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.0.number",
+          "label": "배분1 채권번호",
+          "page": 6,
+          "rect": [
+            60,
+            420,
+            80,
+            447
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.0.name",
+          "label": "배분1 채권자",
+          "page": 6,
+          "rect": [
+            85,
+            420,
+            147,
+            447
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.0.principal",
+          "label": "배분1 확정원금",
+          "page": 6,
+          "rect": [
+            152,
+            420,
+            211,
+            447
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.0.monthly_payment",
+          "label": "배분1 월예정액",
+          "page": 6,
+          "rect": [
+            281,
+            420,
+            341,
+            447
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.0.total_payment",
+          "label": "배분1 총예정액",
+          "page": 6,
+          "rect": [
+            410,
+            420,
+            469,
+            447
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.1.number",
+          "label": "배분2 채권번호",
+          "page": 6,
+          "rect": [
+            60,
+            454,
+            80,
+            481
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.1.name",
+          "label": "배분2 채권자",
+          "page": 6,
+          "rect": [
+            85,
+            454,
+            147,
+            481
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.1.principal",
+          "label": "배분2 확정원금",
+          "page": 6,
+          "rect": [
+            152,
+            454,
+            211,
+            481
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.1.monthly_payment",
+          "label": "배분2 월예정액",
+          "page": 6,
+          "rect": [
+            281,
+            454,
+            341,
+            481
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.1.total_payment",
+          "label": "배분2 총예정액",
+          "page": 6,
+          "rect": [
+            410,
+            454,
+            469,
+            481
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.2.number",
+          "label": "배분3 채권번호",
+          "page": 6,
+          "rect": [
+            60,
+            488,
+            80,
+            515
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.2.name",
+          "label": "배분3 채권자",
+          "page": 6,
+          "rect": [
+            85,
+            488,
+            147,
+            515
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.2.principal",
+          "label": "배분3 확정원금",
+          "page": 6,
+          "rect": [
+            152,
+            488,
+            211,
+            515
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.2.monthly_payment",
+          "label": "배분3 월예정액",
+          "page": 6,
+          "rect": [
+            281,
+            488,
+            341,
+            515
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.2.total_payment",
+          "label": "배분3 총예정액",
+          "page": 6,
+          "rect": [
+            410,
+            488,
+            469,
+            515
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.3.number",
+          "label": "배분4 채권번호",
+          "page": 6,
+          "rect": [
+            60,
+            522,
+            80,
+            549
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.3.name",
+          "label": "배분4 채권자",
+          "page": 6,
+          "rect": [
+            85,
+            522,
+            147,
+            549
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.3.principal",
+          "label": "배분4 확정원금",
+          "page": 6,
+          "rect": [
+            152,
+            522,
+            211,
+            549
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.3.monthly_payment",
+          "label": "배분4 월예정액",
+          "page": 6,
+          "rect": [
+            281,
+            522,
+            341,
+            549
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.3.total_payment",
+          "label": "배분4 총예정액",
+          "page": 6,
+          "rect": [
+            410,
+            522,
+            469,
+            549
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.4.number",
+          "label": "배분5 채권번호",
+          "page": 6,
+          "rect": [
+            60,
+            556,
+            80,
+            583
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.4.name",
+          "label": "배분5 채권자",
+          "page": 6,
+          "rect": [
+            85,
+            556,
+            147,
+            583
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.4.principal",
+          "label": "배분5 확정원금",
+          "page": 6,
+          "rect": [
+            152,
+            556,
+            211,
+            583
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.4.monthly_payment",
+          "label": "배분5 월예정액",
+          "page": 6,
+          "rect": [
+            281,
+            556,
+            341,
+            583
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "allocations.4.total_payment",
+          "label": "배분5 총예정액",
+          "page": 6,
+          "rect": [
+            410,
+            556,
+            469,
+            583
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        }
+      ],
+      "id": "D5110",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-4",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+        "title": "변제계획안(가용소득만으로 변제하는 경우)(D5110).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745818892115_144132.pdf&downFile=%EB%B3%80%EC%A0%9C%EA%B3%84%ED%9A%8D%EC%95%88%28%EA%B0%80%EC%9A%A9%EC%86%8C%EB%93%9D%EB%A7%8C%EC%9C%BC%EB%A1%9C+%EB%B3%80%EC%A0%9C%ED%95%98%EB%8A%94+%EA%B2%BD%EC%9A%B0%29%28D5110%29.pdf&seqnum=",
+        "id": "D5110-pdf",
+        "path": "data/court_forms/originals/D5110.pdf",
+        "sha256": "6bf54e0d45c2cb92da553bea33033d7da0a1b419fdc9b5ba60f789aec5a61532",
+        "bytes": 135645,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "6bf54e0d45c2cb92",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "소득증명서(급여소득자용)",
+      "pages": [
+        0
+      ],
+      "fields": [
+        {
+          "key": "client_name",
+          "label": "성명",
+          "page": 0,
+          "rect": [
+            136,
+            180,
+            277,
+            220
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "resident_id",
+          "label": "주민등록번호",
+          "page": 0,
+          "rect": [
+            373,
+            180,
+            520,
+            220
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "address",
+          "label": "주소",
+          "page": 0,
+          "rect": [
+            136,
+            229,
+            520,
+            264
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "employer",
+          "label": "직장명",
+          "page": 0,
+          "rect": [
+            136,
+            271,
+            280,
+            311
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "employer_phone",
+          "label": "직장전화",
+          "page": 0,
+          "rect": [
+            373,
+            271,
+            520,
+            311
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "employer_address",
+          "label": "직장주소",
+          "page": 0,
+          "rect": [
+            136,
+            321,
+            520,
+            348
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "employment_period",
+          "label": "근무기간",
+          "page": 0,
+          "rect": [
+            136,
+            357,
+            520,
+            384
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "income_manwon",
+          "label": "월평균 소득(만원)",
+          "page": 0,
+          "rect": [
+            365,
+            421,
+            421,
+            443
+          ],
+          "required": true,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        }
+      ],
+      "id": "D5115",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-4",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+        "title": "소득증명서(급여소득자용)(D5115).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745817978218_142618.pdf&downFile=%EC%86%8C%EB%93%9D%EC%A6%9D%EB%AA%85%EC%84%9C%28%EA%B8%89%EC%97%AC%EC%86%8C%EB%93%9D%EC%9E%90%EC%9A%A9%29%28D5115%29.pdf&seqnum=",
+        "id": "D5115-pdf",
+        "path": "data/court_forms/originals/D5115.pdf",
+        "sha256": "383ab06c476b1ced150cbbea3d029f6a95cb744cf60e5950400145f862a0140d",
+        "bytes": 19260,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "383ab06c476b1ced",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "개인회생채권자목록",
+      "pages": [
+        0,
+        1
+      ],
+      "fields": [
+        {
+          "key": "total_debt",
+          "label": "채권현재액 총합계",
+          "page": 0,
+          "rect": [
+            152,
+            181,
+            216,
+            203
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "principal_total",
+          "label": "원금합계",
+          "page": 0,
+          "rect": [
+            152,
+            209,
+            216,
+            222
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "interest_total",
+          "label": "이자합계",
+          "page": 0,
+          "rect": [
+            152,
+            226,
+            216,
+            240
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "secured_debt",
+          "label": "담보부채권액 합계",
+          "page": 0,
+          "rect": [
+            295,
+            181,
+            359,
+            240
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "unsecured_debt",
+          "label": "무담보채권액 합계",
+          "page": 0,
+          "rect": [
+            438,
+            181,
+            520,
+            240
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.0.number",
+          "label": "채권자1 번호",
+          "page": 0,
+          "rect": [
+            70,
+            354.0,
+            86,
+            376.0
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "creditors.0.name",
+          "label": "채권자1 명칭",
+          "page": 0,
+          "rect": [
+            90,
+            354.0,
+            124,
+            457.0
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.0.cause",
+          "label": "채권자1 발생원인",
+          "page": 0,
+          "rect": [
+            130,
+            353.0,
+            281,
+            381.0
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.0.address",
+          "label": "채권자1 주소",
+          "page": 0,
+          "rect": [
+            314,
+            353.0,
+            516,
+            366.0
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.0.principal",
+          "label": "채권자1 원금",
+          "page": 0,
+          "rect": [
+            131,
+            418.0,
+            207,
+            436.0
+          ],
+          "required": true,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.0.interest",
+          "label": "채권자1 이자",
+          "page": 0,
+          "rect": [
+            131,
+            441.0,
+            207,
+            456.0
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.0.basis",
+          "label": "채권자1 산정근거",
+          "page": 0,
+          "rect": [
+            214,
+            419.0,
+            514,
+            454.0
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.1.number",
+          "label": "채권자2 번호",
+          "page": 0,
+          "rect": [
+            70,
+            463.5,
+            86,
+            485.5
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "creditors.1.name",
+          "label": "채권자2 명칭",
+          "page": 0,
+          "rect": [
+            90,
+            463.5,
+            124,
+            566.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.1.cause",
+          "label": "채권자2 발생원인",
+          "page": 0,
+          "rect": [
+            130,
+            462.5,
+            281,
+            490.5
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.1.address",
+          "label": "채권자2 주소",
+          "page": 0,
+          "rect": [
+            314,
+            462.5,
+            516,
+            475.5
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.1.principal",
+          "label": "채권자2 원금",
+          "page": 0,
+          "rect": [
+            131,
+            527.5,
+            207,
+            545.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.1.interest",
+          "label": "채권자2 이자",
+          "page": 0,
+          "rect": [
+            131,
+            550.5,
+            207,
+            565.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.1.basis",
+          "label": "채권자2 산정근거",
+          "page": 0,
+          "rect": [
+            214,
+            528.5,
+            514,
+            563.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.2.number",
+          "label": "채권자3 번호",
+          "page": 0,
+          "rect": [
+            70,
+            573.0,
+            86,
+            595.0
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "creditors.2.name",
+          "label": "채권자3 명칭",
+          "page": 0,
+          "rect": [
+            90,
+            573.0,
+            124,
+            676.0
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.2.cause",
+          "label": "채권자3 발생원인",
+          "page": 0,
+          "rect": [
+            130,
+            572.0,
+            281,
+            600.0
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.2.address",
+          "label": "채권자3 주소",
+          "page": 0,
+          "rect": [
+            314,
+            572.0,
+            516,
+            585.0
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.2.principal",
+          "label": "채권자3 원금",
+          "page": 0,
+          "rect": [
+            131,
+            637.0,
+            207,
+            655.0
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.2.interest",
+          "label": "채권자3 이자",
+          "page": 0,
+          "rect": [
+            131,
+            660.0,
+            207,
+            675.0
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.2.basis",
+          "label": "채권자3 산정근거",
+          "page": 0,
+          "rect": [
+            214,
+            638.0,
+            514,
+            673.0
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.3.number",
+          "label": "채권자4 번호",
+          "page": 0,
+          "rect": [
+            70,
+            682.5,
+            86,
+            704.5
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": true,
+          "source_kind": "approved_calculation"
+        },
+        {
+          "key": "creditors.3.name",
+          "label": "채권자4 명칭",
+          "page": 0,
+          "rect": [
+            90,
+            682.5,
+            124,
+            785.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.3.cause",
+          "label": "채권자4 발생원인",
+          "page": 0,
+          "rect": [
+            130,
+            681.5,
+            281,
+            709.5
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.3.address",
+          "label": "채권자4 주소",
+          "page": 0,
+          "rect": [
+            314,
+            681.5,
+            516,
+            694.5
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.3.principal",
+          "label": "채권자4 원금",
+          "page": 0,
+          "rect": [
+            131,
+            746.5,
+            207,
+            764.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.3.interest",
+          "label": "채권자4 이자",
+          "page": 0,
+          "rect": [
+            131,
+            769.5,
+            207,
+            784.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "creditors.3.basis",
+          "label": "채권자4 산정근거",
+          "page": 0,
+          "rect": [
+            214,
+            747.5,
+            514,
+            782.5
+          ],
+          "required": false,
+          "font_size": 8,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        }
+      ],
+      "id": "D5106",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-3",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=3",
+        "title": "개인회생채권자목록(D5106).pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745800846169_094046.pdf&downFile=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%B1%84%EA%B6%8C%EC%9E%90%EB%AA%A9%EB%A1%9D%28D5106%29.pdf&seqnum=",
+        "id": "D5106-pdf",
+        "path": "data/court_forms/originals/D5106.pdf",
+        "sha256": "2fc6594a66284e882ec07e194607d5a4a9319fc03b1899fee2afac7e8e0abc7c",
+        "bytes": 365947,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "court_ids": [],
+      "layout": "original_pdf_preserved",
+      "version": "2fc6594a66284e88",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    },
+    {
+      "title": "부산회생법원 자료제출목록 (2026-07-01 시행)",
+      "pages": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "court_ids": [
+        "CT03"
+      ],
+      "fields": [],
+      "id": "BUSAN-ATTACHMENTS",
+      "format": "pdf_overlay",
+      "source": {
+        "index": "national-1",
+        "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=1",
+        "title": "(2026. 7. 1. 시행) 부산회생법원 자료제출목록.pdf",
+        "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=",
+        "id": "BUSAN-ATTACHMENTS-pdf",
+        "path": "data/court_forms/originals/BUSAN-ATTACHMENTS.pdf",
+        "sha256": "4cf94623b5eaf054b0295aa160a276938ed3de2deb905827bab30e1889919156",
+        "bytes": 174042,
+        "retrieved_at": "2026-10-03",
+        "currency_status": "officially_listed_snapshot_requires_filing_review"
+      },
+      "layout": "original_pdf_preserved",
+      "version": "4cf94623b5eaf054",
+      "required_manual_actions": [
+        "서명·날인",
+        "법률상 진술 및 동의 체크",
+        "접수일 현재 서식·관할·추가 요구 확인"
+      ]
+    }
+  ],
+  "courts": [
+    {
+      "id": "CT01",
+      "name": "서울회생법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://slb.scourt.go.kr/rel/intro/area/index.jsp",
+        "https://slb.scourt.go.kr/rel/information/qna/practice_rule.pdf",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT02",
+      "name": "수원회생법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://swb.scourt.go.kr/swb/intro/intro_02/index.html",
+        "https://swb.scourt.go.kr/swb/info/info_02/practice_rule_swb.pdf?v=2",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT03",
+      "name": "부산회생법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [
+        "BUSAN-ATTACHMENTS"
+      ],
+      "local_rule_sources": [
+        "https://bsb.scourt.go.kr/main/new/Main.work",
+        "https://bsb.scourt.go.kr/bsb/info/info_01/practice_rule_bsb.pdf?v=2",
+        "https://djb.scourt.go.kr/rel/information/min/MinListAction.work?gubun=0",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": true
+    },
+    {
+      "id": "CT04",
+      "name": "대구회생법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://dgb.scourt.go.kr/dgb/intro/intro_02/index.html",
+        "https://dgb.scourt.go.kr/dcboard/new/DcNewsViewAction.work?gubun=41&seqnum=19961",
+        "https://dgb.scourt.go.kr/dcboard/new/DcNewsViewAction.work?gubun=41&seqnum=20350",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT05",
+      "name": "대전회생법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://djb.scourt.go.kr/djb/intro/intro_02/index.html",
+        "https://djb.scourt.go.kr/common/util/commonBank.jsp?functionCode=3410",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT06",
+      "name": "광주회생법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://gjb.scourt.go.kr/gjb/intro/intro_02/index.html",
+        "https://gjb.scourt.go.kr/dcboard/new/DcNewsViewAction.work?gubun=41&seqnum=20299",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT07",
+      "name": "의정부지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://uijeongbu.scourt.go.kr/dept_info/new/DeptInfoList.work?deptgrp_id=549&gubun=000214&jiwon_cd=000214",
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT08",
+      "name": "인천지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT09",
+      "name": "춘천지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT10",
+      "name": "춘천지방법원 강릉지원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT11",
+      "name": "청주지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR",
+        "https://djb.scourt.go.kr/djb/intro/intro_02/index.html"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT12",
+      "name": "울산지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR",
+        "https://bsb.scourt.go.kr/main/new/Main.work"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT13",
+      "name": "창원지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR",
+        "https://bsb.scourt.go.kr/main/new/Main.work"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT14",
+      "name": "전주지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR",
+        "https://gjb.scourt.go.kr/gjb/intro/intro_02/index.html"
+      ],
+      "independently_verified_local_forms": false
+    },
+    {
+      "id": "CT15",
+      "name": "제주지방법원",
+      "coverage": "national_common_with_local_review",
+      "common_templates": [
+        "D5100",
+        "D5101",
+        "D5103",
+        "D5105",
+        "D5110",
+        "D5115",
+        "D5106"
+      ],
+      "local_templates": [],
+      "local_rule_sources": [
+        "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR",
+        "https://gjb.scourt.go.kr/gjb/intro/intro_02/index.html"
+      ],
+      "independently_verified_local_forms": false
+    }
+  ],
+  "coverage": {
+    "national_common_templates": 7,
+    "mapped_courts": 15,
+    "local_pdf_templates": 1,
+    "original_files": 17,
+    "note": "15개 법원에는 대법원 공통서식을 연결했습니다. 부산 자료제출목록은 별도 원본입니다. 법원별 최신 접수요건 승인과 동일하지 않습니다."
+  },
+  "sources": [
+    {
+      "index": "national-1",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=1",
+      "title": "(2026. 7. 1. 시행) 부산회생법원 자료제출목록.hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689250_154129.hwp&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.hwp&seqnum=",
+      "id": "BUSAN-ATTACHMENTS-hwp",
+      "path": "data/court_forms/originals/BUSAN-ATTACHMENTS.hwp",
+      "sha256": "2445b5472d6c512f046114cfa0add9333ea0d66c2e8c6f672b7c5adc67bba522",
+      "bytes": 27136,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-1",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=1",
+      "title": "(2026. 7. 1. 시행) 부산회생법원 자료제출목록.pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1782801689285_154129.pdf&downFile=%282026.+7.+1.+%EC%8B%9C%ED%96%89%29+%EB%B6%80%EC%82%B0%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90+%EC%9E%90%EB%A3%8C%EC%A0%9C%EC%B6%9C%EB%AA%A9%EB%A1%9D.pdf&seqnum=",
+      "id": "BUSAN-ATTACHMENTS-pdf",
+      "path": "data/court_forms/originals/BUSAN-ATTACHMENTS.pdf",
+      "sha256": "4cf94623b5eaf054b0295aa160a276938ed3de2deb905827bab30e1889919156",
+      "bytes": 174042,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-1",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=1",
+      "title": "(서울회생법원)개인회생사건관련 제증명 신청서.hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671686991279_142951.hwp&downFile=%28%EC%84%9C%EC%9A%B8%ED%9A%8C%EC%83%9D%EB%B2%95%EC%9B%90%29%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%82%AC%EA%B1%B4%EA%B4%80%EB%A0%A8+%EC%A0%9C%EC%A6%9D%EB%AA%85+%EC%8B%A0%EC%B2%AD%EC%84%9C.hwp&seqnum=",
+      "id": "SEOUL-CERTIFICATE-hwp",
+      "path": "data/court_forms/originals/SEOUL-CERTIFICATE.hwp",
+      "sha256": "2bd4b66769b1faba2ebeb80e75113db6445cfb5d155a548ddeaabeee78e5afbb",
+      "bytes": 14848,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-3",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=3",
+      "title": "개인회생절차 개시신청서(2021.4.20.시행)(D5100).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671090749768_165229.hwp&downFile=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%A0%88%EC%B0%A8+%EA%B0%9C%EC%8B%9C%EC%8B%A0%EC%B2%AD%EC%84%9C%282021.4.20.%EC%8B%9C%ED%96%89%29%28D5100%29.hwp&seqnum=",
+      "id": "D5100-hwp",
+      "path": "data/court_forms/originals/D5100.hwp",
+      "sha256": "004228d59c7205e60513988bca876948640021a31a8582fb33e45c4eb0617284",
+      "bytes": 19968,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-3",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=3",
+      "title": "개인회생절차 개시신청서(2021.4.20.시행)(D5100).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745801014647_094334.pdf&downFile=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%A0%88%EC%B0%A8+%EA%B0%9C%EC%8B%9C%EC%8B%A0%EC%B2%AD%EC%84%9C%282021.4.20.%EC%8B%9C%ED%96%89%29%28D5100%29.pdf&seqnum=",
+      "id": "D5100-pdf",
+      "path": "data/court_forms/originals/D5100.pdf",
+      "sha256": "2449f207014269b2d9921002e12269eaa230747bc883e1d8c6edfa7c04bdb3a3",
+      "bytes": 84010,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-3",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=3",
+      "title": "개인회생채권자목록(D5106).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671173144868_154544.hwp&downFile=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%B1%84%EA%B6%8C%EC%9E%90%EB%AA%A9%EB%A1%9D%28D5106%29.hwp&seqnum=",
+      "id": "D5106-hwp",
+      "path": "data/court_forms/originals/D5106.hwp",
+      "sha256": "cbf1b68d536be3c6c7a1317818c86720a4873e80f70a37e7196ec06dba36a4bb",
+      "bytes": 33280,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-3",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=3",
+      "title": "개인회생채권자목록(D5106).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745800846169_094046.pdf&downFile=%EA%B0%9C%EC%9D%B8%ED%9A%8C%EC%83%9D%EC%B1%84%EA%B6%8C%EC%9E%90%EB%AA%A9%EB%A1%9D%28D5106%29.pdf&seqnum=",
+      "id": "D5106-pdf",
+      "path": "data/court_forms/originals/D5106.pdf",
+      "sha256": "2fc6594a66284e882ec07e194607d5a4a9319fc03b1899fee2afac7e8e0abc7c",
+      "bytes": 365947,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-4",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+      "title": "변제계획안(가용소득만으로 변제하는 경우)(D5110).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671173705925_155505.hwp&downFile=%EB%B3%80%EC%A0%9C%EA%B3%84%ED%9A%8D%EC%95%88%28%EA%B0%80%EC%9A%A9%EC%86%8C%EB%93%9D%EB%A7%8C%EC%9C%BC%EB%A1%9C+%EB%B3%80%EC%A0%9C%ED%95%98%EB%8A%94+%EA%B2%BD%EC%9A%B0%29%28D5110%29.hwp&seqnum=",
+      "id": "D5110-hwp",
+      "path": "data/court_forms/originals/D5110.hwp",
+      "sha256": "93d683343accde4206faf38ef847b40a331b8ddff31965afa93bf87b6cab8f63",
+      "bytes": 25600,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-4",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+      "title": "변제계획안(가용소득만으로 변제하는 경우)(D5110).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745818892115_144132.pdf&downFile=%EB%B3%80%EC%A0%9C%EA%B3%84%ED%9A%8D%EC%95%88%28%EA%B0%80%EC%9A%A9%EC%86%8C%EB%93%9D%EB%A7%8C%EC%9C%BC%EB%A1%9C+%EB%B3%80%EC%A0%9C%ED%95%98%EB%8A%94+%EA%B2%BD%EC%9A%B0%29%28D5110%29.pdf&seqnum=",
+      "id": "D5110-pdf",
+      "path": "data/court_forms/originals/D5110.pdf",
+      "sha256": "6bf54e0d45c2cb92da553bea33033d7da0a1b419fdc9b5ba60f789aec5a61532",
+      "bytes": 135645,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-4",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+      "title": "소득증명서(급여소득자용)(D5115).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671088211388_161011.hwp&downFile=%EC%86%8C%EB%93%9D%EC%A6%9D%EB%AA%85%EC%84%9C%28%EA%B8%89%EC%97%AC%EC%86%8C%EB%93%9D%EC%9E%90%EC%9A%A9%29%28D5115%29.hwp&seqnum=",
+      "id": "D5115-hwp",
+      "path": "data/court_forms/originals/D5115.hwp",
+      "sha256": "5a48746ad5b63aaa7900173f163930f15fa93c173812ac1dce22ea3c7a66bbb5",
+      "bytes": 11264,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-4",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+      "title": "소득증명서(급여소득자용)(D5115).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745817978218_142618.pdf&downFile=%EC%86%8C%EB%93%9D%EC%A6%9D%EB%AA%85%EC%84%9C%28%EA%B8%89%EC%97%AC%EC%86%8C%EB%93%9D%EC%9E%90%EC%9A%A9%29%28D5115%29.pdf&seqnum=",
+      "id": "D5115-pdf",
+      "path": "data/court_forms/originals/D5115.pdf",
+      "sha256": "383ab06c476b1ced150cbbea3d029f6a95cb744cf60e5950400145f862a0140d",
+      "bytes": 19260,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-4",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+      "title": "수입 및 지출에 관한 목록(D5103).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671174341496_160541.hwp&downFile=%EC%88%98%EC%9E%85+%EB%B0%8F+%EC%A7%80%EC%B6%9C%EC%97%90+%EA%B4%80%ED%95%9C+%EB%AA%A9%EB%A1%9D%28D5103%29.hwp&seqnum=",
+      "id": "D5103-hwp",
+      "path": "data/court_forms/originals/D5103.hwp",
+      "sha256": "5ba56a0305184956d383de5d0ec1846c2f9ec0e9b7f449562a6935d763986460",
+      "bytes": 20992,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-4",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=4",
+      "title": "수입 및 지출에 관한 목록(D5103).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745819280743_144800.pdf&downFile=%EC%88%98%EC%9E%85+%EB%B0%8F+%EC%A7%80%EC%B6%9C%EC%97%90+%EA%B4%80%ED%95%9C+%EB%AA%A9%EB%A1%9D%28D5103%29.pdf&seqnum=",
+      "id": "D5103-pdf",
+      "path": "data/court_forms/originals/D5103.pdf",
+      "sha256": "d0cfca8e9b6994c1e061827c9d532b4c79e8ef7eb6bb0a48a69fbe5e350cdb04",
+      "bytes": 159473,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-5",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=5",
+      "title": "재산목록(D5101).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671089070565_162430.hwp&downFile=%EC%9E%AC%EC%82%B0%EB%AA%A9%EB%A1%9D%28D5101%29.hwp&seqnum=",
+      "id": "D5101-hwp",
+      "path": "data/court_forms/originals/D5101.hwp",
+      "sha256": "5edc2f84e7dda3ba53dbc9a68bf5d4f3fdaeff40a2f59ecd286b6e1f51dc8937",
+      "bytes": 19968,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-5",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=5",
+      "title": "재산목록(D5101).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745821426969_152346.pdf&downFile=%EC%9E%AC%EC%82%B0%EB%AA%A9%EB%A1%9D%28D5101%29.pdf&seqnum=",
+      "id": "D5101-pdf",
+      "path": "data/court_forms/originals/D5101.pdf",
+      "sha256": "dfb60a11eca8baf0b3dbfff3f6147f1290711670cdb3b5f06a16f950a169b519",
+      "bytes": 147437,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-6",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=6",
+      "title": "진술서(D5105).hwp",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1671174188494_160308.hwp&downFile=%EC%A7%84%EC%88%A0%EC%84%9C%28D5105%29.hwp&seqnum=",
+      "id": "D5105-hwp",
+      "path": "data/court_forms/originals/D5105.hwp",
+      "sha256": "df23ec5c82ccdbfc09aa91cebccf32980fdec52d9a58099cbd4541d57215fe29",
+      "bytes": 18432,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    },
+    {
+      "index": "national-6",
+      "index_url": "https://www.scourt.go.kr/nm/minwon/doc/DocListAction.work?min_gubun=l&pageIndex=6",
+      "title": "진술서(D5105).pdf",
+      "url": "https://file.scourt.go.kr/AttachDownload?path=004&file=1745819546800_145226.pdf&downFile=%EC%A7%84%EC%88%A0%EC%84%9C%28D5105%29.pdf&seqnum=",
+      "id": "D5105-pdf",
+      "path": "data/court_forms/originals/D5105.pdf",
+      "sha256": "a5b0427bd9a13809e0bda0b374e3e87aefebf0a6511f1ce2d2d4e26f60353f2a",
+      "bytes": 116486,
+      "retrieved_at": "2026-10-03",
+      "currency_status": "officially_listed_snapshot_requires_filing_review"
+    }
+  ]
+}

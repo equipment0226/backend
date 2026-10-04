@@ -1,0 +1,2171 @@
+{
+  "version": "workflow-v2",
+  "rules": [
+    {
+      "id": "WF01",
+      "title": "기본 신원·계좌·채권 범위",
+      "condition": {
+        "any_keywords": [],
+        "exclude_keywords": [],
+        "always": true
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D01",
+          "name": "주민등록표 등본",
+          "reason": "신원과 관할 후보, 빠진 계좌·채권 범위를 확인합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "client_name",
+            "address"
+          ]
+        },
+        {
+          "catalog_id": "D03",
+          "name": "가족관계증명서",
+          "reason": "신원과 관할 후보, 빠진 계좌·채권 범위를 확인합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "client_name"
+          ]
+        },
+        {
+          "catalog_id": "D35",
+          "name": "계좌통합조회 결과",
+          "reason": "신원과 관할 후보, 빠진 계좌·채권 범위를 확인합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "account_scope"
+          ]
+        },
+        {
+          "catalog_id": "D38",
+          "name": "부채증명서·채무확인서",
+          "reason": "신원과 관할 후보, 빠진 계좌·채권 범위를 확인합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "total_debt",
+            "creditors"
+          ]
+        }
+      ],
+      "required_factors": [
+        "client_name",
+        "address",
+        "total_debt",
+        "creditors",
+        "account_scope"
+      ],
+      "draft_targets": [
+        "application",
+        "creditors",
+        "attachments"
+      ],
+      "reason": "신원과 관할 후보, 빠진 계좌·채권 범위를 확인합니다.",
+      "source_refs": [
+        "R01",
+        "R03",
+        "R29"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF02",
+      "title": "급여소득의 금액·기간·지속성",
+      "condition": {
+        "any_keywords": [
+          "급여",
+          "직장",
+          "월급",
+          "근로",
+          "회사원"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D07",
+          "name": "급여명세서(사용자 서명 또는 기명날인)",
+          "reason": "급여명세·실제 입금과 재직자료를 대조합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "monthly_income",
+            "income_period"
+          ]
+        },
+        {
+          "catalog_id": "D08",
+          "name": "재직증명서",
+          "reason": "급여명세·실제 입금과 재직자료를 대조합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "employer",
+            "employment_type"
+          ]
+        },
+        {
+          "catalog_id": "D36",
+          "name": "예금계좌 거래내역서·급여 입금 내역",
+          "reason": "급여명세·실제 입금과 재직자료를 대조합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "monthly_income",
+            "income_period"
+          ]
+        }
+      ],
+      "required_factors": [
+        "monthly_income",
+        "income_period",
+        "employer",
+        "employment_type"
+      ],
+      "draft_targets": [
+        "income_expense",
+        "statement"
+      ],
+      "reason": "급여명세·실제 입금과 재직자료를 대조합니다.",
+      "source_refs": [
+        "R05",
+        "R09"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF03",
+      "title": "사업소득의 수입과 경비 분리",
+      "condition": {
+        "any_keywords": [
+          "자영업",
+          "사업소득",
+          "사업자",
+          "프리랜서",
+          "가게 운영"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D15",
+          "name": "사업자등록증 / 사업자등록증명",
+          "reason": "매출을 순소득으로 간주하지 않고 수입과 필요경비를 분리합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": []
+        },
+        {
+          "catalog_id": "D21",
+          "name": "손익계산서 또는 월별 수입상황보고서",
+          "reason": "매출을 순소득으로 간주하지 않고 수입과 필요경비를 분리합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "business_revenue"
+          ]
+        },
+        {
+          "catalog_id": "D22",
+          "name": "사업 필요경비 증빙(임차료·공과금·매입 등)",
+          "reason": "매출을 순소득으로 간주하지 않고 수입과 필요경비를 분리합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "business_expenses"
+          ]
+        },
+        {
+          "catalog_id": "D49",
+          "name": "종합소득세 과세표준확정신고 및 납부계산서(확정신고서)",
+          "reason": "매출을 순소득으로 간주하지 않고 수입과 필요경비를 분리합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "business_revenue",
+            "business_expenses"
+          ]
+        }
+      ],
+      "required_factors": [
+        "business_revenue",
+        "business_expenses",
+        "monthly_income"
+      ],
+      "draft_targets": [
+        "income_expense",
+        "statement"
+      ],
+      "reason": "매출을 순소득으로 간주하지 않고 수입과 필요경비를 분리합니다.",
+      "source_refs": [
+        "R10",
+        "R25"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF04",
+      "title": "임차 주거비와 보증금",
+      "condition": {
+        "any_keywords": [
+          "월세",
+          "전세",
+          "임차",
+          "보증금"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D33",
+          "name": "임대차계약서 사본",
+          "reason": "계약상 금액과 실제 납부를 대조합니다. 법률상 인정액으로 자동 승격하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "housing_cost",
+            "housing_deposit"
+          ]
+        },
+        {
+          "catalog_id": "D36",
+          "name": "예금계좌 거래내역서·급여 입금 내역",
+          "reason": "계약상 금액과 실제 납부를 대조합니다. 법률상 인정액으로 자동 승격하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "housing_cost"
+          ]
+        }
+      ],
+      "required_factors": [
+        "housing_cost",
+        "housing_deposit"
+      ],
+      "draft_targets": [
+        "assets",
+        "income_expense"
+      ],
+      "reason": "계약상 금액과 실제 납부를 대조합니다. 법률상 인정액으로 자동 승격하지 않습니다.",
+      "source_refs": [
+        "R11",
+        "R14"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF05",
+      "title": "가족·제3자의 채무 완납",
+      "condition": {
+        "any_keywords": [
+          "가족이 갚",
+          "가족이 대신",
+          "가족 완납",
+          "부모님이 갚",
+          "부모가 대신",
+          "대신 갚",
+          "완납"
+        ],
+        "exclude_keywords": [
+          "완납한 적 없",
+          "대신 갚은 적 없"
+        ],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D38",
+          "name": "부채증명서·채무확인서",
+          "reason": "완납증명·지급자·송금원천·약정을 확인하고 잔존채무와 가족간 법률관계를 판단할 자료를 준비합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "repayment_date",
+            "remaining_debt"
+          ]
+        },
+        {
+          "catalog_id": "D36",
+          "name": "예금계좌 거래내역서·급여 입금 내역",
+          "reason": "완납증명·지급자·송금원천·약정을 확인하고 잔존채무와 가족간 법률관계를 판단할 자료를 준비합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "repayment_date",
+            "payer",
+            "fund_source"
+          ]
+        },
+        {
+          "catalog_id": "D45",
+          "name": "개인채권 차용증·송금자료·판결문·채권양도 통지",
+          "reason": "완납증명·지급자·송금원천·약정을 확인하고 잔존채무와 가족간 법률관계를 판단할 자료를 준비합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "family_legal_relation"
+          ]
+        },
+        {
+          "catalog_id": "D46",
+          "name": "가족 등 제3자 지원 확인·입금자료",
+          "reason": "완납증명·지급자·송금원천·약정을 확인하고 잔존채무와 가족간 법률관계를 판단할 자료를 준비합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "payer",
+            "fund_source",
+            "family_legal_relation"
+          ]
+        }
+      ],
+      "required_factors": [
+        "repayment_date",
+        "payer",
+        "fund_source",
+        "family_legal_relation",
+        "remaining_debt"
+      ],
+      "draft_targets": [
+        "creditors",
+        "statement"
+      ],
+      "reason": "완납증명·지급자·송금원천·약정을 확인하고 잔존채무와 가족간 법률관계를 판단할 자료를 준비합니다.",
+      "source_refs": [
+        "R18",
+        "R19",
+        "N027"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF06",
+      "title": "최근 차입금 사용처",
+      "condition": {
+        "any_keywords": [
+          "최근 대출",
+          "최근에 대출",
+          "신규 대출",
+          "카드론",
+          "현금서비스",
+          "최근 차입"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D38",
+          "name": "부채증명서·채무확인서",
+          "reason": "대출 실행에서 계좌 이동과 최종 사용처까지 증빙을 연결합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "recent_borrowing"
+          ]
+        },
+        {
+          "catalog_id": "D36",
+          "name": "예금계좌 거래내역서·급여 입금 내역",
+          "reason": "대출 실행에서 계좌 이동과 최종 사용처까지 증빙을 연결합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "fund_usage"
+          ]
+        },
+        {
+          "catalog_id": "D44",
+          "name": "최근 차입·부동산/사업자산 처분대금 사용처 자료",
+          "reason": "대출 실행에서 계좌 이동과 최종 사용처까지 증빙을 연결합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "recent_borrowing",
+            "fund_usage"
+          ]
+        }
+      ],
+      "required_factors": [
+        "recent_borrowing",
+        "fund_usage"
+      ],
+      "draft_targets": [
+        "statement",
+        "creditors"
+      ],
+      "reason": "대출 실행에서 계좌 이동과 최종 사용처까지 증빙을 연결합니다.",
+      "source_refs": [
+        "R18",
+        "N026"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF07",
+      "title": "처분 재산의 대금 추적",
+      "condition": {
+        "any_keywords": [
+          "매각",
+          "처분",
+          "팔았",
+          "매도",
+          "폐업"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D27",
+          "name": "부동산등기사항전부증명서",
+          "reason": "처분대금과 사용처를 확인하며 처분을 재산 소멸로 처리하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "assets_total",
+            "disposal_proceeds"
+          ]
+        },
+        {
+          "catalog_id": "D31",
+          "name": "부동산 시가자료(실거래가 등)",
+          "reason": "처분대금과 사용처를 확인하며 처분을 재산 소멸로 처리하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "disposal_proceeds"
+          ]
+        },
+        {
+          "catalog_id": "D44",
+          "name": "최근 차입·부동산/사업자산 처분대금 사용처 자료",
+          "reason": "처분대금과 사용처를 확인하며 처분을 재산 소멸로 처리하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "fund_usage",
+            "disposal_proceeds"
+          ]
+        },
+        {
+          "catalog_id": "D36",
+          "name": "예금계좌 거래내역서·급여 입금 내역",
+          "reason": "처분대금과 사용처를 확인하며 처분을 재산 소멸로 처리하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "fund_usage"
+          ]
+        }
+      ],
+      "required_factors": [
+        "disposal_proceeds",
+        "fund_usage",
+        "assets_total"
+      ],
+      "draft_targets": [
+        "assets",
+        "statement"
+      ],
+      "reason": "처분대금과 사용처를 확인하며 처분을 재산 소멸로 처리하지 않습니다.",
+      "source_refs": [
+        "R18"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF08",
+      "title": "조세채무 및 과세 범위",
+      "condition": {
+        "any_keywords": [
+          "세금 체납",
+          "국세",
+          "지방세",
+          "체납"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D29",
+          "name": "지방세 세목별 과세증명서",
+          "reason": "세목·과세/미과세·조회 지역과 기간을 확인하고 조세채권을 별도로 표시합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "tax_arrears"
+          ]
+        },
+        {
+          "catalog_id": "D40",
+          "name": "국세 체납내역/납부내역 관련 증명",
+          "reason": "세목·과세/미과세·조회 지역과 기간을 확인하고 조세채권을 별도로 표시합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "tax_arrears"
+          ]
+        }
+      ],
+      "required_factors": [
+        "tax_arrears"
+      ],
+      "draft_targets": [
+        "creditors",
+        "attachments"
+      ],
+      "reason": "세목·과세/미과세·조회 지역과 기간을 확인하고 조세채권을 별도로 표시합니다.",
+      "source_refs": [
+        "R19",
+        "N028"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF09",
+      "title": "실제 부양관계",
+      "condition": {
+        "any_keywords": [
+          "자녀",
+          "부양",
+          "미성년",
+          "양육"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D03",
+          "name": "가족관계증명서",
+          "reason": "가구원 수와 인정 부양가족을 구분할 자료를 준비합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "household_size",
+            "dependents"
+          ]
+        }
+      ],
+      "required_factors": [
+        "household_size",
+        "dependents"
+      ],
+      "draft_targets": [
+        "application",
+        "income_expense"
+      ],
+      "reason": "가구원 수와 인정 부양가족을 구분할 자료를 준비합니다.",
+      "source_refs": [
+        "R11"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF10",
+      "title": "의료·특별 지출",
+      "condition": {
+        "any_keywords": [
+          "치료",
+          "병원",
+          "질병",
+          "의료비",
+          "장애"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D42",
+          "name": "진단서·치료비 납부확인·의료비 증빙",
+          "reason": "질병과 비용은 진료·납부 근거가 있는 범위에서만 서술합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "living_expenses",
+            "dependents"
+          ]
+        }
+      ],
+      "required_factors": [
+        "living_expenses",
+        "dependents"
+      ],
+      "draft_targets": [
+        "income_expense",
+        "statement"
+      ],
+      "reason": "질병과 비용은 진료·납부 근거가 있는 범위에서만 서술합니다.",
+      "source_refs": [
+        "R11",
+        "N011"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF11",
+      "title": "혼인 변경 및 재산관계",
+      "condition": {
+        "any_keywords": [
+          "이혼",
+          "별거",
+          "재혼",
+          "혼인"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D04",
+          "name": "혼인관계증명서",
+          "reason": "혼인 및 재산관계를 확인하며 배우자 재산을 자동 합산하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": []
+        }
+      ],
+      "required_factors": [
+        "household_size",
+        "assets_total"
+      ],
+      "draft_targets": [
+        "application",
+        "assets"
+      ],
+      "reason": "혼인 및 재산관계를 확인하며 배우자 재산을 자동 합산하지 않습니다.",
+      "source_refs": [
+        "R17"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF12",
+      "title": "보험 환급금",
+      "condition": {
+        "any_keywords": [
+          "보험",
+          "해약환급"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D39",
+          "name": "보험의 예상 해약환급금확인서",
+          "reason": "보험료 납부액과 환급가능액을 구분합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "insurance_surrender"
+          ]
+        }
+      ],
+      "required_factors": [
+        "insurance_surrender"
+      ],
+      "draft_targets": [
+        "assets"
+      ],
+      "reason": "보험료 납부액과 환급가능액을 구분합니다.",
+      "source_refs": [
+        "R14"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF13",
+      "title": "과거 절차와 면책 이력",
+      "condition": {
+        "any_keywords": [
+          "과거 회생",
+          "회생 경험",
+          "파산 경험",
+          "면책",
+          "재신청"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D43",
+          "name": "과거 회생·파산 결정문·종국/면책확정 자료",
+          "reason": "접수·기각·종결·면책 확정일을 구분하며 자료 없이 재신청 가능성을 판정하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "prior_proceedings"
+          ]
+        }
+      ],
+      "required_factors": [
+        "prior_proceedings"
+      ],
+      "draft_targets": [
+        "application"
+      ],
+      "reason": "접수·기각·종결·면책 확정일을 구분하며 자료 없이 재신청 가능성을 판정하지 않습니다.",
+      "source_refs": [
+        "R20"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF14",
+      "title": "소득 공백의 추가 확인",
+      "condition": {
+        "any_keywords": [
+          "무직",
+          "실직",
+          "퇴사",
+          "소득이 없",
+          "소득 없음"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D09",
+          "name": "건강보험 자격득실 확인서",
+          "reason": "자료 부재와 실제 소득 부재를 구분하고 절차 방향을 변호사에게 넘깁니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": []
+        },
+        {
+          "catalog_id": "D24",
+          "name": "사실증명(신고사실없음)",
+          "reason": "자료 부재와 실제 소득 부재를 구분하고 절차 방향을 변호사에게 넘깁니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": []
+        }
+      ],
+      "required_factors": [
+        "monthly_income",
+        "employment_type"
+      ],
+      "draft_targets": [
+        "application",
+        "statement"
+      ],
+      "reason": "자료 부재와 실제 소득 부재를 구분하고 절차 방향을 변호사에게 넘깁니다.",
+      "source_refs": [
+        "R06",
+        "R13",
+        "R21"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF15",
+      "title": "자동차 재산",
+      "condition": {
+        "any_keywords": [
+          "자동차",
+          "차량",
+          "승용차"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D30",
+          "name": "자동차 등록원부등본(초본)",
+          "reason": "등록·소유·담보와 현재 시가를 확인합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "assets_total"
+          ]
+        },
+        {
+          "catalog_id": "D32",
+          "name": "자동차·시설·비품 시가자료",
+          "reason": "등록·소유·담보와 현재 시가를 확인합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": []
+        }
+      ],
+      "required_factors": [
+        "assets_total"
+      ],
+      "draft_targets": [
+        "assets"
+      ],
+      "reason": "등록·소유·담보와 현재 시가를 확인합니다.",
+      "source_refs": [
+        "R14"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF16",
+      "title": "본인 계좌 간 이체",
+      "condition": {
+        "any_keywords": [
+          "계좌이체",
+          "계좌 간",
+          "통장 이동",
+          "본인계좌"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D35",
+          "name": "계좌통합조회 결과",
+          "reason": "같은 자금을 계좌 이동마다 소득으로 중복 합산하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "account_scope"
+          ]
+        },
+        {
+          "catalog_id": "D36",
+          "name": "예금계좌 거래내역서·급여 입금 내역",
+          "reason": "같은 자금을 계좌 이동마다 소득으로 중복 합산하지 않습니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "fund_usage",
+            "account_scope"
+          ]
+        }
+      ],
+      "required_factors": [
+        "account_scope",
+        "fund_usage"
+      ],
+      "draft_targets": [
+        "income_expense",
+        "statement"
+      ],
+      "reason": "같은 자금을 계좌 이동마다 소득으로 중복 합산하지 않습니다.",
+      "source_refs": [
+        "R09",
+        "N025"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF17",
+      "title": "연금소득의 지급내역",
+      "condition": {
+        "any_keywords": [
+          "연금"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D25",
+          "name": "국민연금 수급증명(지급내역)",
+          "reason": "지급기간과 실제 수급액을 대조합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": []
+        }
+      ],
+      "required_factors": [
+        "monthly_income",
+        "income_period"
+      ],
+      "draft_targets": [
+        "income_expense"
+      ],
+      "reason": "지급기간과 실제 수급액을 대조합니다.",
+      "source_refs": [
+        "R05"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    },
+    {
+      "id": "WF18",
+      "title": "보정 요구별 범위와 송달근거",
+      "condition": {
+        "any_keywords": [
+          "보정권고",
+          "보정명령",
+          "송달"
+        ],
+        "exclude_keywords": [],
+        "always": false
+      },
+      "required_documents": [
+        {
+          "catalog_id": "D48",
+          "name": "법원 필수자료 제출목록·추가질문 답변서",
+          "reason": "요구별 대상·기간·설명·실제 송달 증거를 연결합니다.",
+          "period": "상담·서류에 기재된 기준기간 확인",
+          "factor_keys": [
+            "service_date"
+          ]
+        }
+      ],
+      "required_factors": [
+        "service_date"
+      ],
+      "draft_targets": [
+        "correction",
+        "attachments"
+      ],
+      "reason": "요구별 대상·기간·설명·실제 송달 증거를 연결합니다.",
+      "source_refs": [
+        "R26",
+        "N020"
+      ],
+      "scope": "자료 준비·초안 구성 규칙",
+      "legal_determination": false,
+      "version": 1
+    }
+  ],
+  "factors": [
+    {
+      "key": "client_name",
+      "label": "내담자 성명",
+      "evidence_catalog_ids": [
+        "D01",
+        "D03"
+      ],
+      "draft_target": "application",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "address",
+      "label": "실제 거주지·주소",
+      "evidence_catalog_ids": [
+        "D01",
+        "D02",
+        "D33"
+      ],
+      "draft_target": "application",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "monthly_income",
+      "label": "월 소득·실수령액",
+      "evidence_catalog_ids": [
+        "D07",
+        "D36",
+        "D50"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "income_period",
+      "label": "소득 산정 기간",
+      "evidence_catalog_ids": [
+        "D07",
+        "D36"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "employer",
+      "label": "근무처",
+      "evidence_catalog_ids": [
+        "D08",
+        "D09"
+      ],
+      "draft_target": "statement",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "employment_type",
+      "label": "근로·소득 유형",
+      "evidence_catalog_ids": [
+        "D08",
+        "D15"
+      ],
+      "draft_target": "application",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "total_debt",
+      "label": "채무 총액",
+      "evidence_catalog_ids": [
+        "D38",
+        "D45"
+      ],
+      "draft_target": "creditors",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "creditors",
+      "label": "채권자별 잔액·원금·이자·기준일",
+      "evidence_catalog_ids": [
+        "D38",
+        "D45"
+      ],
+      "draft_target": "creditors",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "assets_total",
+      "label": "재산 가액",
+      "evidence_catalog_ids": [
+        "D27",
+        "D30",
+        "D37",
+        "D39"
+      ],
+      "draft_target": "assets",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "living_expenses",
+      "label": "실제 월 생활지출",
+      "evidence_catalog_ids": [
+        "D33",
+        "D36",
+        "D42"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "household_size",
+      "label": "가구원 수·관계",
+      "evidence_catalog_ids": [
+        "D03"
+      ],
+      "draft_target": "application",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "dependents",
+      "label": "부양대상·소득·실제 부양",
+      "evidence_catalog_ids": [
+        "D03",
+        "D41",
+        "D42"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "housing_cost",
+      "label": "실제 월 주거비",
+      "evidence_catalog_ids": [
+        "D33",
+        "D36"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "housing_deposit",
+      "label": "임차보증금",
+      "evidence_catalog_ids": [
+        "D33"
+      ],
+      "draft_target": "assets",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "business_revenue",
+      "label": "사업 수입",
+      "evidence_catalog_ids": [
+        "D21",
+        "D49"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "business_expenses",
+      "label": "사업 필요경비",
+      "evidence_catalog_ids": [
+        "D22",
+        "D49"
+      ],
+      "draft_target": "income_expense",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "repayment_date",
+      "label": "제3자 완납일",
+      "evidence_catalog_ids": [
+        "D38",
+        "D36"
+      ],
+      "draft_target": "creditors",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "payer",
+      "label": "제3자 지급자",
+      "evidence_catalog_ids": [
+        "D36",
+        "D46"
+      ],
+      "draft_target": "statement",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "fund_source",
+      "label": "완납·송금 자금출처",
+      "evidence_catalog_ids": [
+        "D36",
+        "D46"
+      ],
+      "draft_target": "statement",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "family_legal_relation",
+      "label": "가족간 대여·증여·대위 관계",
+      "evidence_catalog_ids": [
+        "D45",
+        "D46"
+      ],
+      "draft_target": "creditors",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "remaining_debt",
+      "label": "완납 후 잔존 채무",
+      "evidence_catalog_ids": [
+        "D38"
+      ],
+      "draft_target": "creditors",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "recent_borrowing",
+      "label": "최근 차입일·금액",
+      "evidence_catalog_ids": [
+        "D38",
+        "D44"
+      ],
+      "draft_target": "statement",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "fund_usage",
+      "label": "대출·처분대금 최종 사용처",
+      "evidence_catalog_ids": [
+        "D36",
+        "D44"
+      ],
+      "draft_target": "statement",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "disposal_proceeds",
+      "label": "재산 처분일·대금·잔액",
+      "evidence_catalog_ids": [
+        "D27",
+        "D31",
+        "D44"
+      ],
+      "draft_target": "assets",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "tax_arrears",
+      "label": "세목·체납액·기준일",
+      "evidence_catalog_ids": [
+        "D29",
+        "D40"
+      ],
+      "draft_target": "creditors",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "insurance_surrender",
+      "label": "보험 해약환급금",
+      "evidence_catalog_ids": [
+        "D39"
+      ],
+      "draft_target": "assets",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "prior_proceedings",
+      "label": "과거 신청·종결·면책 이력",
+      "evidence_catalog_ids": [
+        "D43"
+      ],
+      "draft_target": "application",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "service_date",
+      "label": "실제 송달일 근거",
+      "evidence_catalog_ids": [
+        "D48"
+      ],
+      "draft_target": "correction",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    },
+    {
+      "key": "account_scope",
+      "label": "본인 계좌 전체 범위",
+      "evidence_catalog_ids": [
+        "D35",
+        "D36"
+      ],
+      "draft_target": "attachments",
+      "missing_policy": "미확인으로 표시; 초안 생성은 계속하고 변호사 질문에 추가"
+    }
+  ],
+  "registry_factors": [
+    {
+      "id": "F01",
+      "key": "client.identity",
+      "name": "고객 내부ID·실명/본인확인 상태",
+      "type": "object",
+      "mandatory_stage": "접수/H1",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D01,D03",
+      "validation": "수임번호와 본인인증 분리; 주민번호 외부로그 금지",
+      "used_by": "사건·메일 연결",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F02",
+      "key": "venue.current_address",
+      "name": "현재 주소·실제 거주지",
+      "type": "address",
+      "mandatory_stage": "H1",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D01,D02,D33,D34",
+      "validation": "등록주소/실거주 출처 분리",
+      "used_by": "관할 후보",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L01,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F03",
+      "key": "venue.address_history",
+      "name": "주소 변동일·이력",
+      "type": "list[date,address]",
+      "mandatory_stage": "관할 확정",
+      "required_condition": "관할/거주 이력 쟁점",
+      "evidence_docs": "D02",
+      "validation": "기간 공백·중복 확인",
+      "used_by": "관할·처분대조",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L01,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F04",
+      "key": "venue.business_workplace",
+      "name": "주된 영업소·계속근무지",
+      "type": "list[address,basis]",
+      "mandatory_stage": "H1",
+      "required_condition": "해당 근거로 관할 주장",
+      "evidence_docs": "D08,D15,D33",
+      "validation": "잠정 주소만으로 관할 확정 금지",
+      "used_by": "L01 관할 규칙",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L01,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F05",
+      "key": "case.court_profile",
+      "name": "후보/선택 법원·선택 근거",
+      "type": "object",
+      "mandatory_stage": "자료요청 승인",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D01,D08,D15",
+      "validation": "주소/일터/영업소 근거·변호사 선택 저장",
+      "used_by": "법원별 요구/규칙 선택",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L01,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0003&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F06",
+      "key": "income.sources",
+      "name": "복수 소득원·급여/사업/일용/연금 구분",
+      "type": "list[enum]",
+      "mandatory_stage": "H1",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D05~D25",
+      "validation": "하나의 직종으로 고정하지 않음",
+      "used_by": "문서 번들 선택",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F07",
+      "key": "income.employment_terms",
+      "name": "입·퇴사일/고용조건/사업기간",
+      "type": "date+object",
+      "mandatory_stage": "계산 전",
+      "required_condition": "근로/사업 소득",
+      "evidence_docs": "D08,D09,D12,D15",
+      "validation": "재직/보험/진술 날짜 대조",
+      "used_by": "소득 평균·장래 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F08",
+      "key": "income.future_capacity",
+      "name": "계속·반복 소득 가능성 및 근로능력 검토",
+      "type": "enum+evidence",
+      "mandatory_stage": "경로 판단 전",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D07,D08,D21,D25,D42",
+      "validation": "AI가 영구능력 판단 금지; 기간·사유 승인",
+      "used_by": "회생/파산 검토 분기",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F09",
+      "key": "income.continuity_approved",
+      "name": "장래 소득 가능성 변호사 승인",
+      "type": "enum",
+      "mandatory_stage": "경로 판단 전",
+      "required_condition": "회생 경로",
+      "evidence_docs": "D08,D21,D25",
+      "validation": "예/아니오/미확정 + 이유",
+      "used_by": "회생 자격·수행가능성",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F10",
+      "key": "income.period_amounts",
+      "name": "소득원별 귀속·지급 기간과 월별 금액",
+      "type": "list[period,KRW]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "소득 존재",
+      "evidence_docs": "D05,D06,D07,D13,D14,D21,D25,D36",
+      "validation": "귀속/현금수령 시점 분리·공백 표시",
+      "used_by": "평균/변동성/지속성",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F11",
+      "key": "income.amount_semantics",
+      "name": "세전/세후/과세상소득/매출/정산액 구분",
+      "type": "enum",
+      "mandatory_stage": "추출/계산 전",
+      "required_condition": "각 금액",
+      "evidence_docs": "D05,D06,D07,D16,D17,D36",
+      "validation": "문서 필드 의미 코드 강제",
+      "used_by": "이중공제·매출오인 차단",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F12",
+      "key": "income.deductions",
+      "name": "소득세·지방소득세·사회보험 공제 항목",
+      "type": "list[KRW,period]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "해당 공제",
+      "evidence_docs": "D06,D07,D10,D11,D40",
+      "validation": "이미 세후 포함된 공제 중복 차감 금지",
+      "used_by": "법정 가용소득",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F13",
+      "key": "income.tax_reference",
+      "name": "귀속연도 과세소득 및 신고 여부",
+      "type": "object",
+      "mandatory_stage": "소득 대조",
+      "required_condition": "발급 가능한 경우",
+      "evidence_docs": "D05,D06,D13,D14,D24",
+      "validation": "현재 순현금과 분리·미신고 원인",
+      "used_by": "세무/현금 불일치",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F14",
+      "key": "income.missing_tax_reason",
+      "name": "미발급/미신고/신규소득 사유",
+      "type": "enum+text",
+      "mandatory_stage": "요청 재조정",
+      "required_condition": "세무자료 없음",
+      "evidence_docs": "D24",
+      "validation": "자료없음≠무소득",
+      "used_by": "대체자료/H-R",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F15",
+      "key": "business.entities",
+      "name": "사업자번호·개업/폐업·실질 운영자",
+      "type": "list[object]",
+      "mandatory_stage": "H1/계산 전",
+      "required_condition": "영업소득",
+      "evidence_docs": "D15,D23",
+      "validation": "등록 명의/실질 운영 구분",
+      "used_by": "사업 번들·폐업재산",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F16",
+      "key": "business.vat_type",
+      "name": "과세/면세/겸업/미확정",
+      "type": "enum",
+      "mandatory_stage": "자료요청",
+      "required_condition": "사업",
+      "evidence_docs": "D15,D16,D17",
+      "validation": "겸업이면 각 부분 따로",
+      "used_by": "과세표준/면세수입 증명 선택",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F17",
+      "key": "business.revenue",
+      "name": "총매출·채널/월별/부가세 포함 여부",
+      "type": "list[KRW,period]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "사업",
+      "evidence_docs": "D16,D17,D19,D20,D21,D36",
+      "validation": "정산순액/총매출·VAT 정책 통일",
+      "used_by": "사업 수입 계산",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F18",
+      "key": "business.necessary_costs",
+      "name": "인정 필요경비 항목·월별 금액",
+      "type": "list[KRW,basis]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "사업",
+      "evidence_docs": "D18,D19,D21,D22",
+      "validation": "사적지출/자금이체/원금상환 자동 공제 금지",
+      "used_by": "사업 순소득",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F19",
+      "key": "business.net_available_source",
+      "name": "정규화 사업소득",
+      "type": "KRW/period",
+      "mandatory_stage": "계산 전",
+      "required_condition": "사업",
+      "evidence_docs": "D17,D18,D21,D22",
+      "validation": "매출-인정경비의 동일 기간 계산",
+      "used_by": "전체소득 합산",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F20",
+      "key": "business.history_length",
+      "name": "운영기간·계절성·폐업 후 소득원",
+      "type": "object",
+      "mandatory_stage": "계산/경로",
+      "required_condition": "신규/계절/폐업사업",
+      "evidence_docs": "D15,D21,D23",
+      "validation": "1년 미만 자료 부족과 무소득 구별",
+      "used_by": "대체기간·추정 승인",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F21",
+      "key": "income.rent_income",
+      "name": "임대료 수입/보증금/비용",
+      "type": "object",
+      "mandatory_stage": "계산 전",
+      "required_condition": "임대소득",
+      "evidence_docs": "D27,D33,D36",
+      "validation": "보증금 원금입금과 월세 수입 구별",
+      "used_by": "복수소득",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F22",
+      "key": "support.third_party",
+      "name": "제3자 지원 금액·기간·조건",
+      "type": "object",
+      "mandatory_stage": "시나리오",
+      "required_condition": "지원을 주장",
+      "evidence_docs": "D46,D36",
+      "validation": "실제지원/약속/지속성 따로",
+      "used_by": "수행가능성 예외 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F23",
+      "key": "support.acceptance",
+      "name": "제3자 지원의 법적 반영 승인",
+      "type": "enum+basis",
+      "mandatory_stage": "계산 전",
+      "required_condition": "F22 존재",
+      "evidence_docs": "D46",
+      "validation": "고객 급여로 자동전환 금지",
+      "used_by": "조건부 시나리오",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F24",
+      "key": "living.actual_expenses",
+      "name": "항목별 지출액·근거·기간",
+      "type": "list[KRW]",
+      "mandatory_stage": "생계비 검토",
+      "required_condition": "공제/추가 지출",
+      "evidence_docs": "D10,D22,D33,D34,D42",
+      "validation": "사업경비와 생활비 중복 배제",
+      "used_by": "인정 생계비",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F25",
+      "key": "living.table_version",
+      "name": "생계비표·연도·관할·시행일",
+      "type": "ref",
+      "mandatory_stage": "계산 전",
+      "required_condition": "모든 회생 계산",
+      "evidence_docs": "D47",
+      "validation": "공식 표/적용례·승인 버전 존재",
+      "used_by": "기본/추가생계비",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F26",
+      "key": "household.members",
+      "name": "가족관계·동거·성년/미성년",
+      "type": "list[object]",
+      "mandatory_stage": "H1",
+      "required_condition": "가족/부양 쟁점",
+      "evidence_docs": "D01,D03,D04",
+      "validation": "가구원 수와 실제 부양 분리",
+      "used_by": "부양 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F27",
+      "key": "household.actual_support",
+      "name": "가족별 소득·실제 부양·공동부양",
+      "type": "list[object]",
+      "mandatory_stage": "생계비 승인",
+      "required_condition": "부양 주장",
+      "evidence_docs": "D03,D05,D36,D41",
+      "validation": "필요 최소수집·공동부양 분담 검토",
+      "used_by": "법원별 부양 기준",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F28",
+      "key": "living.additional_claims",
+      "name": "추가 주거/의료/교육비·필요성",
+      "type": "list[KRW,evidence]",
+      "mandatory_stage": "생계비 승인",
+      "required_condition": "추가 생계비 주장",
+      "evidence_docs": "D33,D36,D41,D42",
+      "validation": "기본표 이미 포함분과 중복 금지",
+      "used_by": "추가 인정액",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F29",
+      "key": "living.accepted_total",
+      "name": "승인 기본+추가 생계비·인정 인원",
+      "type": "KRW+basis",
+      "mandatory_stage": "계산 전",
+      "required_condition": "모든 회생 계산",
+      "evidence_docs": "D47",
+      "validation": "최종 법원 확정과 사무소 검토값 분리",
+      "used_by": "가용소득",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F30",
+      "key": "assets.inventory",
+      "name": "자산별 종류·식별자·현재/처분 상태",
+      "type": "list[object]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D27~D39,D44",
+      "validation": "진술·조회·계좌 연결; 조사한 범위 명시",
+      "used_by": "재산목록/완전성",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F31",
+      "key": "assets.ownership",
+      "name": "명의·실질 소유·지분",
+      "type": "object/asset",
+      "mandatory_stage": "평가 전",
+      "required_condition": "각 자산",
+      "evidence_docs": "D27,D28,D30,D33,D39",
+      "validation": "배우자 명의 자동 절반 합산 금지",
+      "used_by": "청산가치 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F32",
+      "key": "assets.security_balance",
+      "name": "담보권/실제 피담보 잔액",
+      "type": "KRW/asset",
+      "mandatory_stage": "평가 전",
+      "required_condition": "담보자산",
+      "evidence_docs": "D27,D30,D38",
+      "validation": "채권최고액≠실제잔액",
+      "used_by": "담보/초과분·환가여유",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F33",
+      "key": "assets.value_date",
+      "name": "자산 시가/환가추정액·기준일",
+      "type": "KRW,date,basis",
+      "mandatory_stage": "평가 전",
+      "required_condition": "각 자산",
+      "evidence_docs": "D31,D32,D37,D39",
+      "validation": "가격 출처·유사물건·시점 기록",
+      "used_by": "청산가치",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F34",
+      "key": "assets.exemptions_costs",
+      "name": "면제재산·압류금지·환가비용·법률 승인",
+      "type": "list[KRW,basis]",
+      "mandatory_stage": "평가 전",
+      "required_condition": "해당 예외",
+      "evidence_docs": "D27,D33,D37,D39",
+      "validation": "신청 주장/법원 결정/내부 검토 구별",
+      "used_by": "파산배당 예상액",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F35",
+      "key": "evidence.coverage",
+      "name": "조회 대상·기관·명의·기간·실패 범위",
+      "type": "object",
+      "mandatory_stage": "검증 완료",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D28,D29,D35,D36",
+      "validation": "조회실패를 없음으로 치환 금지",
+      "used_by": "조사범위 완전성",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F36",
+      "key": "accounts.inventory_balances",
+      "name": "계좌 목록·기초/기말잔액",
+      "type": "list[object]",
+      "mandatory_stage": "검증",
+      "required_condition": "금융자산",
+      "evidence_docs": "D35,D36,D37",
+      "validation": "공백·중복·추가계좌 연결",
+      "used_by": "자금수지",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F37",
+      "key": "transactions.items",
+      "name": "거래일·입출금·상대계좌·유형 후보",
+      "type": "list[object]",
+      "mandatory_stage": "검증",
+      "required_condition": "거래 소명",
+      "evidence_docs": "D36,D44,D45",
+      "validation": "차입·본인이체·매출·실비분류 검토",
+      "used_by": "불일치·자금흐름",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F38",
+      "key": "transactions.explanations",
+      "name": "이체/처분대금 사용처 근거·미해결액",
+      "type": "object",
+      "mandatory_stage": "H-R/제출 전",
+      "required_condition": "중요 거래",
+      "evidence_docs": "D36,D44,D45",
+      "validation": "설명 없는 자금이동을 위법/은닉으로 확정 금지",
+      "used_by": "정정·소명 필요",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F39",
+      "key": "assets.disposal_history",
+      "name": "처분일·가격·대금수령·최종 사용",
+      "type": "list[object]",
+      "mandatory_stage": "검증",
+      "required_condition": "처분 이력",
+      "evidence_docs": "D23,D30,D33,D36,D44",
+      "validation": "현물→현금 변경 유지·가족거래 검토",
+      "used_by": "재산/부인권 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F40",
+      "key": "claims.inventory",
+      "name": "현재 채권자·원인·계좌·권리이전",
+      "type": "list[object]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "모든 채무",
+      "evidence_docs": "D26,D38,D40,D45",
+      "validation": "양도·대위변제 중복 확인",
+      "used_by": "채권자목록",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F41",
+      "key": "claims.amounts",
+      "name": "원금·이자·비용·기준일",
+      "type": "list[KRW,date]",
+      "mandatory_stage": "계산 전",
+      "required_condition": "각 채권",
+      "evidence_docs": "D26,D38,D40,D45",
+      "validation": "금액 기준일·확정/다툼 구별",
+      "used_by": "채무한도/배분",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F42",
+      "key": "claims.secured_class",
+      "name": "담보부·그 밖의 채무·미확정",
+      "type": "enum+KRW",
+      "mandatory_stage": "자격 검토 전",
+      "required_condition": "각 채권",
+      "evidence_docs": "D27,D30,D38,D45",
+      "validation": "담보 부족액·보증/미확정 평가 승인",
+      "used_by": "10억/15억 한도",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F43",
+      "key": "claims.guarantee_assignment",
+      "name": "보증·양도·공동채무·분쟁",
+      "type": "list[object]",
+      "mandatory_stage": "검증",
+      "required_condition": "해당 채권",
+      "evidence_docs": "D38,D45",
+      "validation": "명의만다른 동일채권 중복 제외는 사람확정",
+      "used_by": "한도/관할/누락",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F44",
+      "key": "claims.legal_priority",
+      "name": "재단채권·우선권·조세·각 절차 비면책 구분",
+      "type": "enum+basis",
+      "mandatory_stage": "계획/경로 전",
+      "required_condition": "각 채권",
+      "evidence_docs": "D26,D38,D40,D45",
+      "validation": "파산/회생 법적 분류 별도; 조세 모두일률처리 금지",
+      "used_by": "전액변제/잔존채무",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F45",
+      "key": "claims.recent_borrowing",
+      "name": "최근차입 시기·용도·비중·증빙",
+      "type": "list[object]",
+      "mandatory_stage": "H-R",
+      "required_condition": "최근차입/법원요구",
+      "evidence_docs": "D36,D38,D44,D45",
+      "validation": "근거 없는 정량 합격/탈락 기준 금지",
+      "used_by": "성실성/금지명령 등 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F46",
+      "key": "history.filings_10y",
+      "name": "최근10년 신청 법원·번호·종국 결과",
+      "type": "list[object]",
+      "mandatory_stage": "자료요청/경로",
+      "required_condition": "해당 이력",
+      "evidence_docs": "D43",
+      "validation": "신청이력과 면책이력 별개",
+      "used_by": "신청 첨부/재신청 소명",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F47",
+      "key": "history.discharge_date_type",
+      "name": "면책 절차 종류·확정일",
+      "type": "date,enum",
+      "mandatory_stage": "경로 판단 전",
+      "required_condition": "과거면책",
+      "evidence_docs": "D43",
+      "validation": "결정일과 확정일 분리; 달력연수",
+      "used_by": "회생5년/파산7·5년 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F48",
+      "key": "history.changed_circumstances",
+      "name": "종전 실패사유·현재 개선 근거",
+      "type": "object",
+      "mandatory_stage": "재신청 검토",
+      "required_condition": "과거기각/폐지",
+      "evidence_docs": "D43,D08,D21",
+      "validation": "전사건 결과만으로 이번 결과 단정 금지",
+      "used_by": "재신청/보완 전략",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F49",
+      "key": "plan.term",
+      "name": "변제기간·단축/연장 근거·승인",
+      "type": "months+basis",
+      "mandatory_stage": "계획 계산",
+      "required_condition": "회생 계획",
+      "evidence_docs": "D47",
+      "validation": "36/60개월 고정 금지; 지역/법률 조건",
+      "used_by": "총변제·기간검증",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F50",
+      "key": "plan.cash_schedule",
+      "name": "월별 가용소득·납입액·별도재원",
+      "type": "list[period,KRW]",
+      "mandatory_stage": "계획 계산",
+      "required_condition": "회생 계획",
+      "evidence_docs": "D47",
+      "validation": "계절성/생활비/우선채무 지출 반영",
+      "used_by": "수행가능성",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F51",
+      "key": "plan.pv_method",
+      "name": "인가시점 현재가치 계산법/율/버전",
+      "type": "object",
+      "mandatory_stage": "청산가치 검증",
+      "required_condition": "회생 계획",
+      "evidence_docs": "D47",
+      "validation": "PV 미승인이면 명목액만으로 법요건 충족 단정 금지",
+      "used_by": "청산가치 비교",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F52",
+      "key": "plan.objection_consent",
+      "name": "채권자/회생위원 이의·동의 내용",
+      "type": "object",
+      "mandatory_stage": "계획 검토/인가 전",
+      "required_condition": "해당 절차",
+      "evidence_docs": "D47",
+      "validation": "이의 없음/미확인/이의 있음 구별",
+      "used_by": "614(1)/(2) 분기",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F53",
+      "key": "bankruptcy.payment_inability",
+      "name": "지급불능 판단·소득/자산/생활/능력 근거",
+      "type": "enum+basis",
+      "mandatory_stage": "파산 경로 검토",
+      "required_condition": "파산 후보",
+      "evidence_docs": "D05,D21,D25,D30,D37,D42",
+      "validation": "무직·미신고·가용소득≤0만으로 확정 금지",
+      "used_by": "305 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L04,L05,L10",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0305&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0564&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://slb.scourt.go.kr/rel/guide/personal_b/index.jsp"
+    },
+    {
+      "id": "F54",
+      "key": "bankruptcy.discharge_risks",
+      "name": "564조 위험사실·재량면책 검토",
+      "type": "list[object]",
+      "mandatory_stage": "파산 검토",
+      "required_condition": "파산 후보",
+      "evidence_docs": "D43,D44,D45",
+      "validation": "은닉 단정/도박 자동탈락 금지",
+      "used_by": "면책 실익/위험 설명",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L04,L05,L10",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0305&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0564&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://slb.scourt.go.kr/rel/guide/personal_b/index.jsp"
+    },
+    {
+      "id": "F55",
+      "key": "case.key_dates",
+      "name": "예정/실제 접수일·인가일·기준일",
+      "type": "dates",
+      "mandatory_stage": "규칙 선택",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D43,D47",
+      "validation": "게시일/시행일/접수일/수령일 구별",
+      "used_by": "유효 규칙 선택",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F56",
+      "key": "documents.metadata",
+      "name": "발급일·기간·명의·종류·원문위치·해시",
+      "type": "object/document",
+      "mandatory_stage": "자료 검증",
+      "required_condition": "모든 문서",
+      "evidence_docs": "D01~D48",
+      "validation": "원문진위·기간·옵션·중복; 파일해시≠진본보장",
+      "used_by": "수신/완전성 상태",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F57",
+      "key": "evidence.unresolved",
+      "name": "미제출·비해당·불가사유·충돌 과제",
+      "type": "list[object]",
+      "mandatory_stage": "제출 전",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D48",
+      "validation": "세 가지 완료(수신/범위/내용) 분리",
+      "used_by": "제출차단/법원소명",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F58",
+      "key": "approval.snapshot",
+      "name": "사실·계산·규칙·문서 승인 버전",
+      "type": "ref+hash",
+      "mandatory_stage": "H1/H2/H-R",
+      "required_condition": "모든 제출",
+      "evidence_docs": "D47",
+      "validation": "의존값 변경시 만료; 과거결과 보존",
+      "used_by": "최종발송/제출 통제",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F59",
+      "key": "notice.deadline",
+      "name": "법원원문·송달정보·확정기한",
+      "type": "object",
+      "mandatory_stage": "보정/후속",
+      "required_condition": "법원 요구",
+      "evidence_docs": "D43",
+      "validation": "이메일 알림 날짜만으로 산정 금지",
+      "used_by": "기한·대체담당",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F60",
+      "key": "payments.actual",
+      "name": "승인 납입일정 대비 실제 납입 근거",
+      "type": "list[object]",
+      "mandatory_stage": "후속",
+      "required_condition": "진행 사건",
+      "evidence_docs": "D36,D47",
+      "validation": "조회 미연결 상태는 미납 확정 금지",
+      "used_by": "미납위험/변경·면책 검토",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F61",
+      "key": "rules.selection",
+      "name": "적용 법률·법원표·서식 버전과 시행 조건",
+      "type": "refs",
+      "mandatory_stage": "요청/계산/문서",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D47,D48",
+      "validation": "초안 상태 규칙 활성화 금지",
+      "used_by": "전국 일관성",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F62",
+      "key": "procedural.costs",
+      "name": "절차비용·예납·수임료의 별도 상태",
+      "type": "object",
+      "mandatory_stage": "신청/인가 검토",
+      "required_condition": "모든 사건",
+      "evidence_docs": "D47",
+      "validation": "수임료 납부를 절차비용으로 대체 금지",
+      "used_by": "595/614 비용 요건",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F63",
+      "key": "assets.liquidation_distribution",
+      "name": "파산 시 예상 배당액과 계산 근거",
+      "type": "KRW+basis",
+      "mandatory_stage": "회생계획 검증",
+      "required_condition": "회생 계획",
+      "evidence_docs": "D27,D30,D31,D32,D37,D39",
+      "validation": "소유/담보/면제/비용/회수가능성 승인",
+      "used_by": "614 청산가치",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "L02,L03,O01",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR\nhttps://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0614&lsiSeq=267359&urlMode=lsScJoRltInfoR\noriginal/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F64",
+      "key": "research.outcome_labels",
+      "name": "사건 결과·사유·보정·정정 원인",
+      "type": "object",
+      "mandatory_stage": "개선 루프",
+      "required_condition": "종결/중간결과",
+      "evidence_docs": "D43,D47,D48",
+      "validation": "인가=무누락 정답 아님; 법원/유형/시점 분리",
+      "used_by": "법률규칙 아닌 개선후보",
+      "missing_policy": "UNKNOWN → 관련 계산/판단 보류·질문/증거과제 생성; 0/없음으로 대체 금지",
+      "source_ids": "O01",
+      "source_urls": "original/lawyer_detailed_plan.docx"
+    },
+    {
+      "id": "F65",
+      "key": "client.is_natural_person",
+      "name": "개인(자연인) 여부",
+      "type": "verified_boolean",
+      "mandatory_stage": "H1/경로검토",
+      "required_condition": "회생/파산 경로 검토",
+      "evidence_docs": "D01",
+      "validation": "진술만으로 확정하지 않고 해당 법적 평가와 확인자·근거 기록",
+      "used_by": "R05",
+      "missing_policy": "UNKNOWN이면 법률 검토 대기",
+      "source_ids": "L02",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+    },
+    {
+      "id": "F66",
+      "key": "eligibility.bankruptcy_cause_or_risk",
+      "name": "파산원인 사실 또는 발생 염려",
+      "type": "verified_boolean",
+      "mandatory_stage": "H1/경로검토",
+      "required_condition": "회생 자격 검토",
+      "evidence_docs": "D38,D45,D47",
+      "validation": "진술만으로 확정하지 않고 해당 법적 평가와 확인자·근거 기록",
+      "used_by": "R05",
+      "missing_policy": "UNKNOWN이면 법률 검토 대기",
+      "source_ids": "L02",
+      "source_urls": "https://www.law.go.kr/LSW/lsSideInfoP.do?docCls=jo&joBrNo=00&joNo=0579&lsiSeq=267359&urlMode=lsScJoRltInfoR"
+    }
+  ],
+  "document_targets": {
+    "application": "개인회생 신청서 초안",
+    "creditors": "채권자목록 초안",
+    "assets": "재산목록 초안",
+    "income_expense": "수입·지출목록 초안",
+    "statement": "진술서 초안",
+    "repayment_plan": "변제계획 검토 초안",
+    "attachments": "첨부서류목록",
+    "correction": "보정 답변 초안"
+  },
+  "limitations": [
+    "서류 준비 및 초안 구성용 실행 규칙입니다. 법률상 결론·부양 인정·변제액 확정 규칙이 아닙니다.",
+    "조건 키워드는 근거가 있는 후보를 찾는 용도이며 부정문·복잡한 문맥은 추가 확인합니다."
+  ]
+}

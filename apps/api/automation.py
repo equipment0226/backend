@@ -1,0 +1,821 @@
+"""Evidence-gated AX orchestration. All private text stays on the local boundary.
+
+The gate authorizes document preparation, never predicts or records court approval.
+Expensive work runs on a detached case; ax_service commits it with optimistic locking.
+"""
+from __future__ import annotations
+
+import asyncio
+import copy
+import json
+from datetime import datetime, timezone, timedelta
+
+from . import domain, drafting, legal_calculator, store, workflow_contract
+
+VERSION = 'ax-loop-2026-10-04.5-typed-evidence-drafts'
+STEPS = [(stage['id'], stage['title']) for stage in workflow_contract.STAGES]
+INACTIVE = {'withdrawn', 'superseded', 'cancelled'}
+
+
+def notify(case, key, title, message, audience='staff', kind='review_request', request_id=None):
+    rows = case.setdefault('notifications', [])
+    existing = next((n for n in rows if n.get('key') == key and not n.get('resolved_at')), None)
+    if existing:
+        return existing
+    row = {'id': store.uid('notice'), 'key': key, 'title': title, 'message': message,
+           'audience': audience, 'kind': kind, 'request_id': request_id,
+           'created_at': store.now(), 'read_at': None, 'resolved_at': None}
+    rows.append(row)
+    return row
+
+
+def _state(case, stage, index, reasons=None, strategies=None):
+    from . import legal_watch
+    legal_update = legal_watch.case_policy_status(case)
+    status = 'completed' if stage == 'completed' else 'waiting' if stage in ('collecting', 'verification_waiting', 'human_review') else 'blocked'
+    steps = workflow_contract.project_steps(index, status)
+    case['ax_pipeline'] = {'version': VERSION, 'contract_version': workflow_contract.VERSION, 'stage': stage, 'status': status,
+                           'steps': steps, 'reasons': reasons or [], 'strategies': strategies or [],
+                           'updated_at': store.now(), 'input_revision': case['input_revision'],
+                           'legal_update': {**legal_update, 'version': legal_update.get('active_version'),
+                               'summary': '적용 근거 변경 검토 필요' if legal_update.get('pending_changes') else '현재 적용 근거 반영'}}
+    checkpoint = workflow_contract.checkpoint(case['ax_pipeline'])
+    history = case.setdefault('workflow_checkpoints', [])
+    if not history or any(history[-1].get(key) != checkpoint.get(key) for key in
+                          ('stage', 'status', 'input_revision', 'legal_version', 'reason_codes')):
+        history.append(checkpoint)
+    case['stage'] = {'collecting': '자료 수집', 'lawyer_review': '검토 보류',
+                     'human_review': '1차 문서 검토', 'completed': '문서 작성 완료'}.get(stage, '검증 중')
+    case['automation'] = {'stage': stage, 'label': case['stage'], 'generated_at': store.now()}
+    if stage in ('lawyer_review', 'human_review'):
+        message = '\n'.join(str(r.get('reason', r.get('message', ''))) if isinstance(r, dict) else str(r) for r in reasons or [])
+        if stage == 'human_review' and not message:
+            message = '1차 문서 작성과 AI 검토를 마쳤습니다. 문서 내용을 확인하고 보완·최종 승인을 진행해 주세요.'
+        notify(case, 'review:' + store.digest([case['input_revision'], reasons]), '사건 검토 요청', message)
+    elif stage == 'completed':
+        for n in case.get('notifications', []):
+            if n.get('kind') == 'review_request' and not n.get('resolved_at'):
+                n['resolved_at'] = store.now()
+    return case['ax_pipeline']
+
+
+def _human_review(case, draft, reasons=None, strategies=None, review_required_stages=()):
+    """Finish autonomous preparation, without silently completing failed gates."""
+    pending = copy.deepcopy(reasons or draft.get('review_pending', []))
+    draft.update(stage_status='preliminary', human_review_required=True, submission_ready=False,
+                 review_pending=pending)
+    required = set(review_required_stages) | set(draft.get('review_required_stages', []))
+    pipeline = _state(case, 'human_review', 6, pending, strategies)
+    pipeline.update(draft_id=draft['id'], human_review_required=True, submission_ready=False,
+                    review_required_stages=sorted(required))
+    for step in pipeline['steps']:
+        if step['id'] in required:
+            step['status'] = 'review_required'
+            step['detail'] = '자동 검증 미완료 항목을 1차 초안과 함께 담당자가 보완해야 합니다.'
+    case['workflow_checkpoints'][-1] = workflow_contract.checkpoint(pipeline)
+    case['automation'].update(draft_id=draft['id'], label='1차 문서 작성·AI 검토 후 담당자 보완·승인 대기')
+    return pipeline
+
+
+def sync_request_notifications(case):
+    for req in case.get('requests', []):
+        if req.get('status') in INACTIVE | {'fulfilled'}:
+            for notice in case.get('notifications', []):
+                if notice.get('request_id') == req['id'] and not notice.get('resolved_at'):
+                    notice['resolved_at'] = store.now()
+        elif req.get('status') in ('requested', 'needs_more'):
+            message = req.get('public_review_note') or f"{req['title']} · {req.get('period', '')} 자료를 제출해주세요."
+            notify(case, 'request:' + store.digest([req['id'], req.get('version'), req['status'], message]),
+                   '서류 보완 요청' if req['status'] == 'needs_more' else '서류 제출 요청',
+                   message, audience='client', kind='document_request', request_id=req['id'])
+
+
+def _sources(case, verified_only=False):
+    return [{'id': d['id'], 'text': d.get('text', ''), 'version': d.get('version', 1),
+             'kind': 'reviewed_decision' if d.get('source_type') == 'reviewed_decision' and d.get('verified_by') else 'case_document'}
+            for d in case.get('documents', []) if d.get('status') not in
+            {'rejected', 'quarantined', 'superseded'} and (not verified_only or d.get('status') == 'verified')
+            and d.get('source_type') != 'meeting' and d.get('text', '').strip()]
+
+
+def _verification_items(case, sources):
+    allowed = {s['id'] for s in sources}
+    if case.get('evidence_mapping'):
+        from . import evidence_mapping
+        packet = evidence_mapping.build(case)
+        # Repeated identical observations share semantic review while every
+        # original typed row keeps its independent page/unit check and provenance.
+        result = {}
+        for row in packet['facts']:
+            if row['document_id'] not in allowed:
+                continue
+            key = store.dumps([row['key'], row['value'], row.get('basis'), row.get('frequency'),
+                               row.get('period_start'), row.get('period_end'), row.get('account_key')])
+            item = result.setdefault(key, {'id': row['id'], 'key': row['key'], 'value': row['value'],
+                'source_ids': [], 'quote': row['quote'], 'covered_fact_ids': [],
+                'basis': row.get('basis'), 'frequency': row.get('frequency'), 'unit': row.get('unit'),
+                'source_unit_quote': row.get('source_unit_quote'), 'unit_multiplier':row.get('unit_multiplier',1)})
+            if row['document_id'] not in item['source_ids']:
+                item['source_ids'].append(row['document_id'])
+            item['covered_fact_ids'].append(row['id'])
+        if result:
+            return list(result.values())
+    return [{'id': c['id'], 'key': c['key'], 'value': c.get('value'),
+             'source_ids': [c['document_id']], 'quote': c.get('quote', '')}
+            for c in case.get('extraction_candidates', []) if c.get('document_id') in allowed
+            and c.get('status') not in {'rejected', 'quarantined', 'superseded'} and c.get('value') is not None]
+
+
+def _need_more(case, req, reason):
+    req.update(status='needs_more', public_review_note=reason)
+    history = req.setdefault('validation_history', [])
+    if not history or history[-1].get('reason') != reason:
+        history.append({'at': store.now(), 'status': 'needs_more', 'reason': reason})
+
+
+def document_review_signature(case, document):
+    """Bind a staff scope review to this immutable file, OCR and request scope."""
+    request = next((r for r in case.get('requests', []) if r.get('id') == document.get('request_id')), {})
+    account = next((a for a in case.get('financial_accounts', case.get('accounts', []))
+                    if isinstance(a, dict) and str(a.get('id') or a.get('account_key') or '') == str(request.get('account_key'))), {})
+    return store.digest({'version': 'manual-source-scope-v1', 'document': {
+        key: document.get(key) for key in ('id', 'sha256', 'version', 'text', 'page_texts', 'document_metadata', 'request_id')},
+        'request': {key: request.get(key) for key in ('id', 'catalog_id', 'period', 'period_start', 'period_end',
+            'institution', 'account_key', 'issuance_options', 'scope_unresolved')},
+        'person': case.get('client_name'), 'account': account.get('account_number', account.get('number'))})
+
+
+def manual_document_review_current(case, document):
+    """An audited human review can settle scope, but never replace OCR fact checks.
+
+    Legacy uploads are immutable version-one records. Accept only an explicit
+    complete review with no later metadata/file/request change; subsequent reviews
+    carry the exact evidence signature and no longer rely on this compatibility.
+    """
+    if (document.get('status') != 'verified' or not document.get('verified_by') or not document.get('verified_at')
+            or not all(document.get(key) is True for key in ('scope_confirmed', 'content_confirmed', 'person_confirmed'))):
+        return False
+    review = document.get('manual_verification')
+    if review:
+        return (review.get('signature') == document_review_signature(case, document)
+                and review.get('verified_by') == document.get('verified_by')
+                and review.get('verified_at') == document.get('verified_at'))
+    if document.get('version', 1) != 1 or not document.get('sha256'):
+        return False
+    request = next((r for r in case.get('requests', []) if r.get('id') == document.get('request_id')), {})
+    modified = [document.get('updated_at'), document.get('metadata_review', {}).get('at'), request.get('updated_at')]
+    return all(not at or str(at) <= str(document['verified_at']) for at in modified)
+
+
+def _request_metadata(case, request, document):
+    """Parse only the existing request scope from local OCR, retaining exact quotes.
+
+    Do not infer complete statement coverage from the first/last transaction: an
+    explicit issuer date-range header is necessary. Opaque account IDs are bound
+    to numbers already recorded on this case; they are never model inventions.
+    """
+    import re
+    from datetime import date
+    text = document.get('text', '')
+    metadata = document.setdefault('document_metadata', dict(document.get('metadata', {})))
+    quotes = document.setdefault('metadata_source_quotes', {})
+    institution = request.get('institution')
+    if institution and institution in text:
+        metadata['institution'] = institution
+        quotes['institution'] = institution
+    account = next((a for a in case.get('financial_accounts', case.get('accounts', []))
+                    if isinstance(a, dict) and str(a.get('id') or a.get('account_key') or '') == str(request.get('account_key'))), {})
+    number = re.sub(r'\D', '', str(account.get('account_number', account.get('number', ''))))
+    if number:
+        expression = r'(?<!\d)' + r'[\s-]*'.join(number) + r'(?!\d)'
+        match = re.search(expression, text)
+        if match:
+            metadata['account_key'] = request['account_key']
+            quotes['account_key'] = match[0]
+    day = r'(20\d{2})\s*[.년/-]\s*(\d{1,2})\s*[.월/-]\s*(\d{1,2})\s*일?'
+    issued = re.search(r'(?:발급일자?|발행일자?|출력일자?)\s*[:：]?\s*' + day, text)
+    def iso(groups):
+        try:
+            return date(*(int(g) for g in groups)).isoformat()
+        except ValueError:
+            return None
+    if issued:
+        value = iso(issued.groups())
+        if value:
+            metadata['issued_at'], quotes['issued_at'] = value, issued[0]
+    coverage = re.search(r'(?:조회|거래|증명|대상|발급대상)\s*기간\s*[:：]?\s*' + day +
+                         r'\s*[.\s]*\s*(?:~|～|〜|부터|–|-)\s*' + day, text)
+    if coverage:
+        start, end = iso(coverage.groups()[:3]), iso(coverage.groups()[3:])
+        if start and end:
+            metadata.update(period_start=start, period_end=end)
+            quotes.update(period_start=coverage[0], period_end=coverage[0])
+    options = request.get('issuance_options', {})
+    for key, aliases in {'certificate_type': ['상세'], 'tax_scope': ['모든 세목', '전체 세목'],
+                         'jurisdiction_scope': ['전국'], 'address_history': ['과거 주소 전체', '주소변동 전체']}.items():
+        if options.get(key):
+            found = next((alias for alias in aliases if alias in text), None)
+            if found:
+                metadata[key], quotes[key] = options[key], found
+    if options.get('person_number_display'):
+        # Main person's full identifier and third-person suppression are checked
+        # together; a globally unmasked family certificate cannot pass this test.
+        person = case.get('client_name', '')
+        full = r'\d{6}\s*-?\s*[1-4]\d{6}'
+        lines = text.splitlines()
+        own = next((line for line in lines if person and person in line and re.search(full, line)), None)
+        other_full = [line for line in lines if re.search(full, line) and line != own]
+        if own and not other_full:
+            metadata['person_number_display'] = options['person_number_display']
+            quotes['person_number_display'] = own
+    return metadata
+
+
+async def _validate_requests(case, checks, progress=None):
+    from . import court_rules
+    from .verification import run_local_verification_batched as run_local_verification
+    reqs = [r for r in case.get('requests', []) if r.get('status') not in INACTIVE and not r.get('no_longer_required')]
+    check_by_doc = {c['document_id']: c for c in checks}
+    sources = _sources(case)
+    source_ids = {s['id'] for s in sources}
+    pending, unavailable = [], False
+    for req in reqs:
+        linked = [d for d in case['documents'] if d.get('request_id') == req['id'] and
+                  d.get('status') not in {'rejected', 'superseded'}]
+        if not linked:
+            if req.get('status') == 'fulfilled':
+                _need_more(case, req, '현재 요청 범위를 증명하는 유효한 원본이 없습니다. 해당 자료를 제출해주세요.')
+            continue
+        # A replacement is the newest submission, not any historically valid upload.
+        doc = linked[-1]
+        check = check_by_doc.get(doc['id'], {})
+        if check.get('coverage_status') == 'identity_conflict':
+            doc.update(status='quarantined', public_status='명의 확인 후 다시 제출 필요')
+            _need_more(case, req, '요청 대상자의 서류인지 확인하고 다시 제출해주세요.')
+            continue
+        # A heuristic classification/missing range must not undo a current human
+        # review. Identity conflict above still blocks; unavailable machine-readable
+        # text below holds the internal OCR step without blaming the customer.
+        if manual_document_review_current(case, doc):
+            req['status'] = 'fulfilled'
+            continue
+        if check.get('catalog_id') and check['catalog_id'] != req['catalog_id']:
+            doc.update(status='needs_more', public_status='요청한 종류의 서류가 필요합니다')
+            _need_more(case, req, f"요청한 {req['title']}와 다른 서류가 제출되었습니다. 해당 서류로 다시 제출해주세요.")
+            continue
+        if doc['id'] not in source_ids or doc.get('ocr_summary', {}).get('unreadable_pages'):
+            _need_more(case, req, '일부 내용을 읽을 수 없습니다. 빠진 쪽 없이 선명한 원본을 다시 제출해주세요.')
+            continue
+        # Scope is a local evidence constraint, not a conclusion delegated to AI.
+        # Account numbers below are used only by the loopback verification call.
+        managed = req.get('managed_by') == court_rules.MANAGED_BY
+        staff_verified = manual_document_review_current(case, doc)
+        if managed and req.get('scope_unresolved') and not staff_verified:
+            req.update(status='received', public_review_note='기관·계좌의 요청 범위를 확인 중입니다.')
+            req['metadata_validation'] = {'status': 'metadata_required', 'unknown_fields': ['request_scope']}
+            unavailable = True
+            continue
+        if managed and not staff_verified:
+            _request_metadata(case, req, doc)
+            metadata_check = court_rules.validate_metadata(req, doc)
+            req['metadata_validation'] = metadata_check
+            if metadata_check['failures']:
+                reason = ' '.join(dict.fromkeys(f['message'] for f in metadata_check['failures']))
+                _need_more(case, req, reason)
+                doc.update(status='needs_more', public_status='요청 기간·기관·발급정보 보완 필요')
+                continue
+        scope = {k: req.get(k) for k in ('catalog_id', 'title', 'institution', 'account_key',
+                  'period', 'period_start', 'period_end', 'issuance_options', 'source_refs')}
+        if managed:
+            scope['unknown_metadata_fields'] = req.get('metadata_validation', {}).get('unknown_fields', [])
+            account = next((a for a in case.get('financial_accounts', case.get('accounts', []))
+                            if isinstance(a, dict) and str(a.get('id') or a.get('account_key') or '') == str(req.get('account_key'))), {})
+            scope['expected_account_number'] = account.get('account_number', account.get('number'))
+        signature = store.digest([doc.get('sha256'), doc.get('text'), doc.get('document_metadata'), scope, case.get('client_name'), VERSION])
+        prior = req.get('automatic_validation', {})
+        if prior.get('signature') == signature and prior.get('status') == 'passed':
+            req['status'] = 'fulfilled'
+            continue
+        # Explicit staff verification remains a supported override with its audit trail.
+        if staff_verified:
+            req['status'] = 'fulfilled'
+            continue
+        pending.append((req, doc, signature, scope))
+    if pending:
+        payload = {'sources': [s for s in sources if s['id'] in {p[1]['id'] for p in pending}],
+                   'items': [{'id': req['id'], 'key': 'document_scope',
+                              'value': {'expected_person': case.get('client_name'), **scope},
+                              'source_ids': [doc['id']]} for req, doc, _, scope in pending],
+                   'context': {'instruction': '종류·명의·기관·계좌·시작/종료기간·발급옵션을 모두 원문 대조. 범위가 불명확하면 통과 불가. 가족서류는 요구된 관계를 대조.'}}
+        result = await run_local_verification('document_selection', payload, **({'progress': progress} if progress else {}))
+        checked = set(result.get('checked_item_ids', []))
+        for req, doc, signature, _ in pending:
+            req['automatic_validation'] = {**result, 'signature': signature, 'at': store.now()}
+            # Batch pass requires all requested scopes; missing one must never authorize others.
+            individual_supported = any(f.get('item_id') == req['id'] and f.get('status') == 'supported'
+                                       for f in result.get('findings', []) if isinstance(f, dict))
+            if (result.get('passed') or individual_supported) and req['id'] in checked:
+                if req.get('managed_by') == court_rules.MANAGED_BY and req.get('metadata_validation', {}).get('status') != 'matched':
+                    req.update(status='received', public_review_note='제출 완료 · 발급정보와 요청 범위의 원문 확인 대기')
+                    req['automatic_validation']['status'] = 'metadata_required'
+                    req['automatic_validation']['passed'] = False
+                    unavailable = True
+                    continue
+                req.update(status='fulfilled', public_review_note='요청한 서류의 범위 확인이 완료되었습니다.')
+                # Another document's failed batch must not erase this completed
+                # scope check and force its successful local inference to repeat.
+                req['automatic_validation'].update(status='passed', passed=True,
+                    checked_item_ids=[req['id']], findings=[f for f in result.get('findings', [])
+                        if isinstance(f, dict) and f.get('item_id') == req['id']])
+                doc.update(status='verified', auto_verified=True, verified_at=store.now(),
+                           public_status='서류 범위 확인 완료', scope_confirmed=True, person_confirmed=True)
+            elif result.get('status') == 'unavailable':
+                unavailable = True
+                req.update(status='received', public_review_note='제출 완료 · 자동 검증 재시도 대기')
+            else:
+                findings = result.get('findings', [])
+                note = next((f.get('message') or f.get('reason') for f in findings if isinstance(f, dict)
+                             and f.get('item_id') == req['id']), None)
+                # Customer sees bounded scope instructions, not local-model free text or other-party details.
+                _need_more(case, req, f"{req['title']}의 요청 범위({req.get('period', '')})·기관·계좌·발급옵션을 확인해 다시 제출해주세요.")
+                doc.update(status='needs_more', public_status='서류 범위 보완 필요')
+    sync_request_notifications(case)
+    return bool(reqs) and all(r.get('status') == 'fulfilled' for r in reqs), unavailable
+
+
+def _retrieve(case):
+    from . import corpus
+    try:
+        found = corpus.search(query='개인회생 인가 기각 청산가치 가용소득 재산 처분 채무한도 보정 변제계획',
+                              court_id=case.get('court_id'), limit=8)
+        # Current core provisions enter the small writing context before historical
+        # examples. A long archived act must not displace an amended operative rule.
+        current = []
+        today = datetime.now(timezone(timedelta(hours=9))).date().isoformat()
+        for source_id in ('LW579', 'LW614', 'LW611'):
+            source = corpus.source_detail(source_id)
+            if (source and source.get('status') == 'collected' and source.get('chunks')
+                    and source.get('applicability_status') in ('baseline_unchanged', 'watch_scalar_validated')
+                    and (source.get('effective_date') or '') <= today):
+                current.append(source['chunks'][0])
+        seen = {chunk['id'] for chunk in current}
+        return (current + [chunk for chunk in found if chunk['id'] not in seen])[:8]
+    except (OSError, ValueError, KeyError):
+        return []
+
+
+def _strategy(calculation, sources, case=None):
+    reasons, strategies = [], []
+    refs = legal_calculator.policy()['sources']
+    for b in calculation.get('blockers', []):
+        reasons.append({'code': b['code'], 'reason': b.get('message', b.get('reason', '확인 필요')), 'field': b.get('field')})
+    codes = {r['code'] for r in reasons}
+    summary = calculation.get('summary', {})
+    def add(code, title, description, ref_id):
+        strategies.append({'code': code, 'title': title, 'description': description,
+                           'source_refs': [r for r in refs if r['id'] == ref_id]})
+    if summary.get('liquidation_shortfall', 0) > 0:
+        add('LIQUIDATION', '청산가치 부족분 보완',
+            f"현재 현가 기준 부족액은 {summary['liquidation_shortfall']:,}원입니다. 평가액·담보·면제범위 증빙을 대조하고 적법한 추가변제 또는 특별사정에 따른 기간 조정안을 재계산합니다. 자산을 매각해도 대금은 재산에 포함되므로 매각만으로 부족액이 사라지지 않습니다.", 'statute-614')
+    if 'DEBT_LIMIT_EXCEEDED' in codes:
+        add('DEBT_LIMIT', '채무한도 초과 및 절차 선택 검토', '원금·이자·담보 구분과 중복 채권을 부채증명서로 확인합니다. 실제 한도 초과가 유지되면 일반회생·파산 등 다른 절차를 검토합니다. 임의 누락·명목상 이전으로 한도를 맞추지 않습니다.', 'statute-579')
+    if 'NO_POSITIVE_REPAYMENT_CAPACITY' in codes or summary.get('monthly_creditor_capacity', 1) <= 0:
+        add('CAPACITY', '지속 가능한 소득과 지출 증빙 보완', '실수령액·지속근무·실제 부양과 추가지출 근거를 확인해 재산정하고 변제수행 가능성을 검토합니다.', 'statute-614')
+    if any(r['code'] in {'EVIDENCE_REQUIRED', 'EVIDENCE_NOT_VERIFIED', 'LEGAL_INPUT_REASON_REQUIRED', 'INVALID_MONEY', 'BOOLEAN_REQUIRED'} for r in reasons):
+        add('MISSING_INPUT', '미확인 계산 입력·근거 보완', '미확인 금액을 0원으로 처리하지 않습니다. 아래 항목의 해당 증빙 또는 사건별 판단을 추가하면 계산과 전략분석이 다시 진행됩니다.', 'statute-614')
+    matched = {r['id'] for r in (case or {}).get('rule_evaluation', {}).get('matched_rules', [])}
+    precedent_file = store.ROOT / 'data/ax_legal_precedents.json'
+    if precedent_file.exists():
+        precedents = json.loads(precedent_file.read_text(encoding='utf-8'))['precedents']
+        tags = set()
+        if summary.get('liquidation_shortfall', 0) > 0 or matched & {'WF05', 'WF07'}:
+            tags.update({'liquidation_gap', 'preferential_repayment', 'asset_disposal'})
+        if matched & {'WF11', 'WF18'} or (case or {}).get('corrections'):
+            tags.update({'spouse_property', 'correction_insufficient'})
+        for precedent in precedents:
+            if tags.intersection(precedent['issue_tags']):
+                strategies.append({'code': precedent['id'], 'title': precedent['case_number'] + ' 관련 검토',
+                    'description': precedent['holding_summary'], 'actions': precedent['strategy_candidates'],
+                    'required_evidence': precedent['required_evidence'],
+                    'source_refs': [{'id': precedent['id'], 'title': precedent['case_number'], 'url': precedent['source_url']}],
+                    'limits': precedent['excluded_inferences'], 'precedent_outcome': precedent['outcome']})
+    return {'reasons': reasons, 'strategies': strategies, 'source_refs': refs,
+            'retrieved_cases': sources, 'decision': 'review_required' if reasons else 'prepare_documents',
+            'scope': '문서 작성 진행 판단이며 법원 인가 확률이 아님'}
+
+
+def _features(case, calc=None, generated=None):
+    from . import approval_estimator
+    summary = (calc or {}).get('summary', {})
+    features = {'court_id': case.get('court_id'), 'case_type': case.get('case_type', 'personal_rehabilitation'),
+        'rule_version': VERSION, 'document_types': sorted({r['catalog_id'] for r in case.get('requests', []) if r.get('status') not in INACTIVE and r.get('catalog_id')}),
+            'missing_request_count': sum(r.get('status') not in INACTIVE | {'fulfilled'} for r in case.get('requests', [])),
+            'risk_codes': sorted({r.get('code') for r in case.get('ax_pipeline', {}).get('reasons', []) if isinstance(r, dict) and r.get('code')}),
+            'liquidation_shortfall': summary.get('liquidation_shortfall'),
+            'has_positive_capacity': summary.get('monthly_creditor_capacity', 0) > 0}
+    generated = generated or {}
+    fields = generated.get('preview', {}).get('fields', []) or [f for s in generated.get('sections', []) for f in s.get('fields', [])]
+    features['template_id'] = generated.get('template_id', 'draft_package')
+    features['field_presence'] = {f['key']: f.get('value') is not None and f.get('value') != '' for f in fields if f.get('key')}
+    features['field_evidence'] = {f['key']: bool(f.get('source_ids') or f.get('source')) for f in fields if f.get('key')}
+    features['approval_profile'] = approval_estimator.profile(case, calc)
+    return features
+
+
+def learned_patterns(case):
+    """Aggregate evidence-backed local outcomes in the same organization/court only."""
+    try:
+        with store.db() as con:
+            rows = con.execute('SELECT body FROM court_outcomes WHERE org_id=? AND court_id=?',
+                               (case['org_id'], case.get('court_id'))).fetchall()
+    except Exception:
+        return []
+    groups = {}
+    for row in rows:
+        record = json.loads(row['body'])
+        if record.get('synthetic') or not record.get('evidence_verified'):
+            continue
+        for dtype in record.get('features', {}).get('document_types', []):
+            g = groups.setdefault(dtype, {'catalog_id': dtype, 'approved': 0, 'correction': 0, 'rejected': 0})
+            g[record['outcome']] += 1
+        features = record.get('features', {})
+        for key, present in features.get('field_presence', {}).items():
+            if type(present) is not bool:
+                continue
+            identity = (features.get('template_id', 'draft_package'), key, present)
+            g = groups.setdefault(identity, {'template_id': identity[0], 'field_key': key,
+                'present_in_document': present, 'approved': 0, 'correction': 0, 'rejected': 0})
+            g[record['outcome']] += 1
+    return [{**g, 'scope': '관찰된 동시출현 빈도. 법원 결정 사유·인과관계·인가 확률로 사용하지 않음'} for g in groups.values()]
+
+
+def approved_examples(case):
+    """Return bounded verified generation structures, never another client's prose."""
+    try:
+        with store.db() as con:
+            rows = con.execute('SELECT body FROM court_outcomes WHERE org_id=? AND court_id=? ORDER BY rowid DESC LIMIT 100',
+                               (case['org_id'], case.get('court_id'))).fetchall()
+    except Exception:
+        return []
+    examples = []
+    for row in rows:
+        record = json.loads(row['body'])
+        if record.get('outcome') != 'approved' or record.get('synthetic') or not record.get('evidence_verified'):
+            continue
+        examples.append({**{key: record.get(key) for key in ('id', 'document_hash', 'outcome', 'synthetic', 'evidence_verified', 'features')},
+            'org_id': case['org_id'], 'court_id': case['court_id'],
+            'sections': [{'id': section['id']} for section in record.get('generated_snapshot', {}).get('sections', []) if section.get('id')]})
+        if len(examples) == 2:
+            break
+    return examples
+
+
+async def advance(case, document_checks=None, progress=None):
+    from . import intake_workflow
+    if intake_workflow.pending(case):
+        intake_workflow.waiting_state(case)
+        return
+    from .verification import run_local_verification_batched as run_local_verification, run_strategy_verification, extract_calculation_inputs
+    from . import legal_watch
+    policy_state = legal_watch.case_policy_status(case)
+    case['legal_update'] = policy_state
+    def report(stage, index, detail, batch_progress=None):
+        if progress:
+            pipeline = {'version': VERSION, 'contract_version': workflow_contract.VERSION,
+                'stage': stage, 'status': 'running', 'updated_at': store.now(), 'input_revision': case['input_revision'],
+                'legal_update': {**policy_state, 'version': policy_state.get('active_version')},
+                'steps': workflow_contract.project_steps(index, 'running', detail), 'reasons': []}
+            if batch_progress:
+                pipeline['progress'] = {key: batch_progress[key] for key in ('completed', 'total', 'label')}
+            progress(pipeline)
+    def batch_report(stage, index, label):
+        def update(value):
+            report(stage, index, f"{label} · {value['completed']}/{value['total']}묶음 확인",
+                   {**value, 'label': label})
+        return update
+    async def preliminary(reasons, stages, *, calculation=None, check=None, local_failure=None, narrative=None, strategies=None):
+        from . import preliminary_drafting
+        draft = await preliminary_drafting.create(case, reasons, stages, calculation=calculation,
+            ocr_check=check, local_failure=local_failure, narrative=narrative, progress=report if progress else None)
+        draft['legal_dependency_signature'] = policy_state['signature']
+        _human_review(case, draft, strategies=strategies)
+        return draft
+    report('validation', 1, '제출 원문과 요청 기관·계좌·기간·발급옵션을 대조하고 있습니다.')
+    complete, unavailable = await _validate_requests(case, document_checks or [],
+        progress=batch_report('validation', 1, '서류 범위 대조') if progress else None)
+    if not complete:
+        _state(case, 'verification_waiting' if unavailable else 'collecting', 1 if unavailable else 0)
+        return
+    if policy_state.get('pending_changes'):
+        await preliminary([{'code': 'LEGAL_CHANGE_REVIEW', 'stage': 'analysis',
+            'reason': '적용 근거 변경의 의미·시행일·경과규정을 확인해 법률 판단과 문서 내용을 보완해야 합니다.',
+            'changes': policy_state['pending_changes']}], {'ocr', 'analysis'},
+            narrative={'status': 'needs_review', 'verification': {'passed': False}, 'sections': []})
+        return
+    if case.get('court_request_plan', {}).get('coverage') == 'unverified':
+        await preliminary([{'code': 'COURT_RULE_UNVERIFIED', 'stage': 'analysis',
+                'reason': '이 관할의 세부 서류기준 원문이 확보되지 않았습니다. 공통기준에 더해 개별 요구를 확인해야 합니다.'}], {'ocr', 'analysis'},
+            narrative={'status': 'needs_review', 'verification': {'passed': False}, 'sections': []})
+        return
+    sources = _sources(case, verified_only=True)
+    from . import evidence_mapping
+    case['evidence_mapping'] = evidence_mapping.build(case)
+    report('ocr_verification', 2, '서류가 모두 준비되어 추출값을 원문과 다시 대조하고 있습니다.')
+    unreadable = [d for d in case.get('documents', []) if d.get('status') == 'verified'
+                  and d.get('source_type') != 'meeting' and
+                  (not d.get('text', '').strip() or d.get('ocr_summary', {}).get('unreadable_pages'))]
+    if unreadable:
+        await preliminary([{'code': 'OCR_SOURCE_UNREADABLE', 'stage': 'ocr',
+            'reason': '제출 검토는 완료됐지만 일부 원문의 기계 판독이 불완전합니다. 담당자가 판독 결과를 보완해야 합니다.',
+            'document_count': len(unreadable)}], {'ocr', 'analysis'})
+        return
+    items = _verification_items(case, sources)
+    if not sources or not items:
+        await preliminary([{'code': 'NO_STRUCTURED_EVIDENCE', 'stage': 'ocr',
+            'reason': '서류에서 계산에 사용할 원문 연결 추출값이 확보되지 않았습니다.'}], {'ocr', 'analysis'})
+        return
+    signature = store.digest([sources, items, VERSION])
+    check = next((v for v in reversed(case.get('verification_runs', [])) if v.get('signature') == signature and v.get('kind') == 'ocr' and v.get('passed')), None)
+    if check is None:
+        check = await run_local_verification('ocr', {'sources': sources, 'items': items},
+            **({'progress': batch_report('ocr_verification', 2, '서류 원문 대조')} if progress else {}))
+        check.update(id=store.uid('verify'), kind='ocr', signature=signature, created_at=store.now())
+        case.setdefault('verification_runs', []).append(check)
+    if not check.get('passed'):
+        await preliminary([{'code': 'OCR_VERIFICATION', 'stage': 'ocr',
+            'reason': (check.get('error') or {}).get('message') or '추출값과 원문의 일치 검증이 완료되지 않았습니다.',
+            'findings': check.get('findings', [])}], {'ocr', 'analysis'}, check=check,
+            local_failure=check if check.get('status') == 'unavailable' else None)
+        return
+    report('legal_analysis', 3, '구조화 데이터를 저장하고 법률계산과 근거 검색을 병렬로 진행합니다.')
+    source_digest = store.digest([sources, case.get('court_id'), legal_calculator.policy()['policy_hash']])
+    previous = next((x for x in reversed(case.get('structured_data', [])) if x.get('source_hash') == source_digest), None)
+    # An explicit calculation input is an audited human intervention. Reuse only its current revision.
+    manual = next((x for x in reversed(case.get('legal_calculations', []))
+                   if x.get('created_by') not in (None, 'automation') and x.get('input_revision') == case['input_revision'] and not x.get('stale')), None)
+    if manual:
+        inputs = copy.deepcopy(manual['inputs'])
+        mapped = {'status': 'human_input', 'evidence': [], 'inputs': inputs}
+    elif previous:
+        mapped = previous['mapping']; inputs = copy.deepcopy(previous['calculation_inputs'])
+    else:
+        mapped = await extract_calculation_inputs(sources, {'court_id': case.get('court_id'),
+            'as_of': datetime.now(timezone(timedelta(hours=9))).date().isoformat(), 'policy_id': legal_calculator.policy()['id']})
+        inputs = mapped.get('inputs') or {}
+    if mapped.get('semantic_review_nonblocking_for_first_draft'):
+        # Re-parsed typed fields and arithmetic are deterministic. The preceding
+        # OCR semantic review remains visible; do not purchase a duplicate pass.
+        mapped['semantic_verification'] = check
+    if mapped.get('semantic_verification_required') and not mapped.get('semantic_review_nonblocking_for_first_draft') and not mapped.get('semantic_verification', {}).get('passed'):
+        mapping_items = [{'id': 'map:' + e['path'], 'key': e['path'], 'value': e['value'],
+                          'source_ids': [e['source_id']], 'quote': e['quote']}
+                         for e in mapped.get('evidence', []) if e.get('path') and e.get('source_id')]
+        mapping_check = await run_local_verification('ocr', {'sources': sources, 'items': mapping_items},
+            **({'progress': batch_report('ocr_verification', 2, '계산 항목 원문 대조')} if progress else {}))
+        mapped['semantic_verification'] = mapping_check
+        if not mapping_check.get('passed'):
+            case.setdefault('verification_runs', []).append({**mapping_check, 'id': store.uid('verify'), 'kind': 'calculation_mapping', 'created_at': store.now()})
+            await preliminary([{'code': 'CALCULATION_MAPPING_VERIFICATION', 'stage': 'analysis',
+                'reason': '계산 항목에 연결된 원문·단위·의미의 독립 검증이 완료되지 않았습니다.'}], {'analysis'}, check=check,
+                local_failure=mapping_check if mapping_check.get('status') == 'unavailable' else None)
+            return
+    structured = {'id': store.uid('structured'), 'source_hash': source_digest, 'input_revision': case['input_revision'],
+                  'created_at': store.now(), 'facts': items, 'calculation_inputs': inputs, 'mapping': mapped,
+                  'source_versions': [{k: d.get(k) for k in ('id', 'sha256', 'version')} for d in case['documents']],
+                  'verification_id': check['id']}
+    case.setdefault('structured_data', []).append(structured)
+    # Arithmetic and official-source retrieval do not depend on one another.
+    calculation, sources_legal = await asyncio.gather(asyncio.to_thread(legal_calculator.calculate_legal, case, inputs), asyncio.to_thread(_retrieve, case))
+    calculation.update(created_by='automation', created_at=store.now(), stale=False)
+    case.setdefault('legal_calculations', []).append(calculation)
+    strategy = _strategy(calculation, sources_legal, case)
+    strategy['outcome_patterns'] = learned_patterns(case)
+    from . import approval_estimator
+    strategy['approval_estimate'] = await asyncio.to_thread(approval_estimator.estimate, case, calculation)
+    case['approval_estimate'] = strategy['approval_estimate']
+    report('legal_analysis', 3, '계산 결과와 법률 근거를 바탕으로 쟁점·전략을 독립 검증하고 있습니다.')
+    reasoning = await run_strategy_verification(
+        {'court_id': case.get('court_id'), 'case_type': case.get('case_type', 'personal_rehabilitation'),
+         'facts': {i['key']: i['value'] for i in items if isinstance(i.get('value'), (int, float, bool))},
+         'input_revision': case['input_revision']}, calculation, sources_legal or strategy['source_refs'])
+    strategy.update(id=store.uid('strategy'), verification=reasoning, calculation_id=calculation['id'],
+                    structured_data_id=structured['id'], created_at=store.now())
+    case.setdefault('strategy_analyses', []).append(strategy)
+    for finding in reasoning.get('findings', []):
+        strategy['strategies'].append({'code': finding.get('code'), 'title': '추가 전략 검토',
+            'description': finding.get('strategy', ''), 'reason': finding.get('reason', ''),
+            'source_refs': finding.get('source_refs', [])})
+    if not reasoning.get('passed'):
+        strategy['reasons'].append({'code': 'STRATEGY_VERIFICATION', 'reason': '법률 쟁점·전략의 독립 검증이 완료되지 않았습니다.'})
+    if strategy['reasons']:
+        await preliminary([{**reason, 'stage': 'analysis'} for reason in strategy['reasons']], {'analysis'},
+            check=check, calculation=calculation, strategies=strategy['strategies'])
+        return
+    report('drafting', 4, '현재 자료·관련 법령과 확인된 문서 구성 사례를 바탕으로 본문을 작성합니다.')
+    from . import grounded_drafting
+    examples = approved_examples(case)
+    narrative_args = (items, sources_legal, examples, calculation)
+    consultation = case.get('consultation', {})
+    narrative_scope = {'court_id': case.get('court_id'), 'org_id': case.get('org_id'),
+        'consultation': {'text': intake_workflow.record_text(case),
+                         'source_id': 'consultation:notes'} if consultation.get('status') != 'quarantined' else None}
+    narrative_signature = grounded_drafting.signature(*narrative_args, **narrative_scope)
+    narrative = next((entry for entry in reversed(case.get('narrative_runs', []))
+        if entry.get('input_signature') == narrative_signature and entry.get('verification', {}).get('passed')), None)
+    if narrative is None:
+        narrative = await grounded_drafting.compose(*narrative_args, **narrative_scope)
+        narrative.update(id=store.uid('narrative'), created_at=store.now())
+        case.setdefault('narrative_runs', []).append(narrative)
+    if not narrative.get('verification', {}).get('passed') or not narrative.get('sections'):
+        if narrative.get('verification', {}).get('code') == 'STATEMENT_INFORMATION_REQUIRED':
+            request = next((r for r in case.get('requests', [])
+                            if r.get('managed_by') == 'statement_evidence' and r.get('status') not in INACTIVE), None)
+            if request is None:
+                request = {'id': store.uid('req'), 'title': '채무 발생 및 상환 곤란 경위서',
+                    'period': '최초 차입부터 현재까지', 'status': 'requested', 'due_date': None,
+                    'managed_by': 'statement_evidence', 'created_at': store.now(), 'version': 1,
+                    'document_ids': [], 'public_review_note':
+                        '처음 돈을 빌린 시기와 사용처, 채무가 늘어난 과정, 현재 상환이 어려운 이유를 작성해주세요. 기억나지 않는 내용은 추측하지 않아도 됩니다.'}
+                case.setdefault('requests', []).append(request)
+            sync_request_notifications(case)
+        await preliminary([{'code': 'GROUNDED_WRITING_REQUIRED', 'stage': 'draft',
+            'reason': '관련 법령과 현재 증빙을 인용하는 본문 작성·근거 검증이 완료되지 않았습니다.',
+            'details': narrative.get('verification', {})}], {'draft'}, check=check, calculation=calculation,
+            narrative=narrative, local_failure=narrative if narrative.get('status') == 'unavailable' else None)
+        return
+    draft = drafting.generate(case, '자료 완비·원문 대조·법률계산·전략검증 완료')
+    draft.update(calculation_id=calculation['id'], strategy_id=strategy['id'], structured_data_id=structured['id'],
+                 narrative_id=narrative['id'], legal_dependency_signature=policy_state['signature'])
+    draft['outcome_guidance'] = strategy['outcome_patterns']
+    draft['review_priorities'] = [p for p in strategy['outcome_patterns'] if p.get('field_key')
+        and p.get('present_in_document') is False and p.get('correction', 0) + p.get('rejected', 0) > 0]
+    plan = next((s for s in draft['sections'] if s['id'] == 'repayment_plan'), None)
+    if plan:
+        plan['content'] = '현재 증빙에 따른 법률계산 결과입니다. 계산 기준과 근거는 연결된 계산 이력에서 확인할 수 있습니다.'
+        plan['fields'] = [{'key': k, 'label': k, 'value': v, 'status': 'automatically_verified',
+                           'source_ids': ['calculation:' + calculation['id']]} for k, v in calculation['summary'].items()]
+    for written in narrative['sections']:
+        section = next((s for s in draft['sections'] if s['id'] == written['id']), None)
+        if section is None:
+            section = {'id': written['id'], 'title': '법률 쟁점 및 소명 방향', 'fields': []}
+            draft['sections'].insert(-1, section)
+        section['content'] = '\n\n'.join(p['text'] for p in written['paragraphs'])
+        section['grounded_paragraphs'] = copy.deepcopy(written['paragraphs'])
+    draft['narrative_sources'] = copy.deepcopy(narrative.get('source_refs', []))
+    draft['content_hash'] = store.digest({'sections': draft['sections'], 'source_refs': draft['source_refs'], 'input_revision': draft['input_revision']})
+    calculation_source = 'calculation:' + calculation['id']
+    review_sources = sources + [{'id': calculation_source, 'kind': 'code_calculation',
+        'text': store.dumps({'summary': calculation['summary'], 'formulas': calculation.get('formulas', [])})}]
+    review_sources.extend(narrative.get('source_refs', []))
+    consultation = case.get('consultation', {})
+    consultation_text = intake_workflow.record_text(case)
+    if consultation_text and consultation.get('status') != 'quarantined':
+        review_sources.append({'id': 'consultation:notes', 'kind': 'party_statement', 'text': consultation_text})
+    review_sources.append({'id': 'case:workflow', 'kind': 'workflow_record', 'text': store.dumps({
+        'client_name': case.get('client_name'), 'region': case.get('region'), 'court_name': case.get('court_name'),
+        'case_type_label': case.get('case_type_label'), 'case_type': case.get('case_type'),
+        'requests': [{key: request.get(key) for key in ('title', 'period', 'status')} for request in case.get('requests', [])]})})
+    allowed_sources = {source['id'] for source in review_sources}
+    def review_ids(refs):
+        found = []
+        for ref in refs:
+            if ref in allowed_sources:
+                found.append(ref)
+            elif isinstance(ref, str):
+                found.extend(source['id'] for source in sources if ref == 'doc:' + source['id'] or ref.startswith('doc:' + source['id'] + ':'))
+                if ref == 'consultation' or ref.startswith('consultation:'):
+                    found.extend(['consultation:notes'] if 'consultation:notes' in allowed_sources else [])
+        return list(dict.fromkeys(found))
+    draft_items, instructional_sections = [], []
+    for section in draft['sections']:
+        for index, field in enumerate(section.get('fields', [])):
+            if field.get('value') is None:
+                continue
+            refs = review_ids([ref for ref in field.get('source_ids', []) if ref])
+            draft_items.append({'id': f"field:{section['id']}:{index}:{field['key']}", 'key': field['key'],
+                'value': field['value'], 'source_ids': refs or [source['id'] for source in sources]})
+        if section.get('grounded_paragraphs'):
+            for index, paragraph in enumerate(section['grounded_paragraphs']):
+                draft_items.append({'id': f"paragraph:{section['id']}:{index}", 'key': 'grounded_narrative',
+                    'value': paragraph['text'], 'source_ids': paragraph['source_ids']})
+        elif section['id'] in {'application', 'statement', 'attachments'}:
+            refs = ['consultation:notes'] if section['id'] == 'statement' and 'consultation:notes' in allowed_sources else ['case:workflow']
+            draft_items.append({'id': 'section:' + section['id'], 'key': 'draft_section',
+                'value': section['content'], 'source_ids': refs})
+        else:
+            # These strings describe the preparation procedure, not case facts.
+            # Their independently attributed field values are checked above.
+            instructional_sections.append(section['id'])
+    report('document_verification', 5, '작성한 문서의 수치·근거·누락·모순을 다시 확인하고 있습니다.')
+    verification = await run_local_verification('document', {'sources': review_sources, 'items': draft_items,
+        'context': {'prior_outcome_checks': draft['review_priorities'],
+                    'scope': '동일 관할 과거 문서의 누락과 결과를 대조한 검토 우선순위. 법원 결정 사유·인가 확률로 단정하지 말고 현재 원문과 누락을 재검증.'}},
+        **({'progress': batch_report('document_verification', 5, '작성 내용 원문 대조')} if progress else {}))
+    paragraph_findings = [finding for finding in verification.get('findings', [])
+        if str(finding.get('item_id', '')).startswith('paragraph:') and finding.get('status') != 'supported']
+    if (not verification.get('passed') and verification.get('status') == 'needs_review'
+            and not verification.get('error') and paragraph_findings):
+        # One bounded semantic revision; network failures and bad numeric input
+        # are not reasons to regenerate the same private prose repeatedly.
+        prior = {**verification, 'id': store.uid('verify'), 'kind': 'document_before_revision', 'created_at': store.now()}
+        case.setdefault('verification_runs', []).append(prior)
+        report('drafting', 4, '본문 검증에서 지적된 부분을 원문 근거에 맞춰 한 번 보완합니다.')
+        revised = await grounded_drafting.compose(*narrative_args, **narrative_scope, revision_feedback=paragraph_findings)
+        revised.update(id=store.uid('narrative'), created_at=store.now(), revises=narrative['id'])
+        case.setdefault('narrative_runs', []).append(revised)
+        draft['revision_attempts'] = 1
+        if revised.get('verification', {}).get('passed') and revised.get('sections'):
+            for written in revised['sections']:
+                section = next((section for section in draft['sections'] if section['id'] == written['id']), None)
+                if section is None:
+                    continue
+                section['content'] = '\n\n'.join(p['text'] for p in written['paragraphs'])
+                section['grounded_paragraphs'] = copy.deepcopy(written['paragraphs'])
+            draft.update(narrative_id=revised['id'], narrative_sources=copy.deepcopy(revised.get('source_refs', [])))
+            draft['content_hash'] = store.digest({'sections': draft['sections'], 'source_refs': draft['source_refs'], 'input_revision': draft['input_revision']})
+            source_map = {source['id']: source for source in review_sources}
+            source_map.update({source['id']: source for source in revised.get('source_refs', [])})
+            draft_items = [item for item in draft_items if not item['id'].startswith('paragraph:')]
+            draft_items.extend({'id': f"paragraph:{section['id']}:{index}", 'key': 'grounded_narrative',
+                'value': paragraph['text'], 'source_ids': paragraph['source_ids']}
+                for section in draft['sections'] for index, paragraph in enumerate(section.get('grounded_paragraphs', [])))
+            report('document_verification', 5, '보완한 본문과 모든 작성 항목을 다시 대조하고 있습니다.')
+            verification = await run_local_verification('document', {'sources': list(source_map.values()), 'items': draft_items,
+                'context': {'revision_of': prior['id'], 'scope': '수정 문장을 포함한 전체 작성 항목의 사실·금액·인과관계 재검증. 없는 사실을 덧붙이지 않는다.'}},
+                **({'progress': batch_report('document_verification', 5, '보완 내용 원문 대조')} if progress else {}))
+    verification['review_scope'] = {'case_fields': True, 'factual_sections': ['application', 'statement', 'attachments'],
+        'instructional_sections': instructional_sections, 'rendered_pdf_verified': False}
+    verification.update(id=store.uid('verify'), kind='document', created_at=store.now())
+    case.setdefault('verification_runs', []).append(verification)
+    draft['ai_review'] = verification
+    draft['status'] = 'automatically_verified' if verification.get('passed') else 'verification_required'
+    draft.update(stage_status='preliminary', human_review_required=True, submission_ready=False,
+                 scope='담당자 보완·승인이 필요한 1차 검토용 초안 · 법원 제출 승인 전')
+    artifact_issues = []
+    from .auto_documents import prepare, verify_artifacts
+    from .preliminary_drafting import render_case, _unavailable
+    rendering_calculation = None
+    preparation_case = case
+    if verification.get('passed'):
+        calculation['auto_preparation'] = {'passed': True, 'scope': '자동 초안 작성용 계산 검증',
+            'verification_id': verification['id'], 'strategy_id': strategy['id'],
+            **{k: calculation.get(k) for k in ('input_hash', 'policy_hash', 'result_hash')}}
+        rendering_calculation = calculation
+    else:
+        preparation_case, _ = render_case(case, check)
+    report('drafting', 4, '공식 서식 PDF와 편집 가능한 1차 검토 문서를 생성하고 있습니다.')
+    artifacts, artifact_issues = await asyncio.to_thread(prepare, case, draft, rendering_calculation,
+        **({'render_case': preparation_case} if preparation_case is not case else {}))
+    if verification.get('status') == 'unavailable':
+        rendered = _unavailable(verification, 'artifact')
+        for artifact in artifacts:
+            artifact['ai_review'] = copy.deepcopy(rendered)
+    else:
+        report('document_verification', 5, '생성한 공식 서식의 실제 출력과 근거자료를 대조하고 있습니다.')
+        rendered = await verify_artifacts(case, artifacts, rendering_calculation,
+            **({'progress': lambda value: report('document_verification', 5,
+                '생성한 공식 서식의 실제 출력과 근거자료를 대조하고 있습니다.', batch_progress=value)} if progress else {}))
+    draft['rendered_review'] = rendered
+    if not rendered.get('passed'):
+        artifact_issues.append({'code': 'RENDERED_VERIFICATION', 'reason': '생성 서식의 출력값 재검증이 완료되지 않았습니다.'})
+    if not verification.get('passed'):
+        artifact_issues.append({'code': 'DRAFT_VERIFICATION', 'reason': '작성 문서의 원문·계산·누락 검증이 완료되지 않았습니다.'})
+    draft['generation_features'] = _features(case, calculation, draft)
+    for artifact in artifacts:
+        artifact.update(generation_features=_features(case, calculation, artifact),
+                        review_pending=copy.deepcopy(artifact_issues), stage_status='preliminary',
+                        human_review_required=True, submission_ready=False)
+    _human_review(case, draft, artifact_issues, strategy['strategies'], {'review'} if artifact_issues else set())
+
+
+def record_outcome(case, data, user):
+    domain.require(user['role'] == 'lawyer', 'LAWYER_ONLY', '법원 결과 등록은 담당 변호사가 확인합니다.')
+    doc = domain.evidence(case, [data['source_document_id']])[0]
+    bundle = next((d for key in ('drafts', 'court_documents', 'bundles') for d in case.get(key, []) if d['id'] == data['bundle_id']), None)
+    domain.require(bundle is not None, 'BUNDLE_REQUIRED', '법원 결과에 대응하는 생성 문서 버전을 선택하세요.')
+    from . import approval_estimator
+    try:
+        decision_verification = approval_estimator.verify_decision(data, doc)
+    except (ValueError, TypeError) as exc:
+        raise domain.DomainError(str(exc), '결정 유형·결정일과 주문의 정확한 원문 인용을 확인하세요.')
+    fingerprint_data = [bundle['id'], doc.get('sha256'), data['outcome']]
+    if data.get('decision_type'):
+        # Classifying a legacy broad result is allowed. The estimator still
+        # deduplicates court decisions and counts a case only once.
+        fingerprint_data += [data['decision_type'], data.get('decision_date'), data.get('decision_quote')]
+    fingerprint = store.digest(fingerprint_data)
+    domain.require(not any(o.get('fingerprint') == fingerprint for o in case.get('court_outcomes', [])), 'DUPLICATE_OUTCOME', '이미 등록된 문서 버전의 결과입니다.')
+    calc = next((c for c in case.get('legal_calculations', []) if c['id'] == bundle.get('calculation_id')), None)
+    row = {**data, 'id': store.uid('outcome'), 'created_at': store.now(), 'recorded_by': user['id'],
+           'fingerprint': fingerprint, 'evidence_verified': True, 'synthetic': bool(case.get('synthetic')),
+           'decision_verified': decision_verification['verified'], 'decision_verification': decision_verification,
+           'features': copy.deepcopy(bundle.get('generation_features', {})),
+           'feature_status': 'generation_snapshot' if bundle.get('generation_features') else 'historical_features_unavailable',
+           'document_hash': bundle.get('content_hash') or bundle.get('snapshot_hash'),
+           'source_hash': doc.get('sha256'), 'source_version': doc.get('version'), 'generated_snapshot': copy.deepcopy(bundle)}
+    case.setdefault('court_outcomes', []).append(row)
+    if data['outcome'] != 'approved':
+        domain.invalidate(case, '법원 보정·반려 결과 반영')
+        _state(case, 'lawyer_review', 3, [{'code': 'COURT_' + data['outcome'].upper(), 'reason': data['reason']}],
+               [{'title': '법원 요구별 추가자료 및 수정안', 'description': '보정 원문의 요구를 서류 요청에 연결하면 새 자료 제출 후 원문 검증·계산·전략·문서 작성이 재실행됩니다.'}])
+    return row

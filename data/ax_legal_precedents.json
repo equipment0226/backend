@@ -1,0 +1,72 @@
+{
+  "version": "2026-10-03.1",
+  "scope": "personal_rehabilitation",
+  "use_policy": "공식 판결은 쟁점 검토와 증빙 수집·변제계획 보완의 근거로 사용한다. 파기환송은 인가·면책 성공 사례가 아니며 성공률 학습 표본으로 분류하지 않는다. 판례 당시 변제기간 등 구법 수치는 현재 사건에 이식하지 않는다.",
+  "precedents": [
+    {
+      "id": "AXP01",
+      "case_number": "2010마1179",
+      "court": "대법원",
+      "decided_at": "2010-11-30",
+      "source_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=150036",
+      "text_path": "data/legal_research/AXP01.txt",
+      "outcome": "remanded",
+      "not_an_approval_sample": true,
+      "issue_tags": ["preferential_repayment", "asset_disposal", "liquidation_gap", "avoidance"],
+      "holding_summary": "신청 전 특정 채권자 편파변제·담보제공 사실만으로 채권자 일반 이익에 반한다고 단정할 수 없다. 부인권 대상 재산 회복과 그 청산가치 이상을 투입하는 계획 수정 가능성을 심리한다.",
+      "required_evidence": ["처분계약·가격 및 담보상환 증빙", "처분대금 입출금과 최종 사용처", "회복 대상 재산 가액", "청산가치를 반영한 수정 변제계획"],
+      "strategy_candidates": ["누락되거나 회복 가능한 재산을 청산가치에 반영하고 현재가치 부족액을 계산한다.", "공정가액 매각 후 잔여대금 전액의 사용·변제재원 투입 가능성을 검토한다. 매각만으로 재산이 사라진 것으로 처리하지 않는다.", "소득과 투입 가능한 재산을 늘린 수정 계획의 수행가능성을 다시 검증한다."],
+      "human_review_triggers": ["부인권 대상 여부", "매각대금 사용처 미소명", "수정 후에도 청산가치 부족"],
+      "excluded_inferences": ["편파변제이면 항상 기각", "자산 매각은 언제나 승인 해결책", "당시 5년 변제 설명을 현행 원칙으로 적용"]
+    },
+    {
+      "id": "AXP02",
+      "case_number": "2015마657",
+      "court": "대법원",
+      "decided_at": "2015-09-01",
+      "source_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=179701",
+      "text_path": "data/legal_research/AXP02.txt",
+      "outcome": "remanded",
+      "not_an_approval_sample": true,
+      "issue_tags": ["correction_insufficient", "spouse_property", "procedural_dismissal"],
+      "holding_summary": "보정요구에 응했으나 내용이 미흡한 경우 추가 보정·심문 등 시정기회 없이 기각할 수 없다. 배우자 재산 반영에 이의를 제기하며 보정에 응한 사정만으로 불성실 신청이나 허위서류 제출이라고 단정할 수 없다.",
+      "required_evidence": ["보정명령 원문과 송달일", "항목별 제출·미제출 사유", "배우자 재산 취득자금과 채무자 기여내역", "이전 보정답변과 추가 증빙"],
+      "strategy_candidates": ["보정명령 각 항목과 제출 증빙을 연결하고 미충족 항목만 재요청한다.", "배우자 재산을 자동으로 절반 합산하지 말고 명의신탁·기여·부인권 관련 사정을 개별 검토한다.", "다투는 항목은 근거 있는 의견과 추가 증빙을 함께 준비한다."],
+      "human_review_triggers": ["배우자 재산 귀속 다툼", "법원 보정명령 내용에 대한 이의", "실제 소송상 대응 기한"],
+      "excluded_inferences": ["보정명령을 무시해도 됨", "배우자 재산은 항상 제외", "이 판례만으로 인가 가능"]
+    },
+    {
+      "id": "AXP03",
+      "case_number": "2014마1255",
+      "court": "대법원",
+      "decided_at": "2014-10-01",
+      "source_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=177702",
+      "text_path": "data/legal_research/AXP03.txt",
+      "outcome": "remanded",
+      "not_an_approval_sample": true,
+      "issue_tags": ["performance_risk", "arrears", "income_change", "post_approval_termination"],
+      "holding_summary": "인가 후 폐지는 수행불능이 명백한지 종합심리해야 한다. 일부 연체나 유동성만으로 이를 단정하지 않고 이행정도·원인·현재 수입지출·예상소득·사정변경·이행 가능한 변경안을 검토한다.",
+      "required_evidence": ["변제 수행 납입내역", "미납원인과 소득변동 자료", "현재 수입·필수지출 증빙", "예상소득과 실현 가능한 변경계획"],
+      "strategy_candidates": ["연체액과 납입 누계를 대조하고 현재 현금흐름으로 부족액을 계산한다.", "일시납 가능액과 이후 월 변제 가능액을 분리해 변경계획을 검토한다."],
+      "human_review_triggers": ["인가 후 폐지·항고", "변제계획 변경 필요"],
+      "excluded_inferences": ["신규 신청 인가요건을 대신하는 판례", "청산가치 이상 납부하면 잔액은 자동 면책", "연체 횟수만으로 자동 폐지"]
+    },
+    {
+      "id": "AXP04",
+      "case_number": "2018마7459",
+      "court": "대법원",
+      "decided_at": "2019-08-20",
+      "source_url": "https://www.law.go.kr/LSW/precInfoP.do?precSeq=225433",
+      "text_path": "data/legal_research/AXP04.txt",
+      "outcome": "discharge_affirmed",
+      "not_an_approval_sample": true,
+      "positive_outcome_scope": "확정된 변경 변제계획 완납 후 면책결정 유지. 신규 신청 인가 또는 제출서류 양식의 성공 표본이 아님.",
+      "issue_tags": ["discharge", "completed_payment", "final_amended_plan", "creditor_appeal"],
+      "holding_summary": "변경 인가결정이 확정되고 변경계획에 따른 변제를 완료한 사안에서 면책결정에 대한 채권자의 재항고를 기각했다. 확정된 인가결정의 위법성은 이후 면책재판에서 다시 다툴 수 없지만 별도 면책불허가 사유는 확인해야 한다.",
+      "required_evidence": ["변경 변제계획 인가결정 및 확정일", "변제계획 전체 납입·완납 증빙", "면책불허가 사유 관련 의무이행 자료"],
+      "strategy_candidates": ["최종 확정된 변경계획의 금액·회차와 실제 납입을 대조하고 완납을 증명한다.", "인가결정의 확정 여부와 별도 면책불허가 사유를 구분하여 검토한다."],
+      "human_review_triggers": ["면책에 대한 항고·재항고", "확정 여부 또는 완납 여부 다툼", "별도 면책불허가 사유"],
+      "excluded_inferences": ["신규 신청 자동 인가 사례", "인가된 문서 원본·성공 문서 서식이 공개되었다는 가정", "과거 46개월·60개월 수치를 현행 기준으로 재사용", "완납하면 모든 예외 없이 자동 면책"]
+    }
+  ]
+}
