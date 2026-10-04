@@ -16,6 +16,25 @@
 
 원문을 읽는 AI는 내부 환경에서 사용합니다. 외부 AI의 심화 검토에는 고객 식별정보를 제외한 사건 정보만 전달합니다. 서버를 옮길 때도 이 구분을 유지해야 합니다.
 
+## Windows에서 내부 AI의 GPU 실행 준비
+
+현재 PC는 Radeon 840M 내장 GPU를 사용합니다. 공식 Ollama 0.35.1 실행기로 실제 GPU 추론을 확인했으며, 기존 설치와 구분해 `.local/ollama-gpu`에 보관합니다. 모델은 기존 로컬 파일을 사용하고, 사건 서버 연결 주소는 `http://127.0.0.1:11434`로 유지합니다. 모델 파일과 실행기, 사건 데이터는 Git에 올리지 않습니다.
+
+이 PC에서 확인한 설정은 GPU 16개 층, 원문 문맥 8,192토큰, 요청 동시 처리 1개입니다. CPU가 처리할 가중치는 일반 메모리에 두고 이전 프롬프트 저장 공간은 256MiB로 제한합니다. GPU 메모리가 부족했던 원인을 해소하기 위한 이 PC의 설정이며, 다른 장비에서도 그대로 최적이라고 보장하지는 않습니다.
+
+기동과 확인은 다음 도구로 수행합니다.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/start-ollama-gpu.ps1
+python scripts/check_local_gpu.py --output reports/local-gpu-check.json
+```
+
+기동 도구는 새 실행기를 숨김 창으로 띄우고, 합성 금액 추출과 실제 GPU 메모리 사용을 확인합니다. 이미 준비된 같은 모델은 재사용합니다. 같은 포트에 CPU 실행기가 있다면 임의 종료하거나 성공으로 표시하지 않고 교체가 필요하다고 알립니다. 분석 중인 서버를 함부로 종료하면 진행 중인 요청이 실패할 수 있으므로 먼저 상태를 확인해야 합니다.
+
+통합 작업 폴더에서는 `.local/ollama-gpu/config.json`에 `enabled`, `executable`, `gpu_layers`를 보관합니다. 실행기 경로는 작업 폴더 기준으로 지정할 수 있습니다. 이 설정을 켜면 `start-local.cmd` 실행 시 내부 AI의 GPU 준비를 확인한 다음 사건 서버와 두 화면을 시작합니다. 분리된 backend 저장소에서도 `python scripts/dev.py`로 같은 준비 과정을 거쳐 사건 서버만 실행할 수 있습니다. 또는 위 기동 명령을 먼저 실행하고 해당 저장소 README의 서버 실행 안내를 따릅니다. 포트를 바꿀 때는 사건 서버의 연결 설정도 함께 맞춰야 합니다.
+
+설정 근거는 [Ollama의 Vulkan 지원 안내](https://docs.ollama.com/gpu), [Ollama의 실행 옵션 전달](https://github.com/ollama/ollama/blob/v0.35.1/llm/llama_server.go), [llama.cpp의 메모리·GPU 옵션](https://github.com/ggml-org/llama.cpp/blob/b11232/common/arg.cpp)입니다. GPU 사용 확인은 법률 판단의 정확성이나 전체 서류 작성 완료를 검증하는 시험과 구분합니다.
+
 ## 저장해야 하는 데이터
 
 사건 DB에는 상담, 요청 자료, 확인한 사실, 계산, 검토와 승인 기록이 들어갑니다. 업로드 원본과 작성 문서는 별도 파일로 보관하며 해당 사건과 연결합니다. DB만 남기고 파일을 잃으면 원문 대조와 작성 문서 조회가 끊길 수 있으므로 함께 보관해야 합니다.
