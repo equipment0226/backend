@@ -11,8 +11,11 @@ import hashlib
 import json
 import re
 
-VERSION = 'document-facts-v4-policy-identities'
+VERSION = 'document-facts-v5-form-contact-evidence'
 LABELS = {
+    'creditor_phone': '채권자 전화번호', 'creditor_fax': '채권자 팩스번호',
+    'creditor_as_of': '채권 잔액 기준일', 'creditor_content': '채권 내용',
+    'creditor_principal_basis': '채권 원금 산정근거', 'creditor_interest_basis': '채권 이자 산정근거',
     'income_gross': '공제 전 급여', 'income_net': '실수령 소득', 'income_deductions': '급여 공제 합계',
     'income_deduction': '급여 공제 항목', 'income_period': '소득 확인기간',
     'creditor_principal': '채권자별 원금', 'creditor_interest': '채권자별 이자', 'creditor_total': '채권자별 채무 합계',
@@ -478,6 +481,11 @@ def extract(sources):
                 ('creditor_name', r'채권자\s*[:：]\s*([^\n/;|]+)'),
                 ('creditor_cause', r'(?:차입\s*원인|대출\s*목적|차입금\s*용도|차용\s*용도)\s*[:：]\s*([^\n/;|]+)'),
                 ('creditor_address', r'채권자\s*(?:주소|소재지)\s*[:：]\s*([^\n/;|]+)'),
+                ('creditor_phone', r'채권자\s*(?:전화(?:번호)?|연락처)\s*[:：]\s*([\d()+ -]+)'),
+                ('creditor_fax', r'채권자\s*(?:팩스(?:번호)?|FAX)\s*[:：]\s*([\d()+ -]+)'),
+                ('creditor_content', r'^\s*채권\s*(?:의\s*)?내용\s*[:：]\s*([^\n;|]+)'),
+                ('creditor_principal_basis', r'^\s*(?:채권\s*)?원금\s*산정\s*근거\s*[:：]\s*([^\n;|]+)'),
+                ('creditor_interest_basis', r'^\s*(?:채권\s*)?이자\s*산정\s*근거\s*[:：]\s*([^\n;|]+)'),
                 ('institution', r'(?:금융기관|은행명)\s*[:：]\s*([^\n/;|]+)'),
                 ('insurance_name', r'보험\s*(?:회사|회사명)\s*[:：]\s*([^\n/;|]+)'),
                 ('insurance_policy', r'(?:보험\s*)?증권\s*번호\s*[:：]\s*([A-Za-z0-9*＊Xx●•-]{3,})'),
@@ -496,6 +504,20 @@ def extract(sources):
                             value = value[postcode.end():].strip()
                     if value:
                         add(key, value, line.start(), line.end())
+            # A balance date is not the issuance/query date. Keep the original
+            # spelling here so the mapper can reject incomplete/invalid dates
+            # instead of turning an unspecified day into the first of a month.
+            balance_date = re.search(r'(?:^|[/;|])\s*(?:(?:채권(?:현재액)?|채무\s*잔액|채무|잔액)\s*)?(?:산정\s*)?기준일\s*[:：]\s*(' + DATE + r')(?=\s*(?:[/;|]|$))', segment)
+            if balance_date and meta.get('institution') and re.search(r'부채\s*증명|채무\s*확인', text):
+                add('creditor_as_of', balance_date.group(1), line.start(), line.end())
+            # Some certificates use a two-column "현재액 산정 항목 / 내역"
+            # table instead of colon labels. A nearby explicit header is
+            # required; an ordinary loan repayment row is never a formula.
+            basis_header = re.search(r'현재액\s*산정\s*항목\s+내역', text[max(0, line.start()-500):line.start()])
+            basis = re.fullmatch(r'\s*(원금|미지급\s*이자)\s{2,}([^\n]+)', segment)
+            if basis_header and basis and meta.get('institution') and not UNKNOWN.search(basis.group(2)):
+                key = 'creditor_principal_basis' if basis.group(1) == '원금' else 'creditor_interest_basis'
+                add(key, basis.group(2).strip(), line.start(), line.end())
         for employment in employment_observations(text):
             add('employment_type', employment['value'], employment['start'], employment['end'], unit='category')
         salary_title = re.search(r'급여\s*명세서|급료\s*명세서|근로\s*소득\s*원천\s*징수', text[:300])

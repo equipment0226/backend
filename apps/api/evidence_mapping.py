@@ -14,12 +14,23 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from . import document_facts, human_review_evidence, legal_calculator, store
 
-VERSION = 'typed-evidence-mapping-v7-current-source-scope'
+VERSION = 'typed-evidence-mapping-v9-normal-term-draft-default'
 DIRECT = {'client_name', 'resident_id', 'address', 'phone', 'employer', 'employer_address',
           'employer_phone', 'employment_period', 'employment_start', 'job_title', 'housing_type',
           'housing_deposit', 'housing_cost', 'household_size', 'dependent_count', 'employment_type',
           'living_expenses', 'insurance_surrender', 'insurance_name', 'insurance_policy',
-          'tax_arrears', 'prior_proceedings', 'income_seizure'}
+          'tax_arrears', 'prior_proceedings', 'income_seizure', 'education', 'marriage_history', 'housing_start'}
+
+
+def _complete_date(value):
+    """A form's day blank requires an actual day, never a period default."""
+    match = re.fullmatch(r'\s*((?:19|20)\d{2})\s*(?:[-./]|년)\s*(\d{1,2})\s*(?:[-./]|월)\s*(\d{1,2})\s*일?\s*', str(value))
+    if not match:
+        return None
+    try:
+        return date(*map(int, match.groups()))
+    except ValueError:
+        return None
 
 
 def sources(case):
@@ -148,6 +159,21 @@ def build(case):
             continue
         value, rows = unique(key)
         put(key, value, rows)
+
+    def date_parts(prefix, value, rows):
+        observed = _complete_date(value)
+        if observed:
+            for suffix in ('year', 'month', 'day'):
+                put(prefix + '_' + suffix, getattr(observed, suffix), rows, 'explicit_full_date_' + suffix)
+
+    date_parts('housing_start', values.get('housing_start'), by_key['housing_start'])
+    # Education is an attributed history, not an inferred age/year calculation.
+    # Retain the complete statement even when it cannot be split unambiguously.
+    education = re.fullmatch(r'\s*(' + document_facts.DATE + r')\s+(.+?학교)\s+(졸업|중퇴)\s*', str(values.get('education', '')))
+    if education and _complete_date(education.group(1)):
+        date_parts('education', education.group(1), by_key['education'])
+        put('education_school', education.group(2), by_key['education'], 'explicit_education_school')
+        put('education_completion', education.group(3), by_key['education'], 'explicit_education_completion')
     titles = by_key['job_title']
     choices = sorted({row['value'] for row in titles}, key=len)
     employers = {row.get('employer') for row in titles}
@@ -174,6 +200,17 @@ def build(case):
         start,rows=unique('employment_start',active_starts)
         if start:
             put('employment_period',str(start)+' ~ 현재',rows,'start_date_plus_explicit_current_employment')
+    # D5105's first career row says "현재까지". A historical hire date alone
+    # cannot fill that row; require an explicit current-employment statement
+    # from the same original source and a compatible observed employer.
+    active_starts = [row for row in by_key['employment_start'] if any(
+        job['source_id'] == row['source_id'] and job['value'] == '급여소득자'
+        and re.search(r'현재\s*(?:재직|근무)|재직\s*중|재직(?:하고)?\s*있', job['quote'])
+        for job in by_key['employment_type']) and (
+            not row.get('employer') or row.get('employer') == values.get('employer'))]
+    start, rows = unique('current_employment_start', active_starts)
+    if start is not None:
+        date_parts('employment_start', start, rows)
     tenant, rows = unique('housing_tenant')
     put('tenant_name', tenant, rows)
 
@@ -262,8 +299,17 @@ def build(case):
         row = {'id': 'creditor-' + store.digest([name, loan, documents[0][0]])[:12],
                'name': name, 'kind': None, 'principal': None, 'interest': None,
                'evidence_ids': sorted({r['document_id'] for r in rows})}
-        for suffix, target in [('principal', 'principal'), ('interest', 'interest'), ('cause', 'cause'), ('address', 'address')]:
+        for suffix, target in [('principal', 'principal'), ('interest', 'interest'), ('cause', 'cause'), ('address', 'address'),
+                               ('phone', 'phone'), ('fax', 'fax'), ('content', 'content'),
+                               ('principal_basis', 'basis'), ('interest_basis', 'interest_basis')]:
             row[target], _ = unique('creditor_' + suffix, [r for r in rows if r['key'] == 'creditor_' + suffix])
+        dated = [r for r in rows if r['key'] == 'creditor_as_of']
+        as_of, date_rows = unique('creditor_as_of', dated)
+        balance_date = _complete_date(as_of)
+        money_rows = [r for r in rows if r['key'] in {'creditor_principal', 'creditor_interest'}]
+        if balance_date and money_rows and all(r.get('as_of_kind') == 'balance_date'
+                and r.get('as_of') == balance_date.isoformat() for r in money_rows):
+            row['as_of'] = balance_date.isoformat()
         kind, _ = unique('creditor_kind', [r for r in rows if r['key'] == 'creditor_kind'])
         row['kind'] = {'무담보': 'unsecured', '담보': 'secured', '우선권': 'priority'}.get(kind)
         index = len(creditors)
@@ -273,11 +319,27 @@ def build(case):
             if key not in {'id', 'evidence_ids'}:
                 put(f'creditors.{index}.{key}', value, rows, 'document_creditor_binding')
         put(f'creditors.{index}.number', index + 1, rows, 'list_order')
-        put(f'creditors.{index}.basis', '원문에 기재된 원금·이자 및 기준일 대조', rows, 'evidence_description')
+        # Quote the supporting amount/date, not a generic claim that it has
+        # been reconciled. An absent date or explicit formula stays absent.
+        if row.get('as_of'):
+            for kind, target in [('principal', 'basis'), ('interest', 'interest_basis')]:
+                operands = [r for r in money_rows if r['key'] == 'creditor_' + kind]
+                explicit_basis = [r for r in rows if r['key'] == 'creditor_' + kind + '_basis']
+                if row.get(target) is None and not explicit_basis and type(row.get(kind)) is int:
+                    label = '원금' if kind == 'principal' else '이자'
+                    row[target] = f"{row['as_of']} 기준 원문 {label} {row[kind]:,}원"
+                    put(f'creditors.{index}.{target}', row[target],
+                        operands + date_rows, 'observed_amount_and_explicit_balance_date')
     unresolved_creditors=any(error['code'] in {'LOAN_IDENTITY_REQUIRED','CONFLICTING_TYPED_VALUES',
                             'HUMAN_REVIEW_REJECTED','HUMAN_REVIEW_CONFLICT'} and
                             error.get('key','').startswith('creditor') for error in errors)
     if creditors and not unresolved_creditors:
+        # The form has one header date for all claims. Different dates require
+        # review, never the newest/first creditor's date silently copied across.
+        as_of_values = {row.get('as_of') for row in creditors}
+        if len(as_of_values) == 1 and None not in as_of_values:
+            date_parts('creditors_as_of', next(iter(as_of_values)),
+                       [r for r in creditor_fact_rows if r['key'] == 'creditor_as_of'])
         for field, target in [('principal', 'principal_total'), ('interest', 'interest_total')]:
             if all(type(row[field]) is int for row in creditors):
                 put(target, sum(row[field] for row in creditors), creditor_fact_rows, 'distinct_creditors_sum')
@@ -352,6 +414,9 @@ def build(case):
     rules = legal_calculator.policy()
     inputs = {key: None for key in ('recognized_household_size', 'additional_living_cost', 'base_living_cost',
         'months', 'prepaid_months', 'monthly_trustee_fee', 'preapproval_costs_paid', 'objection', 'annual_discount_rate', 'living_cost_mode')}
+    # Start the first plan at the policy's normal term. This is a draft default,
+    # not a fact extracted from the customer or an approved court schedule.
+    inputs['months'] = rules['normal_max_months']
     period_rows = by_key['income_period']
     period = ' / '.join(dict.fromkeys(row['value'] for row in period_rows)) or next((
         f"{row['period_start']}~{row['period_end']}" for row in income_rows if row.get('period_start') and row.get('period_end')), None)
@@ -431,7 +496,7 @@ def form_facts(packet, template_id):
 
 
 def mapping(sources_input, context=None):
-    """Calculator interface using the same parser; no model call or legal defaults."""
+    """Typed calculator inputs plus the explicit normal-term draft default."""
     case = {'documents': [{'id': row.get('document_id') or row['id'], 'status': 'verified', 'text': row['text'],
         'version': row.get('version', 1)} for row in sources_input], **(context or {})}
     packet = build(case)

@@ -21,7 +21,7 @@ import pymupdf
 ROOT=Path(__file__).resolve().parents[2]
 DATA=ROOT/'data'/'court_forms'
 SOURCES=json.loads((DATA/'sources.json').read_text(encoding='utf-8'))
-RENDERER_VERSION='court-evidence-fields-v5-asset-details'
+RENDERER_VERSION='court-evidence-fields-v7-provisional-calculation-drafts'
 # Original national forms use a subset of 휴먼명조 and Type3 glyphs. A subset
 # cannot render arbitrary new names. Prefer a locally licensed full face;
 # HMFMOLD.TTF is 휴먼옛체 (Yet R), not 휴먼명조, and is intentionally excluded.
@@ -47,6 +47,7 @@ def _definitions():
         f('lawyer_phone','대리인 전화',0,[185,322,522,342]),f('lawyer_email','대리인 이메일',0,[185,346,314,362]),
         f('months','변제기간(개월)',0,[370,778,400,796],True,10),f('monthly_deposit','월 변제예정액',0,[453,778,488,796],True,8),
         f('refund_bank','환급은행',1,[427,181,514,198]),f('refund_account','환급계좌',1,[68,201,179,218]),
+        f('client_name','신청인 기명(서명·날인 별도)',1,[239,683,306,700]),
         f('court_prefix','제출법원(법원 앞 부분)',1,[350,718,471,737],True,12)]},
       'D5101':{'title':'재산목록','pages':[0], 'fields':[
         f('cash','현금',0,[157,202,218,221]),f('bank_balance','예금 총액',0,[157,225,218,264],True),
@@ -73,7 +74,19 @@ def _definitions():
         f('recognized_living_cost','예상 생계비',0,[477,479,522,497],True,7),
         f('additional_cost_reason','추가생계비 사유',1,[63,487,523,766],False,11)]},
       'D5105':{'title':'진술서','pages':[0,1,2], 'fields':[
+        f('education_year','최종 학력 연도',0,[91,201,126,218]),
+        f('education_month','최종 학력 월',0,[140,201,159,218]),
+        f('education_day','최종 학력 일',0,[173,201,192,218]),
+        f('education_school','최종 학교명(학교 앞 부분)',0,[207,201,323,218]),
+        f('education_completion','원문 졸업·중퇴 기재',0,[432,201,520,218]),
+        f('employment_start_year','현재 직장 입사 연도',0,[138,247,177,264]),
+        f('employment_start_month','현재 직장 입사 월',0,[191,247,210,264]),
+        f('employment_start_day','현재 직장 입사 일',0,[224,247,243,264]),
         f('employer','최근 직장명',0,[247,269,334,287]),f('job_title','최근 직위',0,[416,269,518,287]),
+        f('marriage_history','원문 혼인·이혼 이력',0,[358,443,522,499]),
+        f('housing_start_year','거주 시작 연도',0,[194,525,223,542]),
+        f('housing_start_month','거주 시작 월',0,[237,525,256,542]),
+        f('housing_start_day','거주 시작 일',0,[270,525,289,542]),
         f('housing_deposit','임차보증금',0,[321,604,399,622]),f('housing_cost','월 임대료',0,[314,623,359,641],False,8),
         f('tenant_name','임차인 성명',0,[326,641,415,659]),
         f('statement','부채 경위 및 신청에 이른 사정',1,[62,470,528,745],True,11),
@@ -116,8 +129,12 @@ def _definitions():
         f('income_start_year','소득 확인 시작 연도',0,[135,422,175,443]),
         f('income_start_month','소득 확인 시작 월',0,[193,422,220,443]),
         f('income_start_day','소득 확인 시작 일',0,[237,422,258,443]),
-        f('income_manwon','월평균 소득(만원)',0,[365,421,421,443],True)]},
+        f('income_manwon','월평균 소득(만원)',0,[365,421,421,443],True),
+        f('employer','발급 직장명(대표자 확인·서명 별도)',0,[336,608,520,628])]},
       'D5106':{'title':'개인회생채권자목록','pages':[0,1], 'fields':[
+        f('creditors_as_of_year','전체 채권 잔액 기준 연도',0,[176,156,194,172],False,7),
+        f('creditors_as_of_month','전체 채권 잔액 기준 월',0,[201,156,214,172],False,7),
+        f('creditors_as_of_day','전체 채권 잔액 기준 일',0,[219.7,156,229.6,172],False,7),
         f('total_debt','채권현재액 총합계',0,[152,181,216,203],True,8),f('principal_total','원금합계',0,[152,209,216,222],True,8),
         f('interest_total','이자합계',0,[152,226,216,240],True,8),f('secured_debt','담보부채권액 합계',0,[295,181,359,240]),
         f('unsecured_debt','무담보채권액 합계',0,[438,181,520,240],True,8)]},
@@ -131,11 +148,15 @@ def _definitions():
           f(f'creditors.{i}.name',f'채권자{i+1} 명칭',0,[90,y+3,124,y+106],i==0,8),
           f(f'creditors.{i}.cause',f'채권자{i+1} 발생원인',0,[130,y+2,281,y+30]),
           f(f'creditors.{i}.address',f'채권자{i+1} 주소',0,[314,y+2,516,y+15],False,7),
+          f(f'creditors.{i}.phone',f'채권자{i+1} 전화',0,[314,y+16,398,y+29],False,7),
+          f(f'creditors.{i}.fax',f'채권자{i+1} 팩스',0,[428,y+16,516,y+29],False,7),
+          f(f'creditors.{i}.content',f'채권자{i+1} 채권 내용',0,[130,y+33,432,y+63],False,8),
           f(f'creditors.{i}.principal',f'채권자{i+1} 원금',0,[131,y+67,207,y+85],i==0,8),
           f(f'creditors.{i}.interest',f'채권자{i+1} 이자',0,[131,y+90,207,y+105],False,8),
           # The dotted separator lies between principal and interest rows. Keep
           # this single-line basis wholly inside the upper row, not centred on it.
-          f(f'creditors.{i}.basis',f'채권자{i+1} 산정근거',0,[214,y+66,514,y+84],False,8)]
+          f(f'creditors.{i}.basis',f'채권자{i+1} 원금 산정근거',0,[214,y+66,514,y+84],False,8),
+          f(f'creditors.{i}.interest_basis',f'채권자{i+1} 이자 산정근거',0,[214,y+90,514,y+105],False,8)]
     for i in range(5):
         y=420+i*34
         defs['D5110']['fields'] += [f(f'allocations.{i}.number',f'배분{i+1} 채권번호',6,[60,y,80,y+27],False,8),
@@ -146,6 +167,18 @@ def _definitions():
     for key,value in defs.items():
         source=next(s for s in SOURCES if s['id']==key+'-pdf')
         value.update(id=key,format='pdf_overlay',source=source,court_ids=value.get('court_ids',[]),layout='original_pdf_preserved',version=source['sha256'][:16],required_manual_actions=['서명·날인','법률상 진술 및 동의 체크','접수일 현재 서식·관할·추가 요구 확인'])
+        # These are named areas requiring original-form review, not an invented
+        # denominator of every blank in a scanned/printed source PDF.
+        value['unmapped_original_sections'] = {
+            'D5100':['문자수신 신청 및 동의', '접수·납부 일정', '대리인·환급 지시 확인'],
+            'D5101':['개별 부동산·자동차 상세', '그 밖의 재산·처분 내역', '면제재산 선택 및 소명'],
+            'D5103':['수입 종류 선택', '개별 지출·부양가족 상세', '추가 생계비 인정 판단'],
+            'D5105':['과거 경력별 기간·업종', '혼인·이혼 원문 이력의 행별 대조', '거주 형태 선택·소유자 관계', '부채 발생 사유 선택', '과거 절차의 법률상 해당 여부'],
+            'D5110':['변제 방법 및 권리관계 선택', '특별한 변제·미확정 채권 처리', '법원 납입 일정 확정'],
+            'D5115':['증명서 발급일', '대표자 성명·서명·날인'],
+            'D5106':['목록 작성일', '담보·다툼 등 부속서류 선택·상세'],
+            'BUSAN-ATTACHMENTS':['제출자료별 체크 및 법원 추가 요구'],
+        }[key]
         for field in value['fields']:
             field['read_only']=field['key'] in CALC_KEYS or field['key'].startswith('allocations.') or field['key'].endswith('.number')
             field['source_kind']='approved_calculation' if field['read_only'] else 'evidence_or_staff'
@@ -234,7 +267,8 @@ def _values(case,fields,calculation):
     for key,value in explicit.items():
         if key in CALC_KEYS or key in confirmed or key.startswith('allocations.'):continue
         values[key]=value;origins[key]={'type':'staff_input','status':'review_required'}
-    # A candidate cannot supply legally computed columns; only a pinned approved run.
+    # A candidate cannot supply computed columns. Approved/automatic runs and
+    # separately reproduced assumption-based drafts have distinct gates below.
     for key in CALC_KEYS:values.pop(key,None)
     if not calculation and packet['facts']:
         for proposal in packet['proposed_decisions']:
@@ -243,8 +277,17 @@ def _values(case,fields,calculation):
                 origins[proposal['key']]={'type':'proposed_legal_input','status':'review_required',
                     'reason':proposal['reason'],'source_ids':proposal['source_ids']}
     if calculation:
-        manual = calculation.get('status') == 'approved' and bool(calculation.get('approval'))
-        automatic = calculation.get('status') == 'ready_for_review' and calculation.get('auto_preparation', {}).get('passed') is True
+        provisional_requested = calculation.get('status') == 'provisional' or bool(calculation.get('provisional'))
+        provisional = False
+        if provisional_requested:
+            from .legal_calculator import validate_provisional
+            provisional = (calculation.get('status') == 'provisional'
+                and calculation.get('provisional') is True and calculation.get('approval') is None
+                and calculation.get('submission_ready') is False
+                and calculation.get('auto_preparation', {}).get('passed') is not True
+                and validate_provisional(case, calculation))
+        manual = not provisional_requested and calculation.get('status') == 'approved' and bool(calculation.get('approval'))
+        automatic = not provisional_requested and calculation.get('status') == 'ready_for_review' and calculation.get('auto_preparation', {}).get('passed') is True
         if automatic:
             from .legal_calculator import calculate_legal
             fresh = calculate_legal(case, calculation.get('inputs'))
@@ -252,9 +295,9 @@ def _values(case,fields,calculation):
                 fresh.get(k) == calculation.get(k) == calculation['auto_preparation'].get(k)
                 for k in ('input_hash', 'policy_hash', 'result_hash')) and all(
                 fresh.get(k) == calculation.get(k) for k in ('summary', 'schedule', 'creditor_allocations'))
-        if not (manual or automatic) or calculation.get('stale') or calculation.get('input_revision')!=case.get('input_revision'):
+        if not (manual or automatic or provisional) or calculation.get('stale') or calculation.get('input_revision')!=case.get('input_revision'):
             raise ValueError('현재 근거의 계산 검증 또는 변호사 계산 검토가 필요합니다.')
-        calculation_origin = 'automatically_verified' if automatic else 'approved'
+        calculation_origin = 'provisional' if provisional else 'automatically_verified' if automatic else 'approved'
         summary=calculation.get('summary',{})
         inputs=calculation.get('inputs',{})
         values.update(summary)
@@ -353,8 +396,12 @@ def preview(case,template_id='D5100',fields=None,calculation=None):
                 entry['annex_reference_layout']=_field_layout(item,'별지',original_chars[item['page']])
     measure.close()
     warnings=['공식 원본의 빈칸에 값을 배치한 검토용 초안입니다. 서명·동의·기각사유 부존재 진술은 자동 확정하지 않습니다.',
-      '서식에 포함된 과거 작성요령·비용 안내의 현재 효력은 별도로 대조해야 합니다.']
+      '서식에 포함된 과거 작성요령·비용 안내의 현재 효력은 별도로 대조해야 합니다.',
+      '필수 항목 확인은 자동 기재 대상으로 등록한 칸에 한정됩니다. 원본의 모든 기재·선택란이 완성되었다는 뜻은 아닙니다.']
     if not calculation and any(f['key'] in CALC_KEYS for f in output):warnings.append('원문에서 확인한 금액과 코드 산술은 기재합니다. 법률 판단 제안은 미승인 상태이며 미확정 비용·생계비·면제재산을 0원으로 간주하지 않습니다.')
+    provisional = bool(calculation and calculation.get('status') == 'provisional')
+    if provisional:
+        warnings.insert(0, '가정 계산을 넣은 검토용 초안입니다. 생계비·공제·비용 등 별지의 가정을 확인해야 하며 승인된 계산이나 법원 제출본이 아닙니다.')
     if template_id=='D5106':warnings.append('첫 4개 채권자는 원본 표에 배치하며 추가 채권자는 별지에 전부 보존합니다. 담보·다툼·전부명령 부속서류는 별도 검토합니다.')
     if template_id=='BUSAN-ATTACHMENTS':warnings.append('제출 여부 체크는 원본 증빙과 대조 후 담당자가 표시합니다. 업로드만으로 제출 완료를 표시하지 않습니다.')
     if overflow:
@@ -366,8 +413,17 @@ def preview(case,template_id='D5100',fields=None,calculation=None):
     packet=evidence_mapping.build(case)
     source_facts=evidence_mapping.form_facts(packet,template_id)
     return {'template':deepcopy(template),'fields':output,'missing_fields':list(dict.fromkeys(missing)),
+      'mapping_coverage':{'scope':'registered_fields_only','original_layout_fully_mapped':False,
+          'registered_slots':len(output),'populated_slots':sum(item['value'] is not None and item['value']!='' for item in output),
+          'unmapped_original_sections':list(template['unmapped_original_sections']),
+          'manual_actions':list(template['required_manual_actions'])},
       'unmapped_fields':extras,'overflow_fields':overflow,'warnings':warnings,'ready_for_review':not missing and not overflow,'submission_ready':False,'original_sha256':template['source']['sha256'],
       'case_id':case.get('id'),'input_revision':case.get('input_revision'),'calculation_id':calculation.get('id') if calculation else None,
+      'calculation_review':({'status':'provisional','scope':'assumption_based_draft',
+          'arithmetic_reproduced':True,'requires_human_review':True,'submission_ready':False,
+          'assumptions':deepcopy(calculation.get('assumptions',[])),
+          'pending_conditions':deepcopy(calculation.get('pending_conditions',[])),
+          'baseline_blockers':deepcopy(calculation.get('baseline_blockers',[]))} if provisional else None),
       'source_facts':source_facts,'proposed_decisions':packet['proposed_decisions'] if not calculation else [],
       'evidence_mapping_version':packet['version'],'evidence_source_signature':packet['source_signature'],
       'renderer_version':RENDERER_VERSION,'typography':{**typography(),'original_font_families':original_font_inventory(template_id)}}
@@ -419,7 +475,7 @@ def _field_layout(field,text,original_chars):
     _,font,_=_font_details(tuple(FONT_CANDIDATES))
     rect=pymupdf.Rect(field['rect']);padding=1 if rect.width<30 else 1.5;available=rect.width-2*padding
     if any(not font.has_glyph(ord(char)) for char in text if not char.isspace()):return None
-    narrative=field['key'] in {'statement','prior_proceedings','additional_cost_reason'}
+    narrative=field['key'] in {'statement','prior_proceedings','additional_cost_reason','marriage_history'}
     numeric=bool(re.fullmatch(r'[\d,.:+()\-/\s]+',text))
     centered=field['key'].endswith(('_year','_month','_day','.number')) or field['key'] in {'months','household_size','median_percent','principal_repayment_percent'}
     alignment='center' if centered else 'right' if numeric or field['key']=='court_prefix' else 'left'
@@ -461,6 +517,12 @@ def _field_layout(field,text,original_chars):
 
 
 def _display(value,key=None):
+    if key=='education_school' and isinstance(value,str) and value.endswith('학교'):return value[:-2]
+    if key=='marriage_history' and isinstance(value,str):return '혼인·이혼 이력: '+value
+    # The court's rate blank is narrow. Keep the calculated decimal unchanged
+    # in the ledger/preview, but avoid spending space on insignificant zeroes.
+    if key=='principal_repayment_percent' and re.fullmatch(r'\d+\.\d+',str(value)):
+        return str(value).rstrip('0').rstrip('.')
     if key in {'bank_name','bank_name_2','refund_bank'} and isinstance(value,str) and value.endswith('은행'):return value[:-2]
     if key=='insurance_name' and isinstance(value,str) and value.endswith('생명'):return value[:-2]
     if isinstance(value,bool):return '예' if value else '아니오'
@@ -483,11 +545,12 @@ def _schedule_date(fields,month):
 
 
 def _calculation_appendix(template_id,calculation,fields):
-    """Export the complete approved ledger, including rows beyond original capacity."""
+    """Export the complete ledger with its approval/draft boundary made explicit."""
     if not calculation or template_id not in ('D5106','D5110'):return []
     creditors=calculation.get('inputs',{}).get('creditors',[])
     names={row.get('id'):str(row.get('name') or '채권자명 미확인') for row in creditors}
-    lines=['[별지] 검증 계산에 연결된 전체 채권자 목록',
+    provisional = calculation.get('status') == 'provisional'
+    lines=['[별지] '+('가정 계산에 연결된 전체 채권자 목록 · 담당자 확인 필요' if provisional else '검증 계산에 연결된 전체 채권자 목록'),
       '채권자 수: '+str(len(creditors))+'명. 원본 표의 행 수와 관계없이 전부 표시합니다.']
     for i,row in enumerate(creditors,1):
         kind={'unsecured':'무담보','secured':'담보부','priority':'우선권'}.get(row.get('kind'),'분류 미확인')
@@ -520,6 +583,45 @@ def _calculation_appendix(template_id,calculation,fields):
     return lines
 
 
+def _provisional_appendix(calculation):
+    """Every assumption is visible; source observations are not rewritten."""
+    if not calculation or calculation.get('status') != 'provisional':
+        return []
+    lines=['[별지] 가정 계산 검토표 · 법률 판단 및 제출 승인 전',
+        '아래 값은 초안을 비교하기 위한 계산 가정입니다. 미확정 사실을 확정하거나 부재·0원을 증명하지 않습니다.',
+        '현재 원문·계산 기준에 대해 산술을 다시 대조했습니다. 이 대조는 가정의 법률상 타당성이나 법원의 판단을 승인하지 않습니다.']
+    labels={row.get('field'):row.get('label') for row in calculation.get('assumptions',[]) if row.get('label')}
+    labels.update({'decisions.household_reason':'생계비 인원 인정 근거', 'decisions.living_cost_reason':'생계비 인정 근거',
+        'decisions.asset_reason':'재산 평가·공제 근거', 'decisions.debt_reason':'채권 금액·분류 근거',
+        'decisions.fee_reason':'비용·보수 근거', 'decisions.objection_reason':'이의 관련 판단 근거',
+        'decisions.period_reason':'변제기간 판단 근거', 'decisions.discount_reason':'현가 할인율 근거'})
+    for row in calculation.get('assumptions', []):
+        value=row.get('value');key=row.get('field')
+        display=_display(value)
+        if key=='living_cost_mode':display={'seoul_median_60':'서울 기준 중위소득의 60%', 'case_specific':'사건별 확인 금액'}.get(value, '적용 기준 확인 필요')
+        elif key=='months':display+='개월'
+        elif key=='prepaid_months':display+='회'
+        elif key=='recognized_household_size':display+='명'
+        elif key=='objection' and value is True:display='이의가 있는 경우의 요건도 계산'
+        elif key=='preapproval_costs_paid' and value is False:display='납부 완료로 간주하지 않음'
+        elif key in {'additional_living_cost','monthly_trustee_fee','base_living_cost'} or (key or '').endswith(('.secured_deduction','.exempt_deduction','.disposal_cost')):display+='원'
+        lines.append(str(row.get('label') or '계산 가정')+': '+display+' / 담당자 확인 필요')
+        lines.append('적용 이유: '+str(row.get('reason') or '근거 및 적용 가능성 확인 필요'))
+    for title, key in [('남아 있는 확인 조건', 'pending_conditions'), ('확정 계산을 보류한 사유', 'baseline_blockers')]:
+        rows = calculation.get(key, [])
+        if rows:
+            lines.append('[검토] '+title)
+        for row in rows:
+            if isinstance(row, dict):
+                reason = row.get('reason') or row.get('message') or row.get('label') or row.get('title')
+                reason = str(reason or '담당자 확인이 필요한 미확정 항목')
+                label = labels.get(row.get('field'))
+                lines.append((label+': ' if label and not reason.startswith(label) else '')+reason)
+            else:
+                lines.append(str(row))
+    return lines
+
+
 def _annex_lines(text,width=55):
     """Lay out physical source lines without letting embedded newlines overlap."""
     for physical_line in str(text).splitlines() or ['']:
@@ -544,6 +646,8 @@ def render_pdf(template_id,case,fields=None,calculation=None):
         p.draw_rect((30,28,p.rect.width-30,52),color=(.75,.2,.1),fill=(1,.97,.93))
         synthetic=bool(case.get('synthetic') or str((fields or {}).get('resident_id','')).startswith('TEST-'))
         banner='DRAFT · 가상자료 · 효력없음 · 테스트 전용' if synthetic else 'DRAFT · 검토용 작성본 · 미확인 항목/서명/선택란은 담당자 확인'
+        if result.get('calculation_review'):
+            banner='DRAFT · 가정 계산 검토본 · '+('가상자료 · 효력없음' if synthetic else '미확정 조건 포함 · 제출 전 검토 필요')
         p.insert_text((38,44),banner,fontname=font,fontsize=9,color=(.7,.15,.1))
     for field in result['fields']:
         value=field['value']
@@ -561,11 +665,13 @@ def render_pdf(template_id,case,fields=None,calculation=None):
     lines=['원본: '+template['source']['title'],
       '원본 URL: '+template['source']['url'],'사건: '+str(case.get('client_name','')),'관할 후보: '+str(case.get('court_name','')),
       '확인 필요: '+(', '.join(result['missing_fields']) or '필수 매핑 값 존재; 증빙·법률 검토 별도')]+result['warnings']
+    lines.extend(_provisional_appendix(calculation))
     for field in result['fields']:
         if field['value'] is not None and field['value']!='':
             status={'source_checked':'원문 확인 · 의미 검토 필요','approved':'검토 승인',
                 'automatically_verified':'자동 검증 완료','semantic_review_required':'본문 의미 검토 필요',
-                'review_required':'담당자 검토 필요','candidate':'후보 · 검토 필요'}.get(field['status'],'근거 및 내용 검토 필요')
+                'review_required':'담당자 검토 필요','candidate':'후보 · 검토 필요',
+                'provisional':'가정 계산 · 담당자 확인 필요'}.get(field['status'],'근거 및 내용 검토 필요')
             lines.append(field['label']+': '+_display(field['value'])+' / '+status)
     for field in overflow+result['unmapped_fields']:lines.append('별지 ['+field.get('label',field['key'])+']: '+_display(field['value']))
     if result.get('source_facts'):
@@ -581,12 +687,16 @@ def render_pdf(template_id,case,fields=None,calculation=None):
         lines.append('미승인 법률 판단 제안: '+proposal['reason']+' / '+_display(proposal['value']))
     lines.extend(_calculation_appendix(template_id,calculation,fields))
     current=out.new_page(width=595,height=842);font=_font(current);y=70
-    current.insert_text((40,44),'작성값·근거·미확인 항목 대조표 (제출 전 분리 검토)',fontname=font,fontsize=13)
+    annex_title = ('가정 계산·원문 근거 대조표 (제출 전 담당자 확인)' if result.get('calculation_review')
+                   else '작성값·근거·미확인 항목 대조표 (제출 전 분리 검토)')
+    current.insert_text((40,44),annex_title,fontname=font,fontsize=13)
     for line in lines:
         # Each original newline consumes its own baseline and page-break check.
         # Never pass multiline text to insert_text while advancing only one row.
         for physical_line in _annex_lines(line):
-            if y>790:current=out.new_page(width=595,height=842);font=_font(current);y=55
+            if y>790:
+                current=out.new_page(width=595,height=842);font=_font(current);y=70 if result.get('calculation_review') else 55
+                if result.get('calculation_review'):current.insert_text((40,44),annex_title,fontname=font,fontsize=13)
             if physical_line:current.insert_text((40,y),physical_line,fontname=font,fontsize=9)
             y+=15
         y+=6

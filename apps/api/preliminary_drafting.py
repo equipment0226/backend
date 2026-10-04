@@ -1,6 +1,7 @@
 """Build reviewable first documents despite unresolved analysis, never a filing approval.
 
-Unknown or disputed values remain blank. The original case is preserved; only an
+Unknown or disputed observations remain blank. A separately reproduced legal
+scenario can fill review-only calculations with visible assumptions. Only an
 evidence-filtered copy reaches the form renderer. AI outages stay explicit and
 must not cause repeated calls to the same unavailable local service in one run.
 """
@@ -12,7 +13,31 @@ from decimal import Decimal
 
 from . import drafting, store
 
-VERSION = 'preliminary-evidence-draft-v4-current-source-scope'
+VERSION = 'preliminary-evidence-draft-v5-provisional-repayment'
+
+
+def attach_provisional_calculation(draft, calculation):
+    """Add a labelled arithmetic section; this does not approve any input."""
+    if not calculation or calculation.get('status') != 'provisional':
+        return
+    from .legal_calculator import provisional_value_text
+    draft.update(provisional_calculation_id=calculation['id'],
+        calculation_assumptions=copy.deepcopy(calculation['assumptions']),
+        provisional_calculation_summary=copy.deepcopy(calculation['summary']),
+        human_review_required=True, submission_ready=False)
+    summary = calculation['summary']
+    rows = [('months', '변제기간'), ('net_monthly_income', '서류 기준 월 소득'),
+        ('base_living_cost', '가정한 기본생계비'), ('monthly_deposit', '검토용 월 변제금'),
+        ('total_creditor_payment', '기간 전체 변제액'), ('liquidation_value', '공제 검토 전 재산 평가액'),
+        ('present_value', '변제액의 현재가치')]
+    source_id = 'calculation:' + calculation['id']
+    section = {'id': 'repayment_projection', 'title': '변제계획 검토안',
+        'content': '서류에서 확인한 금액과 아래 가정으로 계산했습니다. 인정 생계비·면제재산·비용 등을 확정한 결과가 아니며, 법원 제출 전 검토가 필요합니다.\n\n' +
+            '\n'.join(row['label'] + ': ' + provisional_value_text(row) + ' — ' + row['reason']
+                      for row in calculation['assumptions']),
+        'fields': [{'key': key, 'label': label, 'value': summary.get(key), 'status': '검토 전 계산',
+                    'source_ids': [source_id]} for key, label in rows]}
+    draft['sections'] = [section for section in draft['sections'] if section['id'] != 'repayment_projection'] + [section]
 
 
 def render_case(case, ocr_check=None):
@@ -105,6 +130,7 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
     issues = [copy.deepcopy(issue) for issue in pending_issues]
     stages = set(review_required_stages)
     legal_sources = None
+    projection = None
     def report(stage, index, message, batch_progress=None):
         if progress:
             progress(stage, index, message, **({'batch_progress': batch_progress} if batch_progress else {}))
@@ -120,6 +146,14 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                 asyncio.to_thread(automation._retrieve, safe))
             calculation.update(created_by='automation', created_at=store.now(), stale=False)
             case.setdefault('legal_calculations', []).append(calculation)
+        projection = await asyncio.to_thread(legal_calculator.calculate_provisional, case, calculation.get('inputs'))
+        if projection['status'] == 'provisional':
+            projection = legal_calculator.record_provisional(case, projection,
+                created_by='automation', created_at=store.now(), analysis_calculation_id=calculation['id'])
+            issues.append({'code': 'PROVISIONAL_CALCULATION', 'stage': 'analysis',
+                'reason': '기본 변제기간과 명시한 가정으로 변제계획 검토안을 계산했습니다. 인정인원·공제·비용 등 가정을 확인한 뒤 확정해야 합니다.'})
+        else:
+            projection = None
         structured = {'id': store.uid('structured'),
             'source_hash': safe['evidence_mapping']['source_signature'], 'input_revision': case['input_revision'],
             'created_at': store.now(), 'facts': safe['evidence_mapping']['facts'],
@@ -184,11 +218,11 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
         report('document_verification', 5, '생성한 공식 서식의 실제 출력값과 누락 항목을 확인합니다.',
                {key: value[key] for key in ('completed', 'total', 'label')})
 
-    report('drafting', 4, '확인된 자료로 1차 검토 문서를 작성하고 미확정 항목은 비워 둡니다.')
+    report('drafting', 4, '확인된 자료와 계산 가정을 구분해 1차 검토 문서를 작성합니다.')
     sources = automation._sources(safe, verified_only=True, packet=safe['evidence_mapping'])
     items = automation._verification_items(safe, sources, packet=safe['evidence_mapping'])
-    # This path does not authorize unresolved legal calculations for form fill.
-    # Their existing full reports remain linked for human review instead.
+    # A strict blocked calculation is never used for form fill. Only the separate
+    # source-bound projection may fill a visibly labelled, unapproved scenario.
     if narrative is None and not local_failure:
         if legal_sources is None:
             legal_sources = await asyncio.to_thread(automation._retrieve, safe)
@@ -226,6 +260,7 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                  analysis_calculation_id=(calculation or {}).get('id'),
                  review_pending=issues, scope='담당자 보완·승인이 필요한 1차 검토용 초안 · 법원 제출 승인 전')
     draft['evidence_mapping'] = copy.deepcopy(safe['evidence_mapping'])
+    attach_provisional_calculation(draft, projection)
     if strategy:
         draft.update(strategy_id=strategy['id'], structured_data_id=strategy['structured_data_id'],
                      strategies=copy.deepcopy(strategy['strategies']))
@@ -252,6 +287,10 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                        'reason': '진술 본문 작성·근거 검증이 완료되지 않았습니다. 확인된 항목과 원문을 바탕으로 보완해 주세요.'})
         stages.add('draft')
     sources.extend(draft.get('narrative_sources', []))
+    if projection:
+        sources.append({'id': 'calculation:' + projection['id'], 'kind': 'code_calculation',
+            'text': store.dumps({'summary': projection['summary'], 'assumptions': projection['assumptions'],
+                                 'scope': projection['scope']})})
     source_ids = {source['id'] for source in sources}
     identity_id = 'case:identity'
     sources.append({'id': identity_id, 'kind': 'case_record',
@@ -301,8 +340,8 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
     for old in case.setdefault('drafts', []):
         old.update(stale=True, stale_reason='새 자료 기준 1차 검토 초안 작성')
     case['drafts'].append(draft)
-    report('drafting', 4, '공식 서식의 확인 가능한 항목을 채우고 미확정 계산값은 비워 둡니다.')
-    artifacts, artifact_issues = await asyncio.to_thread(auto_documents.prepare, case, draft, None, render_case=safe)
+    report('drafting', 4, '확인한 자료와 가정을 명시한 변제계획 검토안을 공식 서식에 반영합니다.')
+    artifacts, artifact_issues = await asyncio.to_thread(auto_documents.prepare, case, draft, projection, render_case=safe)
     issues.extend({**issue, 'stage': 'review'} for issue in artifact_issues)
     if review.get('status') == 'unavailable':
         rendered = _unavailable(review, 'artifact')
@@ -310,7 +349,7 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
             record['ai_review'] = copy.deepcopy(rendered)
     else:
         report('document_verification', 5, '생성한 공식 서식의 실제 출력값과 누락 항목을 확인합니다.')
-        rendered = await auto_documents.verify_artifacts(case, artifacts, None,
+        rendered = await auto_documents.verify_artifacts(case, artifacts, projection,
             **({'progress': artifact_progress} if progress else {}))
     draft['rendered_review'] = rendered
     if not rendered.get('passed'):

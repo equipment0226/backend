@@ -100,6 +100,11 @@ def attach(app, staff, authorize, change):
             result = legal_calculator.calculate_legal(case, data.inputs, user)
             result.update(id=store.uid('legal'), created_at=store.now(), created_by=user['id'])
             case.setdefault('legal_calculations', []).append(result)
+            if result['status'] == 'blocked':
+                projection = legal_calculator.calculate_provisional(case, data.inputs)
+                if projection['status'] == 'provisional':
+                    legal_calculator.record_provisional(case, projection,
+                        created_at=store.now(), created_by=user['id'], analysis_calculation_id=result['id'])
         return change(case_id, user, data.expected_version, 'legal_calculation.created', apply)
 
     @app.post('/api/cases/{case_id}/legal-calculations/{calculation_id}/approve')
@@ -123,19 +128,30 @@ def attach(app, staff, authorize, change):
         writer = csv.writer(out)
         # User-supplied text never becomes an Excel formula.
         safe = lambda s: "'" + s if isinstance(s, str) and s.lstrip().startswith(('=', '+', '-', '@')) else s
-        writer.writerow(['개인회생 계산·변제 일정', safe(case['client_name']), '가상자료' if case.get('synthetic') else ''])
-        writer.writerow(['검토 상태', '재검토 필요' if calc.get('stale') else calc['status']])
-        writer.writerow(['입력 해시', calc['input_hash'], '기준 버전', calc['policy_version']])
+        provisional = bool(calc.get('provisional'))
+        writer.writerow(['검토용 가정 계산 · 제출 승인 전' if provisional else '개인회생 계산·변제 일정',
+                         safe(case['client_name']), '가상자료' if case.get('synthetic') else ''])
+        statuses = {'provisional': '가정 확인이 필요한 검토안', 'blocked': '보완 필요',
+                    'ready_for_review': '검토 대기', 'approved': '검토 승인'}
+        writer.writerow(['검토 상태', '재검토 필요' if calc.get('stale') else statuses.get(calc['status'], '확인 필요')])
+        writer.writerow(['계산 기준일', safe(calc.get('inputs', {}).get('as_of', ''))])
         writer.writerow(['원 단위 정수 계산 / 인가 결과와 별개'])
-        writer.writerow(['회차', '채권자 ID', '채권자', '원금 변제액', '이자 변제액', '합계', '회차 총 납입액'])
+        if provisional:
+            writer.writerow(['계산에 사용한 가정', '값', '확인할 내용'])
+            for row in calc.get('assumptions', []):
+                writer.writerow([safe(row['label']), safe(legal_calculator.provisional_value_text(row)), safe(row['reason'])])
+            writer.writerow(['확정 전 확인 조건'])
+            for row in calc.get('pending_conditions', []):
+                writer.writerow([safe(row.get('message', '담당자 검토 필요'))])
+        writer.writerow(['회차', '채권자', '원금 변제액', '이자 변제액', '합계', '회차 총 납입액'])
         names = {row['creditor_id']: row['name'] for row in calc.get('creditor_allocations', [])}
         for month in calc.get('schedule', []):
             for row in month['allocations']:
-                writer.writerow([month['month'], safe(row['creditor_id']), safe(names.get(row['creditor_id'], '')),
+                writer.writerow([month['month'], safe(names.get(row['creditor_id'], '')),
                                  row['principal'], row['interest'], row['total'], month['deposit']])
         store.access(user, case_id, 'legal_calculation.download:' + calculation_id)
         return Response(out.getvalue().encode('utf-8-sig'), media_type='text/csv; charset=utf-8',
-                        headers={'Content-Disposition': f'attachment; filename="{calc["id"]}.csv"'})
+                        headers={'Content-Disposition': download_names.disposition(download_names.filename(case, '변제계산표', 'csv'))})
 
     @app.get('/api/court-forms')
     def forms_catalog(court_id: str | None = None, user=Depends(staff)):

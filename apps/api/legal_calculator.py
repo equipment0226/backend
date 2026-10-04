@@ -1,7 +1,8 @@
 """Reproducible KR personal-rehabilitation calculations; no model calls.
 
 This module computes a reviewed-input plan, not a court's decision. Monetary
-inputs are integer KRW. Unknown values are errors, never zero defaults.
+inputs are integer KRW. Strict calculation rejects unknown amounts; a separate
+planning projection labels assumptions without changing source observations.
 """
 from __future__ import annotations
 
@@ -14,7 +15,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 POLICY_FILE = ROOT / 'data/legal_calculation_rules.json'
-CODE_VERSION = 'kr-rehab-calculator-1.0'
+CODE_VERSION = 'kr-rehab-calculator-1.1-default-term'
+PROVISIONAL_VERSION = 'evidence-repayment-projection-v1'
+# Article 611(5), effective 2026-10-02: ordinarily at most three years;
+# exceptional circumstances may justify up to five. 36 is our draft default,
+# not an assertion that every debtor must repay for exactly three years.
+PERIOD_SOURCE_URL = 'https://www.law.go.kr/lsLinkCommonInfo.do?lsJoLnkSeq=1028276221'
 
 
 def _digest(value):
@@ -77,8 +83,9 @@ def example_payload():
 
 def schema():
     return {'version': CODE_VERSION, 'policy': policy(), 'example': example_payload(),
+            'defaults': {'months': policy()['normal_max_months']},
             'required': ['as_of', 'policy_id', 'income', 'recognized_household_size',
-                         'additional_living_cost', 'living_cost_mode', 'months',
+                         'additional_living_cost', 'living_cost_mode',
                          'prepaid_months', 'monthly_trustee_fee', 'preapproval_costs_paid',
                          'objection', 'assets', 'creditors', 'decisions'],
             'notes': ['금액은 정수 원. 미상은 null이며 0원과 다릅니다.',
@@ -135,6 +142,12 @@ def calculate_legal(case, payload, user=None):
     except (ValueError, TypeError):
         policy_date = None
     rules = policy(as_of=policy_date)
+    defaulted_inputs = []
+    if p.get('months') is None:
+        p['months'] = rules['normal_max_months']
+        defaulted_inputs.append({'field': 'months', 'value': p['months'],
+            'source_id': 'statute-611', 'url': PERIOD_SOURCE_URL,
+            'reason': '일반 변제기간 상한을 초안 기본값으로 적용합니다. 명시한 기간은 변경하지 않습니다.'})
     # Evidence contents are part of the snapshot, not merely the case revision.
     # This also detects accidental in-place edits that bypass invalidation.
     evidence_ids = set()
@@ -167,6 +180,7 @@ def calculate_legal(case, payload, user=None):
               'summary': {}, 'creditor_allocations': [], 'schedule': [], 'checks': [],
               'blockers': [], 'warnings': [], 'formulas': [], 'source_refs': rules['sources'],
               'approval': None, 'stale': False,
+              'defaulted_inputs': defaulted_inputs,
               'scope': '금액 계산 및 정량 요건 대조. 법원의 인가·면책 판단과 구별됩니다.'}
     blockers = result['blockers']
     numeric_errors = []
@@ -492,3 +506,199 @@ def calculate_legal(case, payload, user=None):
                                     'creditors': result['creditor_allocations'], 'input_hash': result['input_hash'],
                                     'policy_hash': result['policy_hash']})
     return result
+
+
+def calculate_provisional(case, payload=None):
+    """Source-bound planning scenario, never confirmed facts or filing approval.
+
+    Monetary observations always come from freshly mapped originals. Caller
+    input may preserve an explicit legal scenario (term, deductions, etc.),
+    but cannot replace salary, asset values or creditor balances. Missing legal
+    judgments are labelled assumptions; missing evidence is never invented.
+    """
+    from . import evidence_mapping
+    packet = evidence_mapping.build(case)
+    p = copy.deepcopy(packet['inputs'])
+    supplied = payload if isinstance(payload, dict) else {}
+    # These are judgments/hypotheses, not observations. All remain review-only.
+    legal_keys = ('months', 'recognized_household_size', 'additional_living_cost',
+        'base_living_cost', 'living_cost_mode', 'prepaid_months', 'monthly_trustee_fee',
+        'preapproval_costs_paid', 'objection', 'annual_discount_rate', 'decisions',
+        'period_exception', 'period_order_evidence_ids', 'objecting_creditor_ids')
+    overrides = {key: copy.deepcopy(supplied[key]) for key in legal_keys
+                 if supplied.get(key) is not None}
+    asset_overrides = []
+    supplied_assets = supplied.get('assets') if isinstance(supplied.get('assets'), list) else []
+    for asset in p.get('assets', []):
+        match = next((row for row in supplied_assets if isinstance(row, dict)
+                      and row.get('id') == asset['id']), {})
+        deductions = {key: match[key] for key in ('secured_deduction', 'exempt_deduction', 'disposal_cost')
+                      if match.get(key) is not None}
+        if deductions:
+            asset_overrides.append({'id': asset['id'], **deductions})
+            asset.update(deductions)
+    if asset_overrides:
+        overrides['assets'] = asset_overrides
+    p.update({key: value for key, value in overrides.items() if key != 'assets'})
+    conflicts = []
+    original_income = packet['inputs'].get('income', {})
+    if isinstance(supplied.get('income'), dict):
+        for key in ('kind', 'basis', 'monthly_amount', 'taxes_and_social_insurance', 'business_expenses'):
+            if key in supplied['income'] and supplied['income'][key] != original_income.get(key):
+                conflicts.append('income.' + key)
+    for key, observed_keys in (('assets', ('owned_value',)), ('creditors', ('principal', 'interest', 'kind'))):
+        if isinstance(supplied.get(key), list):
+            actual = {row['id']: row for row in packet['inputs'].get(key, [])}
+            for index, row in enumerate(supplied[key]):
+                if not isinstance(row, dict):
+                    continue
+                source = actual.get(row.get('id'))
+                if source is None:
+                    conflicts.append(f'{key}[{index}]')
+                else:
+                    conflicts.extend(f'{key}[{index}].{field}' for field in observed_keys
+                        if field in row and row[field] != source.get(field))
+    baseline = calculate_legal(case, p)
+    assumptions = []
+
+    def assume(key, value, label, reason, refs=(), *, container=None, field=None):
+        target = p if container is None else container
+        is_default = target.get(key) is None
+        if is_default:
+            target[key] = value
+        if target.get(key) is None:
+            return
+        name = field or key
+        assumptions.append({'field': name, 'key': name, 'label': label,
+            'value': copy.deepcopy(target[key]), 'reason': reason if is_default else
+                '입력한 검토안을 유지했습니다. 법률상 인정 여부와 근거 확인이 필요합니다.',
+            'source_ids': list(refs), 'evidence_ids': list(refs),
+            'status': 'review_required', 'basis': 'proposed' if is_default else 'explicit_scenario'})
+
+    rules = policy(as_of=date.fromisoformat(p['as_of']))
+    assume('months', rules['normal_max_months'], '변제기간',
+        '채무자회생법 제611조 제5항의 일반 상한을 적용한 초안입니다. 기간 특례는 별도 검토합니다.', ['statute-611'])
+    if supplied.get('months') is None:
+        assumptions[-1].update(basis='proposed', reason=
+            '채무자회생법 제611조 제5항의 일반 상한을 초안 기본값으로 적용했습니다. 기간 특례는 별도 검토합니다.')
+    household = packet['form_values'].get('household_size')
+    assume('recognized_household_size', household, '생계비 산정 인원',
+        '서류상 가구원 수를 출발점으로 계산했습니다. 실제 부양 여부와 법률상 인정인원은 미확정입니다.',
+        packet.get('origins', {}).get('household_size', {}).get('source_ids', []))
+    if case.get('court_id') == 'CT01':
+        assume('living_cost_mode', 'seoul_median_60', '기본생계비 기준',
+            '서울 기준 중위소득 60%를 적용한 검토안입니다. 사건별 인정액은 아직 확정하지 않았습니다.',
+            ['median-2026', 'seoul-living-2026'])
+    else:
+        assume('living_cost_mode', None, '기본생계비 기준', '관할 법원 기준을 확인해야 합니다.')
+    for key, label, reason in (
+        ('additional_living_cost', '추가생계비', '추가생계비를 반영하지 않은 초안입니다. 주거·의료·교육 등 추가 인정자료를 확인합니다.'),
+        ('monthly_trustee_fee', '월 회생위원 보수', '보수 명령이 확인되지 않아 비용을 반영하지 않은 초안입니다. 실제 부담액에 따라 변제금이 달라집니다.'),
+        ('prepaid_months', '인가 전 적립회차', '실제 납입 기록이 확인되지 않아 선납을 반영하지 않았습니다.')):
+        assume(key, 0, label, reason)
+    # Unknown objection is NOT recorded as "no objection". The scenario also
+    # tests the stricter aggregate floor; creditor-specific checks stay pending.
+    assume('objection', True, '이의에 따른 추가 요건',
+        '이의 여부가 미확정이므로 이의가 있는 경우의 최저변제액도 대조합니다. 이의 사실을 인정한 것은 아닙니다.', ['statute-614'])
+    assume('preapproval_costs_paid', False, '인가 전 비용 납부',
+        '납부 증빙이 미확정이므로 완료로 처리하지 않습니다. 실제 미납 사실을 확정한 것은 아닙니다.')
+    for index, asset in enumerate(p.get('assets', [])):
+        for key, label in (('secured_deduction', '담보 공제'), ('exempt_deduction', '면제재산 공제'),
+                           ('disposal_cost', '환가비용')):
+            assume(key, 0, f"{asset.get('label') or '재산'} · {label}",
+                '공제 근거가 미확정이므로 공제 없이 계산했습니다. 법정 청산가치의 확정값이 아니며 인정 공제액에 따라 달라집니다.',
+                asset.get('evidence_ids', []), container=asset, field=f'assets[{index}].{key}')
+    # Explicit case-specific values also need visible provenance/assumptions.
+    for key, label in (('base_living_cost', '사건별 기본생계비'), ('annual_discount_rate', '사건별 할인율')):
+        if p.get('living_cost_mode') == 'case_specific':
+            assume(key, None, label, '사건별 판단 근거를 확인해야 합니다.')
+    result = calculate_legal(case, p)
+    evidence_errors = {'EVIDENCE_REQUIRED', 'EVIDENCE_NOT_VERIFIED', 'EVIDENCE_NOT_IN_CASE', 'CONFIRMED_FACT_CONFLICT'}
+    usable = bool(result.get('schedule') and not packet.get('errors') and
+                  not any(row['code'] in evidence_errors for row in result['blockers']))
+    pending = copy.deepcopy(result['blockers'])
+    pending.extend({'code': 'PROVISIONAL_INPUT_REVIEW', 'field': row['field'],
+                    'message': row['label'] + ': ' + row['reason']} for row in assumptions)
+    pending.extend({'code': row['code'], 'field': row.get('key'),
+                    'message': row.get('reason', '원문 매핑을 확인해야 합니다.')} for row in packet.get('errors', []))
+    pending.extend({'code': 'SOURCE_INPUT_DIFFERENCE', 'field': field,
+        'message': '직접 입력한 금액·분류와 서류 추출값이 다릅니다. 이 검토안은 서류값을 사용했으며 자료 검증에서 원문 또는 추출값을 수정해야 반영됩니다.'}
+        for field in conflicts)
+    result.update(status='provisional' if usable else 'blocked', provisional=True,
+        provisional_version=PROVISIONAL_VERSION, submission_ready=False, approval=None,
+        assumptions=assumptions, pending_conditions=pending, baseline_blockers=baseline['blockers'],
+        ignored_input_fields=conflicts,
+        requested_inputs={key: copy.deepcopy(supplied[key]) for key in (*legal_keys, 'assets', 'income', 'creditors') if key in supplied},
+        scenario_overrides=overrides, evidence_source_signature=packet['source_signature'],
+        scope='서류상 금액과 명시한 가정에 따른 검토용 계산 · 법률 판단·제출 승인 전')
+    result['id'] = 'projection-' + _digest({'input_hash': result['input_hash'],
+        'source_signature': packet['source_signature'], 'version': PROVISIONAL_VERSION,
+        'requested_inputs': result['requested_inputs'], 'assumptions': assumptions,
+        'pending_conditions': pending, 'baseline_blockers': result['baseline_blockers']})[:16]
+    result['projection_hash'] = _projection_hash(result)
+    return result
+
+
+def record_provisional(case, calculation, **metadata):
+    """Reuse one source-bound scenario ID, retaining each preparation event."""
+    if calculation.get('status') != 'provisional':
+        raise ValueError('검토용 계산이 완료된 경우에만 기록할 수 있습니다.')
+    rows = case.setdefault('legal_calculations', [])
+    existing = next((row for row in rows if row['id'] == calculation['id']), None)
+    record = copy.deepcopy(calculation)
+    history = copy.deepcopy((existing or {}).get('preparation_history', []))
+    if existing and not history:
+        history.append({key: existing[key] for key in ('created_at', 'created_by', 'analysis_calculation_id') if key in existing})
+    if not history or history[-1] != metadata:
+        history.append(copy.deepcopy(metadata))
+    record.update(metadata, preparation_history=history)
+    if existing:
+        # Latest preparation appears last without creating duplicate item IDs.
+        rows.remove(existing)
+    rows.append(record)
+    return record
+
+
+def _projection_hash(result):
+    return _digest({key: result.get(key) for key in (
+        'id', 'input_revision', 'inputs', 'input_hash', 'policy_hash', 'summary', 'schedule',
+        'creditor_allocations', 'asset_calculations', 'assumptions', 'pending_conditions',
+        'scenario_overrides', 'requested_inputs', 'ignored_input_fields', 'evidence_source_signature',
+        'provisional_version', 'baseline_blockers', 'checks', 'blockers', 'result_hash')})
+
+
+def provisional_value_text(row):
+    """Human-readable scenario values, especially unknown procedural facts."""
+    key, value = row.get('field'), row.get('value')
+    if key == 'living_cost_mode':
+        return {'seoul_median_60': '서울 기준 중위소득의 60%', 'case_specific': '사건별 확인 금액'}.get(value, '적용 기준 확인 필요')
+    if key == 'objection':
+        return '이의가 있는 경우의 요건도 계산' if value is True else '이의가 없는 경우를 가정한 검토안'
+    if key == 'preapproval_costs_paid':
+        return '납부 완료로 간주하지 않음' if value is False else '납부 완료 입력안 · 증빙 확인 필요'
+    if value is None:
+        return '미확인'
+    display = f'{value:,}' if type(value) is int else str(value)
+    units = {'months': '개월', 'prepaid_months': '회', 'recognized_household_size': '명'}
+    if key in units:
+        return display + units[key]
+    if key in {'additional_living_cost', 'monthly_trustee_fee', 'base_living_cost'} or (key or '').endswith(
+            ('.secured_deduction', '.exempt_deduction', '.disposal_cost')):
+        return display + '원'
+    return display
+
+
+def validate_provisional(case, calculation):
+    """Reject stale/tampered scenarios before filling a review-only document."""
+    if (not isinstance(calculation, dict) or calculation.get('status') != 'provisional'
+            or calculation.get('provisional') is not True or calculation.get('approval') is not None
+            or calculation.get('submission_ready') is not False or calculation.get('stale')
+            or calculation.get('auto_preparation', {}).get('passed') is True
+            or calculation.get('input_revision') != case.get('input_revision')):
+        return False
+    try:
+        fresh = calculate_provisional(case, calculation.get('requested_inputs'))
+        return (fresh['status'] == 'provisional' and _projection_hash(calculation) == calculation.get('projection_hash')
+                and fresh['projection_hash'] == calculation['projection_hash'])
+    except (KeyError, ValueError, TypeError):
+        return False

@@ -42,6 +42,7 @@
 | 틀린 문서를 고치고 최종 확인하려면요? | [보완·승인·제출 기록](filing-review.md) |
 | 이번에 무엇이 바뀌었나요? | [변경사항과 확인 범위](implementation-status.md) |
 | 직접 신청부터 시험해 보고 싶어요. | [테스트 안내](testing.md) |
+| 로그인 없이 현재 사건 화면과 작성 자료를 함께 살펴보고 싶어요. | [HTML 사건 자료집](review-files.md) |
 | 실행하거나 다른 환경으로 옮기려면요? | [실행 환경](runtime-analysis.md), [세 저장소의 역할](repositories.md), [운영 환경 준비](deployment.md) |
 
 ## 현재 확인된 범위
