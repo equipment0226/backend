@@ -96,7 +96,7 @@ class OcrScopeTests(unittest.IsolatedAsyncioTestCase):
         def timeout(messages, schema, **kwargs):
             nonlocal count
             count += 1
-            if count == 2:
+            if count >= 2:
                 raise asyncio.TimeoutError()
             return answer(messages, schema, **kwargs)
         with patch.object(model_client, 'generate', new=AsyncMock(side_effect=timeout)):

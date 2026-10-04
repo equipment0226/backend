@@ -13,6 +13,7 @@ import hashlib
 import inspect
 import json
 import math
+import os
 import re
 import threading
 import time
@@ -29,7 +30,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 # including a complete negative review without ever changing its status.
 _LOCAL_SUCCESS_CACHE = OrderedDict()
 _LOCAL_SUCCESS_LOCK = threading.Lock()
-_LOCAL_SUCCESS_TTL = 3600
+_LOCAL_SUCCESS_TTL = 6 * 3600
 _LOCAL_SUCCESS_LIMIT = 256
 
 
@@ -55,13 +56,18 @@ async def _verify_cached_batch(kind, payload):
             return {**copy.deepcopy(entry[1]), 'cache_hit': True}
         _LOCAL_SUCCESS_CACHE.pop(key, None)
     result = await run_local_verification(kind, payload)
+    _remember_local_batch(kind, payload, result, key=key)
+    return result
+
+
+def _remember_local_batch(kind, payload, result, *, key=None):
     if _complete_local_batch(kind, payload, result):
+        key = key or _local_success_key(kind, payload)
         with _LOCAL_SUCCESS_LOCK:
             _LOCAL_SUCCESS_CACHE[key] = (time.monotonic(), copy.deepcopy(result))
             _LOCAL_SUCCESS_CACHE.move_to_end(key)
             while len(_LOCAL_SUCCESS_CACHE) > _LOCAL_SUCCESS_LIMIT:
                 _LOCAL_SUCCESS_CACHE.popitem(last=False)
-    return result
 
 
 def _complete_local_batch(kind, payload, result):
@@ -110,7 +116,7 @@ def _complete_local_batch(kind, payload, result):
 
 from . import model_client
 
-VERSION = "private-verification-v6-indexed-ocr-verdicts"
+VERSION = "private-verification-v7-bounded-timeout-recovery"
 MAX_LOCAL_CHARACTERS = 12000
 NUMERIC_FACTS = {
     "monthly_income", "total_debt", "living_expenses", "assets_total",
@@ -457,6 +463,21 @@ def _compact_json(content):
     return json.loads(content, object_pairs_hook=unique_keys)
 
 
+def local_verification_timeout(input_bound, output_limit):
+    """Bound CPU processing time per call, not the whole case's running time.
+
+    Long source pages need more prefill time even when their verdict is short.
+    The operator override is deliberately finite; it cannot disable timeouts.
+    """
+    configured = os.getenv('DEBTOFF_LOCAL_VERIFICATION_TIMEOUT', '').strip()
+    if configured:
+        try:
+            return max(120, min(600, int(configured)))
+        except (ValueError, TypeError):
+            pass
+    return max(180, min(300, math.ceil(60 + input_bound / 40 + min(output_limit, 1024) / 3)))
+
+
 async def run_local_verification(kind: str, payload: dict) -> dict:
     """Verify every requested item against local source text, with full coverage.
 
@@ -520,11 +541,16 @@ async def run_local_verification(kind: str, payload: dict) -> dict:
             {"role":"system","content":prompt},{"role":"user","content":encoded}]
         options={'local_context_tokens':compact['context_tokens']} if compact else {}
         token_limit=compact['max_tokens'] if compact else min(12000,max(1200,len(items)*220))
+        input_bound = (compact['token_upper_bound'] - token_limit if compact else
+            sum(len(message['content'].encode('utf-8')) for message in messages)
+            + len(json.dumps(schema, ensure_ascii=False, separators=(',', ':')).encode('utf-8')) + 512)
+        timeout = local_verification_timeout(input_bound, token_limit)
         execution={'format':'evidence_selection' if compact else 'full_review',
                    'item_count':len(items),'source_count':len(sources),'output_token_limit':token_limit,
-                   'input_characters':sum(len(message['content']) for message in messages)}
+                   'input_characters':sum(len(message['content']) for message in messages),
+                   'timeout_seconds': timeout}
         raw = await model_client.generate(messages,compact['schema'] if compact else schema,
-            task_role=kind,timeout=120,max_tokens=token_limit,**options)
+            task_role=kind,timeout=timeout,max_tokens=token_limit,**options)
         execution.update(elapsed_seconds=round(time.perf_counter()-started,3),
             **{key:raw[key] for key in ('prompt_eval_count','eval_count','load_duration','prompt_eval_duration','eval_duration',
                                       'context_tokens','input_token_upper_bound','output_token_limit')
@@ -771,6 +797,52 @@ def _restore_ocr_scopes(results, associations, source_map, work_sources):
     return restored, complete
 
 
+async def _verify_with_timeout_recovery(kind, payload):
+    """Retry one timed-out multi-item scope in halves, with no recursion.
+
+    Every child keeps its complete declared sources and context. A partial
+    recovery is still unavailable; a disagreement is still a disagreement.
+    Completed halves remain available to an exact later retry in local memory.
+    """
+    initial = await _verify_cached_batch(kind, payload)
+    items = payload['items']
+    if (kind != 'ocr' or (initial.get('error') or {}).get('code') != 'MODEL_TIMEOUT'
+            or len(items) < 2):
+        return initial
+    source_map = _source_map(payload)
+    middle = (len(items) + 1) // 2
+    results, attempts = [], []
+    for rows in (items[:middle], items[middle:]):
+        source_ids = {source_id for item in rows for source_id in (item.get('source_ids') or list(source_map))}
+        child = {'sources': [source_map[key] for key in sorted(source_ids)], 'items': rows,
+                 **{key: payload[key] for key in ('context', 'draft') if key in payload}}
+        result = await _verify_cached_batch(kind, child)
+        results.append(result)
+        attempts.append({'item_count': len(rows), 'input_sha256': result['input_sha256'],
+                         'status': result['status'], 'error': result.get('error'),
+                         'cache_hit': bool(result.get('cache_hit')), 'execution': result.get('execution', {})})
+        if result.get('status') == 'unavailable':
+            break
+    findings = [row for result in results for row in result.get('findings', [])]
+    checked = [item_id for result in results for item_id in result.get('checked_item_ids', [])]
+    complete = (len(results) == 2 and sorted(checked) == sorted(item['id'] for item in items)
+                and all(result.get('status') in {'passed', 'needs_review'} and not result.get('error') for result in results))
+    passed = complete and all(result.get('passed') for result in results)
+    combined = {'status': 'passed' if passed else 'needs_review' if complete else 'unavailable',
+        'passed': passed, 'kind': kind, 'findings': findings, 'checked_item_ids': checked,
+        'input_sha256': _digest(payload), 'version': VERSION, 'external_processing': False,
+        'source_refs': [{'source_id': source['id'], 'version': source.get('version'),
+                         'sha256': _digest(source['text'])} for source in source_map.values()],
+        'error': None if complete else next((result['error'] for result in results if result.get('error')), initial['error']),
+        'execution': {'format': initial.get('execution', {}).get('format', 'evidence_selection'),
+            'item_count': len(items), 'source_count': len(source_map),
+            'elapsed_seconds': round(sum(result.get('execution', {}).get('elapsed_seconds', 0) for result in [initial, *results]), 3),
+            'timeout_recovery': {'strategy': 'split_once', 'initial': initial.get('execution', {}),
+                                 'parts': attempts, 'unattempted_parts': 2 - len(results)}}}
+    _remember_local_batch(kind, payload, combined)
+    return combined
+
+
 async def run_local_verification_batched(kind: str, payload: dict, progress=None) -> dict:
     """Bound per-item context while preserving exact overall coverage and hashes.
 
@@ -822,7 +894,7 @@ async def run_local_verification_batched(kind: str, payload: dict, progress=None
                 update = progress({"kind": kind, "completed": index, "total": len(batches), "item_ids": [item["id"] for item in batch["items"]]})
                 if inspect.isawaitable(update):
                     await update
-            result = await _verify_cached_batch(kind, batch)
+            result = await _verify_with_timeout_recovery(kind, batch)
             results.append(result)
             # Infrastructure/format failure cannot establish coverage. Stop now
             # instead of spending another timeout on every remaining document.

@@ -33,10 +33,11 @@
 | 사건 개요의 그래프와 보완 의견은 무엇을 뜻하나요? | [사건 대시보드와 법률쟁점](case-overview.md) |
 | 상담에서 어떤 정보를 찾아내나요? | [상담 내용이 업무로 연결되는 방식](ax-pipeline.md) |
 | 고객은 어떤 화면을 이용하나요? | [고객 페이지와 알림](portal.md) |
+| 로딩과 화면 전환은 어떻게 안내하나요? | [화면의 움직임과 이용 흐름](interface-motion.md) |
 | 어떤 서류를 왜 요청하나요? | [법원과 상황에 맞춘 서류 안내](court-request-rules.md) |
 | 사진과 PDF에서 내용을 어떻게 읽나요? | [제출 서류 읽기](ocr.md), [읽은 내용을 사건 정보로 정리하기](document-extraction.md) |
 | 계산과 전략 검토는 어떻게 이어지나요? | [법률계산](legal-calculation.md), [자동 진행과 보완](ax-automation.md) |
-| 진술서와 신청 문서는 어떻게 작성하나요? | [문서 작성](document-workflow.md), [법원 서식과 다운로드](court-forms.md) |
+| 진술서와 신청 문서는 어떻게 작성하고 확인하나요? | [문서 작성](document-workflow.md), [법원 서식 미리보기와 다운로드](court-forms.md) |
 | AI는 무엇을 확인하나요? | [AI에게 맡기는 일과 확인 기준](prompts.md) |
 | 틀린 문서를 고치고 최종 확인하려면요? | [보완·승인·제출 기록](filing-review.md) |
 | 이번에 무엇이 바뀌었나요? | [변경사항과 확인 범위](implementation-status.md) |
