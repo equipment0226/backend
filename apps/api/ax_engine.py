@@ -149,8 +149,12 @@ def _windows(text: str, size=900, overlap=140):
 
 def case_sources(case: dict) -> list[dict]:
     """Preserve exact page text and distinguish claims from workflow metadata."""
+    from .extraction_readiness import active_documents
+    current_documents = active_documents(case)
+    excluded_document_ids = {document['id'] for document in case.get('documents', [])} - {
+        document['id'] for document in current_documents}
     sources = []
-    for document in case.get("documents", []):
+    for document in current_documents:
         if not _active(document):
             continue
         doc_id = str(document["id"])
@@ -201,7 +205,7 @@ def case_sources(case: dict) -> list[dict]:
             sources.append(_source(f"statement:{statement.get('id', index)}:{offset}", "party_statement",
                 statement.get("title", "상담 진술"), excerpt, statement.get("version", 1), status="unverified_statement"))
     for fact in case.get("facts", []):
-        if not _active(fact):
+        if not _active(fact) or excluded_document_ids.intersection(fact.get('evidence_ids', [])):
             continue
         value = fact.get("value") if fact.get("value") is not None else fact.get("claimed_value")
         if value is None:

@@ -136,11 +136,18 @@ FEATURE_ENUMS = {
     "case_type": {"personal_rehabilitation", "bankruptcy_review", "unknown"},
     "employment_type": {"wage", "business", "pension", "unemployed", "unknown"},
     "income_basis": {"net", "gross", "unknown"},
+    "procedure_stage": {"initial_application", "post_approval", "discharge"},
+}
+EVIDENCE_FEATURE_FLAGS = {
+    'income_evidence_verified', 'debt_evidence_verified', 'housing_evidence_verified',
+    'living_expenses_evidence_verified', 'bank_balance_evidence_verified',
+    'insurance_evidence_verified', 'retirement_evidence_verified', 'household_evidence_verified',
 }
 FEATURE_FLAGS = {
     "recent_borrowing", "prior_proceedings", "asset_disposal", "family_repayment",
     "variable_income", "objection", "preapproval_costs_paid",
-}
+    "spouse_property", "investment_loss", "additional_living_cost", "prior_discharge",
+} | EVIDENCE_FEATURE_FLAGS
 RISK_CODES = {
     "INSUFFICIENT_INCOME", "LIQUIDATION_SHORTFALL", "DEBT_LIMIT_EXCEEDED",
     "MISSING_EVIDENCE", "UNRESOLVED_LEGAL_ISSUE", "POLICY_MISMATCH",
@@ -629,6 +636,10 @@ def build_safe_strategy_payload(structured_case: dict, calculations: dict | None
     for source in legal_sources or []:
         if not isinstance(source, dict):
             continue
+        if source.get('public_graph_node_id'):
+            # Reconstruct these references from the verified graph, not from
+            # the caller's text, title, ID or claimed hash.
+            continue
         public_id = source.get("public_source_id", source.get("source_id", source.get("id")))
         if isinstance(public_id, str) and public_id in PUBLIC_SOURCE_IDS:
             public_ids.add(public_id)
@@ -649,7 +660,9 @@ def build_safe_strategy_payload(structured_case: dict, calculations: dict | None
             refs.append({"ref": f"LAW{len(refs) + 1}", "law": "debtor_rehabilitation_act", "articles": sorted(set(articles))})
     # National precedents are separate from court-specific document policies.
     # The same trusted retrieval is repeated during boundary validation.
-    public_ids.update({"AXP01", "AXP02", "AXP03"})
+    # Historical decisions are selected for the current issue and procedural
+    # stage by the graph below. An appeal after approval is not a universal
+    # example for every new application.
     for source_id in sorted(public_ids):
         if source_id == "AXC06" and features.get("court_id") != "CT06":
             continue
@@ -666,13 +679,23 @@ def build_safe_strategy_payload(structured_case: dict, calculations: dict | None
             corpus_count += 1
             if corpus_count == 3:
                 break
+    from . import legal_knowledge_graph, legal_calculator, legal_watch
+    graph_policy = {**legal_calculator.policy(), **legal_watch.case_policy_status(features)}
+    graph = legal_knowledge_graph.external_context({**features, 'numeric_facts': numeric,
+        'calculation': numbers, 'risk_codes': risks}, graph_policy)
+    for reference in graph.get('references', []):
+        refs.append({'ref': f'LAW{len(refs) + 1}',
+            'public_graph_node_id': reference['node_id'], 'public_source_id': reference['id'],
+            **{key: value for key, value in reference.items() if key not in {'node_id', 'id'}}})
+    graph = {key: value for key, value in graph.items() if key != 'references'}
     return {"privacy_version": VERSION, "case_features": features, "numeric_facts": numeric,
-            "calculation": numbers, "risk_codes": risks, "legal_references": refs}
+            "calculation": numbers, "risk_codes": risks, "legal_references": refs,
+            "knowledge_graph": graph}
 
 
 def safe_strategy_messages(payload):
     """Validate the full external shape again; reject extras or unsanitized types."""
-    if not isinstance(payload, dict) or set(payload) != {"privacy_version", "case_features", "numeric_facts", "calculation", "risk_codes", "legal_references"}:
+    if not isinstance(payload, dict) or set(payload) != {"privacy_version", "case_features", "numeric_facts", "calculation", "risk_codes", "legal_references", "knowledge_graph"}:
         raise model_client.ModelClientError("UNSAFE_EXTERNAL_PAYLOAD", "외부 검증용 익명 구조가 올바르지 않습니다.")
     features = payload.get("case_features")
     if not isinstance(features, dict) or not isinstance(payload.get("numeric_facts"), dict) or not isinstance(payload.get("calculation"), dict):
@@ -692,6 +715,23 @@ def safe_strategy_messages(payload):
              "제공되지 않은 판례나 구체적 법률 문구를 만들어내지 않는다. public_source_id가 있는 excerpt는 "
              "공식 공개 원문 스냅샷이다. 판례의 당시 법령과 현재 법령·기간은 구분한다. 파기환송은 인가 사례가 아니다. "
              "source_refs는 제공된 LAW 별칭만 인용하고 판례의 구체적 사실이 이 사건에도 있는지 대조한다. "
+             "knowledge_graph는 공식 원문에서 확인한 법률요건·쟁점·판례·필요증빙의 관계다. "
+             "지식그래프의 쟁점은 검토할 주제이지 그 사실이 현재 사건에 존재한다는 증명이 아니다. "
+             "판례 속 배우자·처분·과거 절차가 현재 사건에도 있다고 가정하거나 없는 사정의 증빙을 일괄 요청하지 않는다. "
+             "판례가 요구한 조건, 현재 사건에서 확인한 수치, 아직 없는 증빙을 구분해 비교한다. "
+             "case_features의 *_evidence_verified=true는 현재 수치에 연결된 원본과 추출값이 이미 검토되었다는 뜻이다. "
+             "income은 월 소득, debt는 채무 합계, housing은 보증금·주거비, living_expenses는 생활지출, "
+             "bank_balance는 예금잔액, insurance는 보험환급금, retirement는 예상퇴직금, household는 가구원 수다. "
+             "true인 영역을 단순히 증빙 미제공으로 취급하거나 동일 자료를 다시 일괄 요청하지 않는다. "
+             "이미 확인된 수치 사이에 모순이 있으면 재제출부터 요구하지 말고 금액·기간·계산 연결을 먼저 대조한다. "
+             "추가 증빙이 필요하면 기존 증빙으로 확인할 수 없는 구체 조건을 지목한다. "
+             "false나 누락은 검토 미완료 또는 확인 불가이지 미제출 확정이 아니다. "
+             "이 표시는 모든 채권·재산 누락 없음, 요청기간 전체 충족, 법률상 인정이나 인가를 뜻하지 않는다. "
+             "관할과 절차단계가 다른 사례를 같은 법원의 신규 인가 사례라고 부르지 않는다. "
+             "전략은 (1)현재 확인된 부족·초과 또는 미확인 조건 (2)구체적으로 준비할 증빙 "
+             "(3)보완 후 다시 계산·검토할 항목 순서로 두세 문장에 정리한다. "
+             "자료 미확인을 법률 위반이나 기각 확정으로 단정하지 않고 인가 확률을 만들어내지 않는다. "
+             "매각대금은 재산으로 추적되므로 매각만으로 청산가치가 줄어든다고 설명하지 않는다. "
              "문제별 사유와 추가 소명 또는 적법한 변제안 조정 전략을 제시한다. 자산 은닉·허위기재는 제안하지 않는다. "
              "근거가 부족하면 insufficient_evidence, 쟁점이 있으면 review_required다. "
              "no_additional_risk_identified는 법원 인가 예측이나 승인 보장이 아니다. JSON만 반환한다."},

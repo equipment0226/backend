@@ -17,7 +17,6 @@ class CaseScopedResetTests(unittest.TestCase):
         root = Path(temporary.name)
         self.local = root / '.local'
         self.local.mkdir()
-        (root / 'reports').mkdir()
         for attribute, value in [('ROOT', root), ('RUNTIME', self.local)]:
             patcher = patch.object(reset_test_case, attribute, value)
             patcher.start()
@@ -62,6 +61,18 @@ class CaseScopedResetTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             reset_test_case.reset(self.case_id, apply=True)
         self.assertTrue((self.local / 'uploads' / self.case_id).exists())
+
+    def test_archive_import_jobs_are_backed_up_and_removed_with_their_case(self):
+        folder = self.local / 'document_imports' / self.case_id
+        folder.mkdir(parents=True)
+        (folder / 'job.json').write_text('{"status":"completed"}', encoding='utf-8')
+        with patch('scripts.reset_test_case.socket.socket') as socket:
+            socket.return_value.__enter__.return_value.connect_ex.return_value = 1
+            result = reset_test_case.reset(self.case_id, apply=True)
+        self.assertFalse(folder.exists())
+        with zipfile.ZipFile(self.local.parent / result['backup']) as archive:
+            self.assertEqual(json.loads(archive.read('document_imports/' + self.case_id + '/job.json')),
+                             {'status': 'completed'})
 
     def test_invalid_or_escaping_case_id_is_rejected(self):
         with self.assertRaises(ValueError):

@@ -49,7 +49,7 @@ def reset(case_id, apply=False):
         tables = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         counts = {table: con.execute(f'SELECT COUNT(*) FROM {table} WHERE case_id=?', (case_id,)).fetchone()[0]
                   for table in CASE_TABLES if table in tables}
-    folders = [checked(RUNTIME / kind / case_id) for kind in ('uploads', 'generated')]
+    folders = [checked(RUNTIME / kind / case_id) for kind in ('uploads', 'generated', 'document_imports')]
     files = []
     for folder in folders:
         if folder.exists():
@@ -109,6 +109,7 @@ def reset(case_id, apply=False):
     checked(snapshot).unlink()
     report.update(applied=True, backup=archive_path.relative_to(ROOT).as_posix(),
                   backup_files_verified=len(manifest), accounts_unchanged=True)
+    (ROOT / 'reports').mkdir(exist_ok=True)
     (ROOT / 'reports/test-case-reset.json').write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     return report
 

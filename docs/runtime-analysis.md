@@ -8,7 +8,7 @@
 
 현재 통합 작업 폴더에서는 `start-local.cmd`로 실행합니다. 고객 화면은 http://localhost:5173, 직원·변호사 화면은 http://localhost:5174 입니다. 실행 중인 서버가 있으면 같은 서버를 중복 실행하지 않습니다.
 
-2026년 10월 4일 이하늘 가상 사건을 백업 후 삭제하고 ‘박지우’ 사건 한 건을 상담 신청 접수 상태로 준비했습니다. 계정은 그대로 보존했습니다. 직원이 세부 상담을 요청하는 단계부터 직접 진행하면 됩니다. 자료 제출이나 검토·승인은 미리 처리하지 않았으며, 재시작해도 과거 시연 사건을 다시 만들지 않습니다.
+2026년 10월 4일 마지막 요청에 따라 기존 사건 전체를 백업 후 비우고 계정은 보존했습니다. 사건 0건에서 고객이 이하늘 상담을 직접 신청하면 됩니다. 새로운 사건이나 제출·검토·승인을 미리 만들지 않았으며, 재시작해도 과거 시연 사건을 다시 만들지 않습니다.
 
 접속 계정과 신청 순서는 [테스트 안내](testing.md)에 있습니다. 예전 검사 보고서에 남아 있는 사건 수나 화면은 당시 기록이므로 현재 사건 목록과 구분해서 봐야 합니다.
 
@@ -35,6 +35,10 @@ AI가 응답하는 데 시간이 걸릴 수 있어 화면에는 처리 중인 �
 
 회귀 검사는 사건 DB와 분리된 환경에서 실행합니다. 서류 한 건을 검토하면 그 자료의 값들이 함께 확인되는지, 개별 수정이 계산·문서에 유지되는지, 페이지 판독이나 AI 대조가 미완료일 때 다음 작성을 막는지 포함합니다. 검사 개수와 실행 시각은 아래 기록에서 확인할 수 있습니다.
 
+ZIP 접수는 파일명을 무작위로 바꾼 PDF 29개를 실제 비동기 처리 경로에 넣어 확인했습니다. 요청 연결, 원본 내용 보존, 추출 완료 기록과 검토 전 상태를 대조했습니다. 분류에 외부 AI를 호출하지 않았으며, 이 결과를 모든 스캔·기관 서식에 대한 정확도로 해석하지 않습니다.
+
+개요와 법률쟁점은 같은 계산·증빙·공개 근거를 사용하는지 확인했습니다. 공식 법률·법원 자료 10건의 본문을 다시 수집했고, 별도의 가상 사건을 익명화해 실제 심화 검토도 호출했습니다. 이 검토는 의도적으로 넣은 채무 금액의 불일치를 보완 대상으로 남겼으며, 인가나 문서 승인을 받은 결과는 아닙니다.
+
 ## 확인 기록을 찾아보려면
 
 다음 파일은 로컬 검사 결과입니다. 고객 자료와 실행 흔적이 저장소에 섞이지 않도록 Git에는 포함하지 않습니다.
@@ -45,8 +49,11 @@ AI가 응답하는 데 시간이 걸릴 수 있어 화면에는 처리 중인 �
 | 작성 문서의 내용 연결 | `reports/ocr-audit/court_ready_fixture-generated-documents.json` |
 | 가상 판단을 넣은 계산·서식 연결 | `reports/court-ready-fixture/reviewed-layout.json` |
 | 원본 금액 검산과 시각 확인 | `reports/court-ready-fixture/arithmetic.json`, `source-visual-review.json` |
-| 세 계정 로그인·새 사건 | `reports/browser-court-ready-intake.json` |
-| 가상 사건 정리·백업과 신규 접수 | `reports/test-case-reset.json`, `reports/new-test-case.json` |
+| 세 계정 로그인·사건 0건 시작 | `reports/browser-fresh-start.json` |
+| 가상 사건 정리·백업 | `reports/test-case-reset.json` |
+| 대시보드·법률쟁점 화면 | `reports/case-dashboard/result.json` |
+| 복수 원본·ZIP 제출 화면 | `reports/upload-batch/result.json`, `reports/archive-upload/result.json` |
+| 실제 익명 심화 검토 | `reports/dashboard-real-review.json` |
 | 최신 회귀 검사 | `reports/test-results.json` |
 | 독립 실행·파일 일치 확인 | `.work/repository-split/validation.json` |
 | 세 저장소 업로드 확인 | `reports/git-publication.json` |

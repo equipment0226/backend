@@ -34,6 +34,13 @@ class SourceReview(BaseModel):
     candidate_reviews: list[CandidateDecision] = Field(default_factory=list, max_length=1000)
 
 
+class SourceRequestAssignment(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    expected_version: StrictInt = Field(ge=1)
+    request_id: str = Field(min_length=1, max_length=200)
+    reason: str = Field(min_length=5, max_length=1500)
+
+
 def reviewable_document(case, doc_id):
     from .extraction_readiness import document_state
     document = domain.item(case, 'documents', doc_id)
@@ -112,9 +119,8 @@ def apply_document(case, document, data, user):
         request = domain.item(case, 'requests', document['request_id'])
         # A historical source can be reviewed without reopening a withdrawn request.
         if request.get('status') not in automation.INACTIVE and not request.get('no_longer_required'):
-            request['status'] = 'fulfilled' if document['status'] == 'verified' else 'needs_more'
-            if document['status'] == 'verified':
-                request.pop('public_review_note', None)
+            from .request_collection import sync_review_status
+            sync_review_status(case, request)
     if document['status'] == 'verified':
         document['manual_verification'] = {
             'signature': automation.document_review_signature(case, document),
@@ -125,6 +131,43 @@ def apply_document(case, document, data, user):
 
 
 def attach(app, staff, change):
+    @app.post('/api/cases/{case_id}/documents/{doc_id}/request')
+    def assign_source_request(case_id: str, doc_id: str, data: SourceRequestAssignment, user=Depends(staff)):
+        def apply(case):
+            document = domain.item(case, 'documents', doc_id)
+            domain.require(not document.get('request_id'), 'DOCUMENT_ALREADY_ASSIGNED',
+                           '이미 연결된 자료입니다. 현재 요청에서 원문과 추출값을 확인해 주세요.')
+            domain.require(document.get('status') in {'received', 'needs_more', 'verified'}
+                           and document.get('source_type') != 'meeting', 'INACTIVE_DOCUMENT',
+                           '현재 받은 자료 중 연결되지 않은 원본만 선택할 수 있습니다.')
+            domain.require(document.get('automated_check', {}).get('coverage_status') != 'identity_conflict'
+                           and document.get('import_routing', {}).get('identity_status') != 'conflict',
+                           'DOCUMENT_IDENTITY_CONFLICT', '명의가 다른 자료는 요청에 연결할 수 없습니다. 제출 대상자를 확인하세요.')
+            request = domain.item(case, 'requests', data.request_id)
+            domain.require(request.get('status') not in automation.INACTIVE and not request.get('no_longer_required'),
+                           'REQUEST_WITHDRAWN', '철회된 요청에는 연결할 수 없습니다. 현재 필요한 요청을 선택하세요.')
+            domain.require(bool(data.reason.strip()), 'REASON_REQUIRED', '연결 근거를 입력해 주세요.')
+            domain.invalidate(case, '담당자가 받은 원본을 요청서류에 연결')
+            assignment = {'at': store.now(), 'actor_id': user['id'], 'actor': user['name'],
+                          'request_id': request['id'], 'reason': data.reason.strip(),
+                          'previous': {key: copy.deepcopy(document.get(key)) for key in (
+                              'request_id', 'status', 'scope_confirmed', 'content_confirmed', 'person_confirmed',
+                              'manual_verification', 'auto_verified', 'extraction_review')}}
+            document.setdefault('request_assignment_history', []).append(assignment)
+            document.update(request_id=request['id'], status='received', scope_confirmed=False,
+                            classification_review_required=False, scope_review_required=True,
+                            public_status='요청 항목 연결 · 원문과 추출값 확인 전', auto_verified=False)
+            # A new scope requires a new review. Preserve the previous decision
+            # in history without changing the original, candidates or facts.
+            document.pop('manual_verification', None)
+            document.pop('extraction_review', None)
+            if doc_id not in request.setdefault('document_ids', []):
+                request['document_ids'].append(doc_id)
+            request.pop('automatic_validation', None)
+            from .request_collection import sync_review_status
+            sync_review_status(case, request)
+        return change(case_id, user, data.expected_version, 'document.request_assigned', apply)
+
     @app.post('/api/cases/{case_id}/documents/{doc_id}/review')
     def review_source(case_id: str, doc_id: str, data: SourceReview, user=Depends(staff)):
         def apply(case):

@@ -710,6 +710,14 @@ def write_bundle():
         for path in sorted(OUT.rglob('*')):
             if path.is_file():archive.write(path,path.relative_to(OUT))
     temporary.replace(bundle)
+    # The customer upload pack contains only originals. Expected parser values
+    # and fictional legal assumptions must never enter automatic extraction.
+    submission = ROOT/'examples/court_ready_fixture_submission.zip'
+    temporary = submission.with_suffix('.zip.tmp')
+    with zipfile.ZipFile(temporary, 'w', zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted((OUT/'documents').glob('*.pdf')):
+            archive.write(path, path.name)
+    temporary.replace(submission)
     return bundle
 
 

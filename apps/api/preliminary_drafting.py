@@ -12,20 +12,25 @@ from decimal import Decimal
 
 from . import drafting, store
 
-VERSION = 'preliminary-evidence-draft-v3'
+VERSION = 'preliminary-evidence-draft-v4-current-source-scope'
 
 
 def render_case(case, ocr_check=None):
     from .verification import _numbers
-    from . import evidence_mapping
+    from . import evidence_mapping, extraction_readiness
     packet = evidence_mapping.build(case)
     safe = copy.deepcopy(case)
+    active_ids = {doc['id'] for doc in extraction_readiness.active_documents(case)}
+    # Keep historical originals in the actual case, but remove them from the
+    # isolated renderer input as well as the deterministic evidence packet.
+    safe['documents'] = [doc for doc in safe.get('documents', []) if doc['id'] in active_ids]
     # Keep bound review records available for an independent PDF reparse, away
     # from the display candidates selected below. No value bypasses the mapper's
     # original-file, fact and scope checks through this provenance collection.
     safe['source_review_candidates'] = copy.deepcopy([
-        candidate for candidate in case.get('extraction_candidates', []) if candidate.get('source_edit')])
-    documents = {doc['id']: doc for doc in case.get('documents', []) if doc.get('status') == 'verified'
+        candidate for candidate in case.get('extraction_candidates', [])
+        if candidate.get('source_edit') and candidate.get('document_id') in active_ids])
+    documents = {doc['id']: doc for doc in safe['documents'] if doc.get('status') == 'verified'
                  and doc.get('text', '').strip() and doc.get('automated_check', {}).get('coverage_status') != 'identity_conflict'}
     checked = set((ocr_check or {}).get('checked_item_ids', []))
     supported = {row.get('item_id') for row in (ocr_check or {}).get('findings', []) if row.get('status') == 'supported'}
@@ -150,12 +155,9 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
             reasoning = {'status':'not_attempted', 'passed':False, 'findings':[]}
             if strategy_review:
                 try:
+                    from . import strategy_context
                     reasoning = await strategy_review(
-                        {'court_id':case.get('court_id'), 'case_type':case.get('case_type', 'personal_rehabilitation'),
-                         'employment_type':safe['evidence_mapping']['inputs'].get('income', {}).get('kind', 'unknown'),
-                         'income_basis':safe['evidence_mapping']['inputs'].get('income', {}).get('basis', 'unknown'),
-                         'facts':{key:value for key,value in safe['evidence_mapping']['form_values'].items()
-                                  if type(value) in (int, float, bool)}, 'input_revision':case['input_revision']},
+                        strategy_context.build(safe, calculation, safe['evidence_mapping']),
                         calculation, legal_sources or strategy['source_refs'])
                 except Exception:
                     # Supplementary inference must not discard the detached
@@ -165,10 +167,8 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                         'error':{'code':'STRATEGY_UNAVAILABLE', 'message':'전략 검증 연결을 완료하지 못했습니다. 계산 결과와 확인된 자료는 보존했습니다.'}}
             strategy['verification'] = reasoning
             strategy['reasons'].extend(copy.deepcopy(issues))
-            for finding in reasoning.get('findings', []):
-                strategy['strategies'].append({'code':finding.get('code'), 'title':'추가 전략 검토',
-                    'description':finding.get('strategy', ''), 'reason':finding.get('reason', ''),
-                    'source_refs':finding.get('source_refs', [])})
+            from . import strategy_context
+            strategy['strategies'].extend(strategy_context.finding_cards(reasoning))
             if not reasoning.get('passed'):
                 reason = {'code':'STRATEGY_VERIFICATION', 'stage':'analysis',
                           'reason':'법률 쟁점·전략의 독립 검증이 완료되지 않았습니다.'}

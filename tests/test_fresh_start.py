@@ -296,6 +296,26 @@ class FreshStartTests(unittest.TestCase):
             self.assertEqual(accounts.config()['start_profile'], 'production')
             self.assertEqual(self.client.get('/api/portal/testing-materials', headers=self.auth('customer')).status_code, 404)
 
+    def test_case_testing_download_matches_person_and_preserves_case_authorization(self):
+        import io
+        import zipfile
+        case = self.apply(name='이하늘')
+        result = self.client.get('/api/portal/testing-materials', params={'case_id': case['id']},
+                                 headers=self.auth('customer'))
+        self.assertEqual(result.status_code, 200, result.text[:200] if result.status_code != 200 else '')
+        with zipfile.ZipFile(io.BytesIO(result.content)) as archive:
+            self.assertEqual(len(archive.namelist()), 15)
+            self.assertTrue(all(name.lower().endswith('.pdf') for name in archive.namelist()))
+        result = self.client.get('/api/portal/testing-materials', params={'case_id': 'case-missing'},
+                                 headers=self.auth('customer'))
+        self.assertEqual(result.status_code, 404)
+        stored = store.get_case(case['id'])
+        stored['client_user_id'] = 'another-customer'
+        with store.db() as con:
+            con.execute('UPDATE cases SET body=? WHERE id=?', (json.dumps(stored), case['id']))
+        self.assertEqual(self.client.get('/api/portal/testing-materials', params={'case_id': case['id']},
+                         headers=self.auth('customer')).status_code, 404)
+
     def test_short_fresh_credentials_are_never_bootstrapped_in_production(self):
         new_directory = self.stack.enter_context(tempfile.TemporaryDirectory())
         with patch.object(store, 'DATA_DIR', Path(new_directory)), patch.dict(os.environ,

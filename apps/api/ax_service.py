@@ -19,7 +19,7 @@ def knowledge_signature(case=None):
         from .ax_engine import HARNESS_VERSION
         from .prompt_registry import signature
         from .automation import VERSION
-        from . import legal_watch, court_forms, grounded_drafting, auto_documents, workflow_contract, document_facts, evidence_mapping, verification
+        from . import legal_watch, court_forms, grounded_drafting, auto_documents, workflow_contract, document_facts, evidence_mapping, verification, legal_knowledge_graph
         court_file = store.ROOT / 'data/court_request_rules.json'
         court_policy = json.loads(court_file.read_text(encoding='utf-8')) if court_file.exists() else {}
         court_id = (case or {}).get('court_id')
@@ -33,6 +33,7 @@ def knowledge_signature(case=None):
                              auto_documents.VERIFICATION_VERSION,
                              grounded_drafting.VERSION, grounded_drafting.writing_policy(),
                              document_facts.VERSION, evidence_mapping.VERSION, verification.VERSION,
+                             legal_knowledge_graph.signature(),
                              workflow_contract.VERSION, workflow_contract.STAGES])
     except (ImportError,OSError,ValueError):return 'unavailable'
 

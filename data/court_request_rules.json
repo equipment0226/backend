@@ -1,7 +1,30 @@
 {
-  "version": "court-document-rules-2026-10-04.2",
+  "version": "court-document-rules-2026-10-04.3-evidence-collections",
   "reviewed_at": "2026-10-03",
   "scope": "personal_rehabilitation",
+  "preparation_coverage": {
+    "scope": "공식 작성서식의 기재사항을 뒷받침하기 위한 사무실 준비자료입니다. 법원이 모든 사건에 일률적으로 요구하는 법정 필수목록이라는 뜻은 아닙니다.",
+    "common": ["D02", "D04", "SUPPORT-HISTORY", "SUPPORT-EXPENSE", "SUPPORT-VEHICLE", "SUPPORT-TAX"],
+    "salary": ["D05", "D06", "SUPPORT-RETIREMENT"],
+    "insurance_inventory_when_no_refund_request": "SUPPORT-INSURANCE",
+    "source_ids": ["OFFICIAL_WRITING_FIELDS"],
+    "documents": {
+      "SUPPORT-HISTORY": {"name": "채무발생 경위와 과거 절차·생활현황 진술", "issuer": "본인 작성", "purpose": "statement_background", "not_proven": "본인 진술만으로 과거 결정·면책 확정이나 채무 원인을 객관적 사실로 확정하지 않습니다.", "upload_examples": ["채무가 늘어난 시기·사용처", "학력·직장·혼인·거주 이력", "과거 절차 유무와 관련 결정자료"]},
+      "SUPPORT-EXPENSE": {"name": "월 생활지출 내역과 납부자료", "issuer": "본인·거래기관", "purpose": "living_expense_evidence", "accepted_catalog_ids": ["SUPPORT-EXPENSE-RECEIPTS"], "not_proven": "실제 지출액과 법률상 인정 생계비는 다릅니다.", "upload_examples": ["월 생활지출표", "월세·공과금·의료·보험료 납부내역"]},
+      "SUPPORT-RETIREMENT": {"name": "퇴직급여 제도·예상액 확인자료", "issuer": "근무처·퇴직연금 운영기관", "purpose": "retirement_evidence", "split": "employer", "not_proven": "일반 퇴직금과 DB·DC·IRP를 구분하며 공제 전 예상액을 그대로 청산가치로 확정하지 않습니다.", "upload_examples": ["예상퇴직금 확인서 또는 해당 없음 확인", "일반 퇴직금·DB·DC·IRP 제도 확인자료"]},
+      "SUPPORT-VEHICLE": {"name": "자동차 보유 여부 확인자료", "issuer": "차량등록·조회기관", "purpose": "vehicle_inventory", "not_proven": "보유 조회와 차량 시가는 별개입니다. 차량이 없는 경우 시가자료를 요청하지 않습니다.", "upload_examples": ["자동차 소유 조회 결과", "차량이 있는 경우 등록원부 및 별도 시가자료"]},
+      "SUPPORT-TAX": {"name": "국세 납세·체납 현황 확인자료", "issuer": "국세청", "purpose": "tax_inventory", "not_proven": "급여소득자에게 사업자등록증 제출을 요구하는 항목이 아닙니다.", "upload_examples": ["납세증명 또는 체납내역", "다른 확인자료와 함께 발급된 납세 현황"]},
+      "SUPPORT-INSURANCE": {"name": "보험가입 조회 결과", "issuer": "보험가입 조회기관", "purpose": "insurance_inventory", "not_proven": "보험료 납부액·가입금액과 해약환급금은 다릅니다.", "upload_examples": ["보험가입 통합조회 결과", "보험이 없는 경우 가입내역 없음 확인"]}
+    },
+    "request_guides": {
+      "D33": {"accepted_catalog_ids": ["SUPPORT-HOUSING"], "upload_examples": ["현재 임대차계약서", "보증금·월세 납부확인 또는 이체내역"]},
+      "D39": {"accepted_catalog_ids": ["SUPPORT-INSURANCE"], "title": "보험가입 조회·해약환급금 확인자료", "upload_examples": ["보험가입 조회 결과", "계약별 기준일 해약환급금·보험대출 확인서"]},
+      "D42": {"accepted_catalog_ids": ["SUPPORT-HISTORY-EVIDENCE"], "upload_examples": ["진단·치료비 납입 자료", "해당 차입금의 치료비 사용내역"]},
+      "D38": {"upload_examples": ["채권자별 부채증명서", "여러 대출이 있으면 대출별 원금·이자·기준일 자료"]},
+      "D07": {"upload_examples": ["요청기간의 월별 급여명세서 여러 장 또는 통합 PDF"]},
+      "D35": {"upload_examples": ["전체 금융기관 계좌통합조회 결과", "계좌별 잔액 현황"]}
+    }
+  },
   "income_eligibility": {
     "business_only_document_ids": ["D14", "D15", "D16", "D17", "D18", "D19", "D20", "D21", "D22", "D49"],
     "routing_basis": "현재 사업·영업·프리랜서 또는 급여와 사업의 복합소득이 명시된 경우에만 자동 요청",
@@ -10,6 +33,15 @@
     "classification_note": "소득유형 분기 안전장치이며 새 법률상 제출 의무를 추가하지 않음"
   },
   "sources": {
+    "OFFICIAL_WRITING_FIELDS": {
+      "title": "법원 개인회생 신청서·재산목록·수입지출목록·진술서 작성 안내",
+      "url": "https://slb.scourt.go.kr/rel/guide/personal_r/index.jsp",
+      "locator": "저장한 공식 D5100·D5101·D5103·D5105·D5115·D5106 서식의 신원·재산·소득·지출·과거 이력 기재란",
+      "scope": "national",
+      "authority_type": "official_form_field_evidence_preparation",
+      "reviewed_at": "2026-10-04",
+      "evidence": "공식 작성서식의 기재사항을 확인하기 위한 준비자료 연결. 아래 준비자료를 모두 법정 필수 제출서류라고 주장하지 않음."
+    },
     "NATIONAL_FRESHNESS": {
       "title": "개인회생사건 처리지침 제4조 제1항 (생활법령 공식 안내)",
       "url": "https://www.easylaw.go.kr/CSP/CnpClsMain.laf?ccfNo=2&cciNo=1&cnpClsNo=1&csmSeq=1286",
@@ -606,7 +638,7 @@
     "D06": "employer",
     "D07": "employer",
     "D08": "employer",
-    "D35": "account",
+    "D35": "inventory",
     "D36": "account",
     "D37": "account",
     "D38": "creditor",

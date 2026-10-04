@@ -105,6 +105,14 @@ def _business(case, needs):
 
 def _policy_rows(catalog_id, need, profile, is_salary):
     rule = deepcopy(profile.get('documents', {}).get(catalog_id, {}))
+    if catalog_id == 'D07' and is_salary and 'WF02' in need.get('rule_ids', []):
+        # Tax-year proof can establish annual income while current monthly
+        # payroll proves a different reporting period. Do not retire the latter
+        # merely because a prior-year withholding certificate was uploaded.
+        return [{**rule, 'purpose': 'current_monthly_income', 'completed_months': 12,
+            'requirement_kind': 'preparation', 'source_ids': ['OFFICIAL_WRITING_FIELDS'],
+            'locator': '수입지출목록·소득증명서의 현재 월평균 소득과 산정기간 기재란',
+            'qualification': '12개월은 월평균 산정과 변동 확인을 위한 사무실 준비범위입니다. 모든 법원의 법정 공통 요청기간이라는 뜻은 아닙니다.'}]
     if catalog_id == 'D36':
         if profile.get('bank_statement_months'):
             rows = [{'purpose': 'account_activity', 'months': profile['bank_statement_months'],
@@ -143,12 +151,21 @@ def plan(case, required_documents=None, as_of=None):
     court_id = case.get('court_id', '')
     profile = policy['courts'].get(court_id, {'coverage': 'unverified', 'source_ids': []})
     profile = {**profile, 'split': policy['split']}
+    preparation = policy.get('preparation_coverage', {})
+    extra_catalog = preparation.get('documents', {})
+    profile['split'] = {**profile['split'], **{key: value['split'] for key, value in extra_catalog.items() if value.get('split')}}
+    profile['documents'] = {**profile.get('documents', {}), **{key: {
+        'purpose': value.get('purpose', 'evidence_preparation'), 'requirement_kind': 'preparation',
+        'source_ids': preparation.get('source_ids', []),
+        'qualification': preparation.get('scope', ''),
+        'locator': '공식 작성서식의 기재사항을 확인하는 준비자료'} for key, value in extra_catalog.items()}}
     reference = _date(as_of or case.get('application_date') or case.get('filing_date') or
                       case.get('request_reference_date') or case.get('created_at') or
                       datetime.now(timezone(timedelta(hours=9))).date())
     if profile.get('effective_from') and reference < _date(profile['effective_from']):
         profile = {'coverage': 'unverified', 'source_ids': [], 'split': policy['split']}
     catalog = {d['id']: d for d in json.loads((ROOT / 'data/registry.json').read_text(encoding='utf-8'))['documents']}
+    catalog.update(extra_catalog)
     salary, business = _salary(case, needs), _business(case, needs)
     business_only = set(policy.get('income_eligibility', {}).get('business_only_document_ids', []))
     excluded_income_documents = [n['catalog_id'] for n in needs if n['catalog_id'] in business_only and not business]
@@ -162,6 +179,14 @@ def plan(case, required_documents=None, as_of=None):
             if not any(n['catalog_id'] == document_id for n in needs):
                 needs.append({'catalog_id': document_id, 'reason': '관할 법원 자료제출목록에 따른 증빙',
                               'rule_ids': ['COURT_REQUIRED']})
+        additions = preparation.get('common', []) + (preparation.get('salary', []) if salary else [])
+        if not any(need['catalog_id'] == 'D39' for need in needs) and preparation.get('insurance_inventory_when_no_refund_request'):
+            additions.append(preparation['insurance_inventory_when_no_refund_request'])
+        for document_id in additions:
+            if not any(need['catalog_id'] == document_id for need in needs):
+                needs.append({'catalog_id': document_id, 'reason': '공식 작성서식의 기재사항을 원문으로 확인하기 위한 준비자료',
+                              'rule_ids': ['FORM_EVIDENCE_PREPARATION'],
+                              'preparation_only': True})
     # An explicit empty list means recomputation removed all needs, not baseline refill.
     warnings, requests = [], []
     from .rulebook import income_profile
@@ -190,6 +215,8 @@ def plan(case, required_documents=None, as_of=None):
                     continue
             options = deepcopy(settings.get('issuance_options', {}))
             source_ids = settings.get('source_ids', profile.get('source_ids', []))
+            if need.get('preparation_only'):
+                source_ids = list(source_ids) + preparation.get('source_ids', [])
             if document_id in policy['government_document_ids']:
                 options.setdefault('freshness_months', 2)
                 options.setdefault('freshness_exception', '특별한 사정이 있는 경우 예외 검토')
@@ -199,6 +226,10 @@ def plan(case, required_documents=None, as_of=None):
             start = settings.get('period_start')
             end = settings.get('period_end')
             months = settings.get('months')
+            if settings.get('completed_months') and not (start and end):
+                end_day = reference.replace(day=1) - timedelta(days=1)
+                start_day = _months_before(reference.replace(day=1), settings['completed_months'])
+                start, end = start_day.isoformat(), end_day.isoformat()
             if months and not (start and end):
                 start, end = _months_before(reference, months).isoformat(), reference.isoformat()
             if start and end:
@@ -215,29 +246,31 @@ def plan(case, required_documents=None, as_of=None):
             account_key = str(entity.get('account_key', ''))
             account_label = str(entity.get('account_label', ''))
             purpose = settings.get('purpose', 'evidence')
+            guide = {**entry, **preparation.get('request_guides', {}).get(document_id, {})}
             key_data = [court_id, document_id, institution, account_key, start, end, purpose, options,
                         period if not start else None]
             source_refs = _sources(policy, source_ids, settings.get('locator'))
             # Use an alternative only after its required scope has been verified.
             # A random verified bank file must never cover another account.
-            verified = [d for d in case.get('documents', []) if d.get('status') == 'verified']
+            from .extraction_readiness import active_documents
+            verified = [d for d in active_documents(case) if d.get('status') == 'verified']
             if document_id == 'D36' and purpose == 'account_activity' and court_id == 'CT03':
                 inventories = [d.get('document_metadata', d.get('metadata', {})) for d in verified if d.get('catalog_id') == 'D35']
                 if any(meta.get('covers_all_accounts') is True and
                        meta.get('institution') in {institution, '전체 금융기관'} and bool(meta.get('institution')) and
                        (not meta.get('account_key') or meta.get('account_key') == account_key) for meta in inventories):
                     continue
-            if settings.get('requirement_kind') == 'alternative' and document_id in {'D07', 'D50', 'D36'} and purpose != 'account_activity':
+            if settings.get('requirement_kind') == 'alternative' and document_id in {'D07', 'D50', 'D36'} and purpose not in {'account_activity', 'current_monthly_income'}:
                 if any(d.get('catalog_id') == 'D06' and (not institution or
                        d.get('document_metadata', d.get('metadata', {})).get('institution') == institution) for d in verified):
                     continue
             suffix = ' · '.join(x for x in [institution, account_label] if x)
-            request = {'catalog_id': document_id, 'title': entry['name'] + (' · ' + suffix if suffix else ''),
+            request = {'catalog_id': document_id, 'title': guide.get('title', entry['name']) + (' · ' + suffix if suffix else ''),
                        'issuer': institution or entry['issuer'], 'institution': institution,
                        'account_key': account_key, 'account_label': account_label,
                        'period': period, 'period_start': start, 'period_end': end, 'purpose': purpose,
                        'reference_date': reference.isoformat(), 'issuance_options': options,
-                       'requirement_kind': settings.get('requirement_kind', 'preparation'),
+                       'requirement_kind': 'preparation' if need.get('preparation_only') else settings.get('requirement_kind', 'preparation'),
                        'reason': need.get('reason', '상담 내용에 따른 자료 확인'),
                        'qualification': settings.get('qualification', ''),
                        'source_refs': source_refs, 'rule_ids': need.get('rule_ids', []),
@@ -246,6 +279,11 @@ def plan(case, required_documents=None, as_of=None):
                        'issuance_url': entry.get('issuance_url', ''), 'steps': entry.get('steps', []),
                        'not_proven': entry.get('not_proven', ''), 'policy_version': policy['version'],
                        'court_id': court_id, 'managed_by': MANAGED_BY}
+            request.update(upload_mode='collection', supports_multiple_files=True,
+                accepted_catalog_ids=guide.get('accepted_catalog_ids', []),
+                upload_examples=guide.get('upload_examples', []))
+            if need.get('preparation_only'):
+                request['qualification'] = preparation.get('scope', '')
             if request['scope_unresolved']:
                 warnings.append({'code': 'REQUEST_SCOPE_UNRESOLVED', 'catalog_id': document_id,
                                  'message': '기관·계좌를 확인하면 요청이 기관·계좌별로 자동 분리됩니다.'})
@@ -324,6 +362,12 @@ def reconcile(case, required_documents=None, as_of=None):
         if active:
             active.update(source_refs=specification['source_refs'], rule_ids=specification['rule_ids'],
                           policy_version=result['version'])
+            # Guidance and collection capability can evolve without replacing
+            # the same evidence scope or detaching already uploaded originals.
+            for key in ('title','qualification','upload_mode','supports_multiple_files',
+                        'accepted_catalog_ids','upload_examples'):
+                if key in specification:
+                    active[key] = deepcopy(specification[key])
             continue
         predecessor = next((r for r in reversed(existing) if r.get('scope_key') == scope_key), None)
         request = {**specification, 'id': uid('req'), 'version': 1, 'status': 'requested',

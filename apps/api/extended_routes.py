@@ -278,11 +278,15 @@ def attach(app, staff, authorize, change):
         return FileResponse(path, media_type='application/pdf', filename=download_names.filename(case, title))
 
     @app.get('/api/testing/sample-bundle')
-    def sample_bundle(user=Depends(staff)):
+    def sample_bundle(case_id: str = '', user=Depends(staff)):
         import os
         fresh = os.getenv('DEBTOFF_START_PROFILE') == 'fresh'
         from .testing_materials import current
-        path = current()['bundle'] if fresh else store.ROOT / 'examples/synthetic_case_bundle.zip'
+        case = authorize(case_id, user) if case_id else None
+        try:
+            path = current(case.get('client_name') if case else None)['bundle'] if fresh else store.ROOT / 'examples/synthetic_case_bundle.zip'
+        except FileNotFoundError:
+            raise HTTPException(404, '이 사건 이름에 맞는 연습자료가 없습니다. 같은 사람의 자료를 직접 준비해 주세요.')
         if not path.exists():
             raise HTTPException(404, '가상자료 묶음이 아직 생성되지 않았습니다.')
         return FileResponse(path, media_type='application/zip', filename='새출발_연습자료.zip' if fresh else 'debtoff-synthetic-case.zip')

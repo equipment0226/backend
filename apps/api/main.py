@@ -177,7 +177,8 @@ def visible(case, user):
         case['notifications'] = notices
         request_fields = ('id','version','catalog_id','title','issuer','institution','account_masked','period',
                           'period_start','period_end','issuance_options','status','issuance_url','steps',
-                          'not_proven','document_ids','due_date','public_review_note','withdrawal_reason','no_longer_required')
+                          'not_proven','document_ids','due_date','public_review_note','withdrawal_reason','no_longer_required',
+                          'upload_mode','supports_multiple_files','upload_examples','collection_progress','requirement_kind','qualification')
         case['requests'] = [{k:r.get(k) for k in request_fields if k in r} for r in case['requests']]
         case['documents']=[{k:d.get(k) for k in ('id','filename','request_id','status','created_at','public_status')} for d in case['documents'] if d['uploader']==user['id']]
         allowed_doc_ids={d['id'] for d in case['documents']}
@@ -211,6 +212,8 @@ def visible(case, user):
             if field not in step and field in definition:
                 step[field] = copy.deepcopy(definition[field])
     case['rule_evaluation']=rulebook.evaluate_case(case)
+    from . import dashboard_insights
+    case['case_assessment'] = dashboard_insights.build(case)
     for field in ('extraction_candidates','drafts','automation_history','tasks','legal_calculations','court_documents'):
         case.setdefault(field,[])
     case.setdefault('automation',{})
@@ -235,7 +238,7 @@ def change(case_id, user, version, action, fn):
         if intake_workflow.pending(case):
             intake_workflow.waiting_state(case)
     saved=store.mutate(case_id, version, user, action, apply)
-    if action in ('document.received','document.verified','document.metadata','document.scopes','consultation.recorded','correction.created','request.created','request.withdrawn','fact.confirmed','issue.decided','legal_calculation.created','candidate.reviewed','intake.reviewed') or (action=='message.created' and user['role']=='client'):
+    if action in ('document.received','document.verified','document.metadata','document.scopes','document.request_assigned','consultation.recorded','correction.created','request.created','request.withdrawn','fact.confirmed','issue.decided','legal_calculation.created','candidate.reviewed','intake.reviewed') or (action=='message.created' and user['role']=='client'):
         ax_service.maybe_schedule(saved,user,POOL,trigger={'document.received':'새 서류 제출','document.verified':'서류 확인 결과 반영','consultation.recorded':'상담 기록 변경','correction.created':'보정 요구 등록','message.created':'내담자 회신'}.get(action, '보완 자료·판단 반영'))
     return visible(saved,user)
 
@@ -491,47 +494,131 @@ def extract_file(content, extension):
 
 
 @app.post('/api/cases/{case_id}/documents')
-async def upload(case_id:str,file:UploadFile=File(...),request_id:str=Form(default=''),expected_version:int=Form(...),user=Depends(current_user)):
+async def upload(case_id:str,file:UploadFile=File(...),request_id:str=Form(default=''),expected_version:int=Form(...),replaces_document_id:str=Form(default=''),user=Depends(current_user)):
+    return await _receive_documents(case_id,[file],request_id,expected_version,user,replaces_document_id)
+
+
+@app.post('/api/cases/{case_id}/documents/batch')
+async def upload_batch(case_id:str,files:list[UploadFile]=File(...),request_id:str=Form(default=''),expected_version:int=Form(...),replaces_document_id:str=Form(default=''),user=Depends(current_user)):
+    return await _receive_documents(case_id,files,request_id,expected_version,user,replaces_document_id)
+
+
+async def _receive_documents(case_id,files,request_id,expected_version,user,replaces_document_id=''):
+    """Parse a bounded batch, then commit all originals in one case transaction.
+
+    Additional files supplement a request. Replacing an earlier original is an
+    explicit operation; adding December's payroll must never hide November's.
+    A failed parse, duplicate or version conflict stores none of this batch.
+    """
     case=authorize(case_id,user)
     if case['version']!=expected_version:
         raise store.VersionConflict('사건이 변경되었습니다. 새로고침 후 제출하세요.')
-    content=await file.read(10_000_001)
-    domain.require(0<len(content)<=10_000_000,'FILE_SIZE','파일은 0바이트 초과 10MB 이하여야 합니다.')
-    filename=Path((file.filename or 'document').replace('\\','/')).name[:160]
-    extension=Path(filename).suffix.lower()
-    pages=await asyncio.to_thread(extract_file,content,extension)
-    file_hash=hashlib.sha256(content).hexdigest()
-    doc_id=store.uid('doc')
+    domain.require(1<=len(files)<=20,'FILE_BATCH_SIZE','한 번에 1~20개 파일을 제출할 수 있습니다.')
+    domain.require(not replaces_document_id or len(files)==1,'REPLACEMENT_SINGLE_FILE','원본 교체는 한 번에 한 파일씩 지정해 주세요.')
+    prepared=[]
+    total_bytes=0
+    for file in files:
+        content=await file.read(10_000_001)
+        domain.require(0<len(content)<=10_000_000,'FILE_SIZE','각 파일은 0바이트 초과 10MB 이하여야 합니다.')
+        total_bytes+=len(content)
+        domain.require(total_bytes<=50_000_000,'FILE_BATCH_BYTES','한 번에 제출하는 파일의 합계는 50MB 이하여야 합니다.')
+        filename=Path((file.filename or 'document').replace('\\','/')).name[:160]
+        extension=Path(filename).suffix.lower()
+        pages=await asyncio.to_thread(extract_file,content,extension)
+        prepared.append({'id':store.uid('doc'),'filename':filename,'extension':extension,
+            'content':content,'pages':pages,'sha256':hashlib.sha256(content).hexdigest(),'request_id':request_id})
+    return _commit_prepared_documents(case_id,prepared,expected_version,user,replaces_document_id)
+
+
+def _commit_prepared_documents(case_id,prepared,expected_version,user,replaces_document_id=''):
+    """Shared atomic commit for selected-file batches and content-routed imports."""
+    case=authorize(case_id,user)
+    if case['version']!=expected_version:
+        raise store.VersionConflict('사건이 변경되었습니다. 새로고침 후 제출하세요.')
+    domain.require(bool(prepared),'NO_IMPORT_DOCUMENTS','제출할 수 있는 서류가 없습니다.')
+    domain.require(len({row['sha256'] for row in prepared})==len(prepared),'DUPLICATE_FILE','선택한 파일 중 내용이 같은 파일이 있습니다. 중복 파일을 제외해 주세요.')
     folder=store.DATA_DIR/'uploads'/case_id
     folder.mkdir(parents=True,exist_ok=True)
-    target=folder/(doc_id+extension)
-    target.write_bytes(content)
+    targets=[]
     def apply(c):
-        domain.require(not any(d['sha256']==file_hash and d['request_id']==request_id for d in c['documents']),'DUPLICATE_FILE','같은 요청에 동일한 파일이 이미 등록되어 있습니다.')
-        request_item=domain.item(c,'requests',request_id) if request_id else None
-        domain.require(not request_item or request_item['status'] not in automation.INACTIVE,
-                       'REQUEST_WITHDRAWN', '철회된 요청에는 제출할 수 없습니다. 현재 요청을 선택하세요.')
+        identities={(row['sha256'],row.get('request_id','')) for row in prepared}
+        domain.require(not any((d.get('sha256'),d.get('request_id','')) in identities
+            and d.get('status') not in {'superseded','rejected'} for d in c['documents']),
+            'DUPLICATE_FILE','같은 요청에 동일한 파일이 이미 등록되어 있습니다.')
+        requests={}
+        for row in prepared:
+            request_id=row.get('request_id','')
+            request_item=domain.item(c,'requests',request_id) if request_id else None
+            domain.require(not request_item or (request_item['status'] not in automation.INACTIVE and not request_item.get('no_longer_required')),
+                           'REQUEST_WITHDRAWN', '철회된 요청에는 제출할 수 없습니다. 현재 요청을 선택하세요.')
+            if request_item:requests[request_id]=request_item
+        if replaces_document_id:
+            domain.require(len(prepared)==1,'REPLACEMENT_SINGLE_FILE','원본 교체는 한 번에 한 파일씩 지정해 주세요.')
+            request_id=prepared[0].get('request_id','')
+            previous=domain.item(c,'documents',replaces_document_id)
+            domain.require(previous.get('request_id','')==request_id,'REPLACEMENT_REQUEST_MISMATCH','같은 요청에 제출한 원본만 교체할 수 있습니다.')
+            domain.require(previous.get('status') not in {'superseded','rejected','quarantined'},'INACTIVE_DOCUMENT','현재 사용 중인 원본을 선택해 주세요.')
+            if user['role']=='client':
+                domain.require(previous.get('uploader')==user['id'],'REPLACEMENT_OWNER','본인이 제출한 원본만 교체할 수 있습니다.')
+            previous.setdefault('status_history',[]).append({'at':store.now(),'status':previous.get('status'),'reason':'사용자가 원본 교체를 명시적으로 요청'})
+            previous.update(status='superseded',superseded_by=prepared[0]['id'])
         domain.invalidate(c,'자료 수신으로 근거 버전 변경')
-        # Store all extracted pages. Model context limits belong to verification
-        # batches; truncating the source here silently loses later transactions.
-        c['documents'].append({'id':doc_id,'filename':filename,'storage_name':target.name,'sha256':file_hash,'size':len(content),'version':1,'request_id':request_id,'status':'received','public_status':'파일 수신 · 담당자 확인 전','created_at':store.now(),'uploader':user['id'],'text':'\n'.join(p['text'] for p in pages),'page_texts':pages,'extraction_status':'extracted' if any(p['text'].strip() for p in pages) else 'manual_review','scope_confirmed':False,'content_confirmed':False,'person_confirmed':False,'security_status':'extension_and_signature_checked; antivirus_not_configured'})
-        methods={p.get('extraction_method','native_text') for p in pages}
-        pending=[p['page'] for p in pages if not p.get('text','').strip()]
-        c['documents'][-1].update(extraction_method='mixed' if len(methods)>1 else next(iter(methods),'unreadable'),ocr_summary={'ocr_pages':[p['page'] for p in pages if p.get('extraction_method')=='ocr'],'unreadable_pages':pending,'page_count':len(pages),'review_required':any(p.get('requires_review') for p in pages)})
-        if pending and any(p.get('text','').strip() for p in pages):c['documents'][-1]['extraction_status']='partial'
-        # Finish deterministic extraction with the upload. Later AI checks may
-        # disagree with values, but must not expose a half-populated review form.
         from . import extraction_readiness
-        extracted=extraction_readiness.candidates(c['documents'][-1])
-        ax_service.enrich_candidates(c,extracted)
-        extraction_readiness.capture(c,c['documents'][-1],extracted)
-        if request_item:
-            request_item['document_ids'].append(doc_id)
+        for row in prepared:
+            pages=row['pages']
+            document={'id':row['id'],'filename':row['filename'],'storage_name':row['id']+row['extension'],
+                'sha256':row['sha256'],'size':len(row['content']),'version':1,'request_id':row.get('request_id',''),
+                'status':'received','public_status':'파일 수신 · 담당자 확인 전','created_at':store.now(),
+                'uploader':user['id'],'text':'\n'.join(p['text'] for p in pages),'page_texts':pages,
+                'extraction_status':'extracted' if any(p['text'].strip() for p in pages) else 'manual_review',
+                'scope_confirmed':False,'content_confirmed':False,'person_confirmed':False,
+                'security_status':'extension_and_signature_checked; antivirus_not_configured'}
+            if row.get('import_routing'):
+                document['import_routing']=copy.deepcopy(row['import_routing'])
+                document['classification_review_required']=row['import_routing'].get('status')!='matched'
+                document['scope_review_required']=bool(row['import_routing'].get('scope_pending'))
+                if document['classification_review_required']:
+                    document['public_status']='파일 수신 · 연결할 서류 항목 확인 필요'
+                if row['import_routing'].get('identity_status')=='conflict':
+                    document.update(status='quarantined',public_status='명의 확인 후 연결 필요')
+                    document['automated_check']={'coverage_status':'identity_conflict'}
+            if row.get('import_job_id'):document['import_job_id']=row['import_job_id']
+            if replaces_document_id:document['replaces_document_id']=replaces_document_id
+            methods={p.get('extraction_method','native_text') for p in pages}
+            pending=[p['page'] for p in pages if not p.get('text','').strip()]
+            document.update(extraction_method='mixed' if len(methods)>1 else next(iter(methods),'unreadable'),
+                ocr_summary={'ocr_pages':[p['page'] for p in pages if p.get('extraction_method')=='ocr'],
+                'unreadable_pages':pending,'page_count':len(pages),'review_required':any(p.get('requires_review') for p in pages)})
+            if pending and any(p.get('text','').strip() for p in pages):document['extraction_status']='partial'
+            c['documents'].append(document)
+            extracted=extraction_readiness.candidates(document)
+            ax_service.enrich_candidates(c,extracted)
+            extraction_readiness.capture(c,document,extracted)
+        for request_id,request_item in requests.items():
+            request_item.setdefault('document_ids',[]).extend(row['id'] for row in prepared if row.get('request_id','')==request_id)
             request_item['status']='received'
+            request_item.pop('automatic_validation',None)
+            from .request_collection import sync_review_status
+            sync_review_status(c,request_item)
     try:
+        for row in prepared:
+            target=(folder/(row['id']+row['extension'])).resolve()
+            domain.require(target.is_relative_to(folder.resolve()),'ARTIFACT_PATH','잘못된 저장 경로입니다.')
+            targets.append(target)
+            target.write_bytes(row['content'])
         return change(case_id,user,expected_version,'document.received',apply)
     except Exception:
-        target.unlink(missing_ok=True)
+        # change() commits before scheduling and building the response. A
+        # post-commit display/worker error must never delete stored evidence.
+        # If persistence cannot be inspected, retaining an orphan is safer
+        # than removing a possibly committed original.
+        try:
+            saved=store.get_case(case_id)
+            committed={doc.get('id') for doc in (saved or {}).get('documents',[])}
+        except Exception:
+            committed={row['id'] for row in prepared}
+        for row,target in zip(prepared,targets):
+            if row['id'] not in committed:target.unlink(missing_ok=True)
         raise
 
 
@@ -1283,3 +1370,6 @@ from .portal_routes import register as attach_customer_portal
 
 
 attach_customer_portal(app, current_user, staff, authorize, change, visible)
+
+from .archive_import import attach as attach_archive_import
+attach_archive_import(app, current_user, authorize, extract_file, _commit_prepared_documents)

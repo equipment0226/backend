@@ -76,8 +76,9 @@ def definition():
 
 
 def sources(case):
+    from .extraction_readiness import active_documents
     result=[]
-    for d in case.get('documents',[]):
+    for d in active_documents(case):
         if d.get('text') and d.get('status') not in ('rejected','quarantined','superseded'):
             result.append({'source_id':'doc:'+d['id'],'document_id':d['id'],'text':d['text'],'source_type':d.get('source_type','case_document')})
     c=case.get('consultation',{})
@@ -163,9 +164,26 @@ def _rule_refs(rule, source_rows):
                     if source.get('document_id') and not re.search(r'(?:체납|미납)(?:액|금액|금)?\s*[:：은는이가]?\s*[1-9][\d,]*\s*(?:원|만)|(?:체납|미납).{0,12}(?:있|했|하였|중)', sentence):
                         continue
                 if rule['id'] == 'WF17':
+                    if re.search(r'퇴직\s*$',source['text'][max(0,match.start()-6):match.start()]):
+                        # A retirement-plan balance/absence is not National
+                        # Pension income and has its own preparation request.
+                        continue
+                    if re.match(r'\s*(?:미가입|가입\s*없|수급\s*없)',tail):
+                        continue
                     if re.match(r'\s*(?:산정|가입|보험료|공제)', tail):
                         continue
                     if source.get('document_id') and not re.search(r'연금.{0,20}(?:수급|지급|수령|받|월\s*[1-9])', sentence):
+                        continue
+                if rule['id'] == 'WF15' and source.get('document_id'):
+                    # An inventory certificate headed "자동차 소유 조회" may
+                    # explicitly say no vehicle is owned. Its title is not a
+                    # reason to request a valuation/registration of a car.
+                    if not re.search(r'(?:자동차|차량|승용차).{0,30}(?:보유|소유|등록).{0,12}(?:있|1\s*대|[2-9]\s*대|본인|채무자)|(?:보유|소유)\s*(?:자동차|차량)\s*[:：]\s*(?!없|해당\s*없|미보유|0\s*대)[가-힣A-Za-z0-9]', sentence):
+                        continue
+                if rule['id'] == 'WF18' and word == '송달':
+                    if not re.search(r'보정|명령|결정|법원|송달일',sentence):
+                        # A requested service address is an application field,
+                        # not evidence of an already-issued correction order.
                         continue
                 quote = source['text'][max(0, match.start()-25):min(len(source['text']), match.end()+90)]
                 refs.append({k:v for k,v in source.items() if k!='text'} | {'quote':quote,'keyword':word})
@@ -193,9 +211,11 @@ def evaluate_case(case):
     defs=definition()
     source_rows=sources(case)
     matched=[]
-    excluded={d['id'] for d in case.get('documents',[]) if d.get('status') in ('rejected','quarantined','superseded')}
+    from .extraction_readiness import active_documents
+    current_documents=active_documents(case)
+    excluded={d['id'] for d in case.get('documents',[])}-{d['id'] for d in current_documents}
     available={f['key'] for f in case.get('extraction_candidates',[]) if f.get('value') is not None and f.get('status') not in ('rejected','quarantined','superseded') and f.get('document_id') not in excluded}
-    available|={f['key'] for f in case.get('facts',[]) if f.get('value') is not None and f.get('status')=='confirmed' and f.get('evidence_ids') and all(any(d['id']==eid and d.get('status')=='verified' for d in case.get('documents',[])) for eid in f['evidence_ids'])}
+    available|={f['key'] for f in case.get('facts',[]) if f.get('value') is not None and f.get('status')=='confirmed' and f.get('evidence_ids') and all(any(d['id']==eid and d.get('status')=='verified' for d in current_documents) for eid in f['evidence_ids'])}
     needs={}
     income = income_profile(case, source_rows)
     for rule in defs['rules']:

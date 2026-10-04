@@ -4,6 +4,31 @@ from __future__ import annotations
 from . import store
 
 
+def active_documents(case):
+    """Select originals used by the current workflow, without parsing or mutation.
+
+    Retired request originals remain in history but cannot re-enter a current
+    calculation through an old verified flag. An explicit attachment list is
+    authoritative, including an empty list. Imported standalone evidence with
+    no known request remains eligible for its own extraction/review gates.
+    """
+    requests = {row['id']: row for row in case.get('requests', []) if row.get('id')}
+    result = []
+    for document in case.get('documents', []):
+        if (document.get('status') in {'superseded', 'rejected', 'quarantined'}
+                or document.get('source_type') == 'meeting'):
+            continue
+        request = requests.get(document.get('request_id'))
+        if request is not None:
+            if request.get('status') in {'withdrawn', 'cancelled', 'superseded'} or request.get('no_longer_required'):
+                continue
+            ids = request.get('document_ids')
+            if isinstance(ids, list) and document.get('id') not in ids:
+                continue
+        result.append(document)
+    return result
+
+
 def source_signature(document):
     from .ax_engine import HARNESS_VERSION
     from .document_facts import VERSION as FACT_VERSION

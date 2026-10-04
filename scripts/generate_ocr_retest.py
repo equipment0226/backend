@@ -150,6 +150,9 @@ manifest.json은 독립적인 검산표이며 업로드할 증빙이 아닙니�
         for path in sorted(out.rglob('*')):
             if path.is_file():
                 archive.write(path, path.relative_to(out))
+    with zipfile.ZipFile(ROOT / 'examples/ocr_retest_submission.zip', 'w', zipfile.ZIP_DEFLATED) as archive:
+        for path in sorted((out / 'documents').glob('*.pdf')):
+            archive.write(path, path.name)
     return {'name': name, 'documents': len(manifest), 'bundle': str(bundle.relative_to(ROOT)), 'case_created': False}
 
 

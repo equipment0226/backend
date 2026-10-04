@@ -12,7 +12,7 @@ from datetime import datetime, timezone, timedelta
 
 from . import domain, drafting, legal_calculator, store, workflow_contract
 
-VERSION = 'ax-loop-2026-10-04.7-document-review-completion'
+VERSION = 'ax-loop-2026-10-04.8-evidence-dashboard-graph'
 STEPS = [(stage['id'], stage['title']) for stage in workflow_contract.STAGES]
 INACTIVE = {'withdrawn', 'superseded', 'cancelled'}
 
@@ -91,9 +91,10 @@ def sync_request_notifications(case):
 
 
 def _sources(case, verified_only=False, packet=None):
+    from .extraction_readiness import active_documents
     sources = [{'id': d['id'], 'text': d.get('text', ''), 'version': d.get('version', 1),
              'kind': 'reviewed_decision' if d.get('source_type') == 'reviewed_decision' and d.get('verified_by') else 'case_document'}
-            for d in case.get('documents', []) if d.get('status') not in
+            for d in active_documents(case) if d.get('status') not in
             {'rejected', 'quarantined', 'superseded'} and (not verified_only or d.get('status') == 'verified')
             and d.get('source_type') != 'meeting' and d.get('text', '').strip()]
     from . import evidence_mapping
@@ -214,7 +215,7 @@ def _request_metadata(case, request, document):
         value = iso(issued.groups())
         if value:
             metadata['issued_at'], quotes['issued_at'] = value, issued[0]
-    coverage = re.search(r'(?:조회|거래|증명|대상|발급대상)\s*기간\s*[:：]?\s*' + day +
+    coverage = re.search(r'(?:조회|거래|증명|대상|급여|발급대상)\s*기간\s*[:：]?\s*' + day +
                          r'\s*[.\s]*\s*(?:~|～|〜|부터|–|-)\s*' + day, text)
     if coverage:
         start, end = iso(coverage.groups()[:3]), iso(coverage.groups()[3:])
@@ -243,7 +244,7 @@ def _request_metadata(case, request, document):
 
 
 async def _validate_requests(case, checks, progress=None):
-    from . import court_rules
+    from . import court_rules, extraction_readiness, request_collection
     from .verification import run_local_verification_batched as run_local_verification
     reqs = [r for r in case.get('requests', []) if r.get('status') not in INACTIVE and not r.get('no_longer_required')]
     check_by_doc = {c['document_id']: c for c in checks}
@@ -251,49 +252,61 @@ async def _validate_requests(case, checks, progress=None):
     source_ids = {s['id'] for s in sources}
     pending, unavailable = [], False
     for req in reqs:
-        linked = [d for d in case['documents'] if d.get('request_id') == req['id'] and
-                  d.get('status') not in {'rejected', 'superseded'}]
+        linked = request_collection.active_documents(case, req)
         if not linked:
             if req.get('status') == 'fulfilled':
                 _need_more(case, req, '현재 요청 범위를 증명하는 유효한 원본이 없습니다. 해당 자료를 제출해주세요.')
             continue
-        # A replacement is the newest submission, not any historically valid upload.
-        doc = linked[-1]
-        check = check_by_doc.get(doc['id'], {})
-        if check.get('coverage_status') == 'identity_conflict':
-            doc.update(status='quarantined', public_status='명의 확인 후 다시 제출 필요')
+        identity_conflicts = [doc for doc in linked if check_by_doc.get(doc['id'], {}).get('coverage_status') == 'identity_conflict'
+                              or doc.get('automated_check', {}).get('coverage_status') == 'identity_conflict']
+        if identity_conflicts:
+            for doc in identity_conflicts:
+                doc.update(status='quarantined', public_status='명의 확인 후 다시 제출 필요')
             _need_more(case, req, '요청 대상자의 서류인지 확인하고 다시 제출해주세요.')
             continue
-        # A heuristic classification/missing range must not undo a current human
-        # review. Identity conflict above still blocks; unavailable machine-readable
-        # text below holds the internal OCR step without blaming the customer.
-        if manual_document_review_current(case, doc):
+        # Every original belongs to the collection until explicitly replaced.
+        # Human review of one monthly certificate cannot approve other months.
+        if all(manual_document_review_current(case, doc) for doc in linked):
             req['status'] = 'fulfilled'
             continue
-        if check.get('catalog_id') and check['catalog_id'] != req['catalog_id']:
-            doc.update(status='needs_more', public_status='요청한 종류의 서류가 필요합니다')
+        if any(not extraction_readiness.document_state(case, doc)['can_review'] for doc in linked):
+            req.update(status='received', public_review_note='제출한 모든 파일의 추출 완료를 기다리고 있습니다.')
+            unavailable = True
+            continue
+        accepted_types = {req['catalog_id'], *req.get('accepted_catalog_ids', [])}
+        wrong_types = [doc for doc in linked if not manual_document_review_current(case, doc)
+                       and not req['catalog_id'].startswith('SUPPORT-')
+                       and check_by_doc.get(doc['id'], {}).get('catalog_id')
+                       and check_by_doc[doc['id']]['catalog_id'] not in accepted_types]
+        if wrong_types:
+            for doc in wrong_types:
+                doc.update(status='needs_more', public_status='요청한 종류의 서류가 필요합니다')
             _need_more(case, req, f"요청한 {req['title']}와 다른 서류가 제출되었습니다. 해당 서류로 다시 제출해주세요.")
             continue
-        if doc['id'] not in source_ids or doc.get('ocr_summary', {}).get('unreadable_pages'):
+        if any(doc['id'] not in source_ids or doc.get('ocr_summary', {}).get('unreadable_pages') for doc in linked):
             _need_more(case, req, '일부 내용을 읽을 수 없습니다. 빠진 쪽 없이 선명한 원본을 다시 제출해주세요.')
             continue
         # Scope is a local evidence constraint, not a conclusion delegated to AI.
         # Account numbers below are used only by the loopback verification call.
         managed = req.get('managed_by') == court_rules.MANAGED_BY
-        staff_verified = manual_document_review_current(case, doc)
-        if managed and req.get('scope_unresolved') and not staff_verified:
+        if managed and req.get('scope_unresolved'):
             req.update(status='received', public_review_note='기관·계좌의 요청 범위를 확인 중입니다.')
             req['metadata_validation'] = {'status': 'metadata_required', 'unknown_fields': ['request_scope']}
             unavailable = True
             continue
-        if managed and not staff_verified:
-            _request_metadata(case, req, doc)
-            metadata_check = court_rules.validate_metadata(req, doc)
+        if managed:
+            for doc in linked:
+                _request_metadata(case, req, doc)
+            aggregate = request_collection.combined_metadata(req, linked)
+            metadata_check = court_rules.validate_metadata(req, {'document_metadata': aggregate})
             req['metadata_validation'] = metadata_check
+            req['collection_metadata'] = aggregate
             if metadata_check['failures']:
                 reason = ' '.join(dict.fromkeys(f['message'] for f in metadata_check['failures']))
                 _need_more(case, req, reason)
-                doc.update(status='needs_more', public_status='요청 기간·기관·발급정보 보완 필요')
+                for doc in linked:
+                    if doc.get('status') != 'verified':
+                        doc.update(status='needs_more', public_status='요청 기간·기관·발급정보 보완 필요')
                 continue
         scope = {k: req.get(k) for k in ('catalog_id', 'title', 'institution', 'account_key',
                   'period', 'period_start', 'period_end', 'issuance_options', 'source_refs')}
@@ -302,25 +315,22 @@ async def _validate_requests(case, checks, progress=None):
             account = next((a for a in case.get('financial_accounts', case.get('accounts', []))
                             if isinstance(a, dict) and str(a.get('id') or a.get('account_key') or '') == str(req.get('account_key'))), {})
             scope['expected_account_number'] = account.get('account_number', account.get('number'))
-        signature = store.digest([doc.get('sha256'), doc.get('text'), doc.get('document_metadata'), scope, case.get('client_name'), VERSION])
+        signature = store.digest([[{key: doc.get(key) for key in ('id','sha256','version','text','document_metadata')}
+                                   for doc in linked], scope, case.get('client_name'), VERSION])
         prior = req.get('automatic_validation', {})
         if prior.get('signature') == signature and prior.get('status') == 'passed':
             req['status'] = 'fulfilled'
             continue
-        # Explicit staff verification remains a supported override with its audit trail.
-        if staff_verified:
-            req['status'] = 'fulfilled'
-            continue
-        pending.append((req, doc, signature, scope))
+        pending.append((req, linked, signature, scope))
     if pending:
-        payload = {'sources': [s for s in sources if s['id'] in {p[1]['id'] for p in pending}],
+        payload = {'sources': [s for s in sources if s['id'] in {doc['id'] for _, linked, _, _ in pending for doc in linked}],
                    'items': [{'id': req['id'], 'key': 'document_scope',
                               'value': {'expected_person': case.get('client_name'), **scope},
-                              'source_ids': [doc['id']]} for req, doc, _, scope in pending],
-                   'context': {'instruction': '종류·명의·기관·계좌·시작/종료기간·발급옵션을 모두 원문 대조. 범위가 불명확하면 통과 불가. 가족서류는 요구된 관계를 대조.'}}
+                              'source_ids': [doc['id'] for doc in linked]} for req, linked, _, scope in pending],
+                   'context': {'instruction': '각 요청에 연결된 모든 파일을 하나의 제출묶음으로 대조한다. 종류·명의·기관·계좌·시작/종료기간·발급옵션을 모두 원문 확인한다. 월별 파일은 합쳐 요청기간 전체를 충족해야 하며 빠진 월·기관이 있으면 통과할 수 없다. 마지막 파일만 보고 판단하지 않는다. 가족서류는 요구된 관계를 대조.'}}
         result = await run_local_verification('document_selection', payload, **({'progress': progress} if progress else {}))
         checked = set(result.get('checked_item_ids', []))
-        for req, doc, signature, _ in pending:
+        for req, linked, signature, _ in pending:
             req['automatic_validation'] = {**result, 'signature': signature, 'at': store.now()}
             # Batch pass requires all requested scopes; missing one must never authorize others.
             individual_supported = any(f.get('item_id') == req['id'] and f.get('status') == 'supported'
@@ -338,8 +348,11 @@ async def _validate_requests(case, checks, progress=None):
                 req['automatic_validation'].update(status='passed', passed=True,
                     checked_item_ids=[req['id']], findings=[f for f in result.get('findings', [])
                         if isinstance(f, dict) and f.get('item_id') == req['id']])
-                doc.update(status='verified', auto_verified=True, verified_at=store.now(),
-                           public_status='서류 범위 확인 완료', scope_confirmed=True, person_confirmed=True)
+                for doc in linked:
+                    if not manual_document_review_current(case, doc):
+                        doc.update(status='verified', auto_verified=True, verified_at=store.now(),
+                                   public_status='서류 범위 확인 완료', scope_confirmed=True, person_confirmed=True)
+                request_collection.sync_review_status(case, req)
             elif result.get('status') == 'unavailable':
                 unavailable = True
                 req.update(status='received', public_review_note='제출 완료 · 자동 검증 재시도 대기')
@@ -349,7 +362,9 @@ async def _validate_requests(case, checks, progress=None):
                              and f.get('item_id') == req['id']), None)
                 # Customer sees bounded scope instructions, not local-model free text or other-party details.
                 _need_more(case, req, f"{req['title']}의 요청 범위({req.get('period', '')})·기관·계좌·발급옵션을 확인해 다시 제출해주세요.")
-                doc.update(status='needs_more', public_status='서류 범위 보완 필요')
+                for doc in linked:
+                    if doc.get('status') != 'verified':
+                        doc.update(status='needs_more', public_status='서류 범위 보완 필요')
     sync_request_notifications(case)
     return bool(reqs) and all(r.get('status') == 'fulfilled' for r in reqs), unavailable
 
@@ -413,23 +428,18 @@ def _strategy(calculation, sources, case=None):
         add('CAPACITY', '지속 가능한 소득과 지출 증빙 보완', '실수령액·지속근무·실제 부양과 추가지출 근거를 확인해 재산정하고 변제수행 가능성을 검토합니다.', 'statute-614')
     if any(r['code'] in {'EVIDENCE_REQUIRED', 'EVIDENCE_NOT_VERIFIED', 'LEGAL_INPUT_REASON_REQUIRED', 'INVALID_MONEY', 'BOOLEAN_REQUIRED'} for r in reasons):
         add('MISSING_INPUT', '미확인 계산 입력·근거 보완', '미확인 금액을 0원으로 처리하지 않습니다. 아래 항목의 해당 증빙 또는 사건별 판단을 추가하면 계산과 전략분석이 다시 진행됩니다.', 'statute-614')
-    matched = {r['id'] for r in (case or {}).get('rule_evaluation', {}).get('matched_rules', [])}
-    precedent_file = store.ROOT / 'data/ax_legal_precedents.json'
-    if precedent_file.exists():
-        precedents = json.loads(precedent_file.read_text(encoding='utf-8'))['precedents']
-        tags = set()
-        if summary.get('liquidation_shortfall', 0) > 0 or matched & {'WF05', 'WF07'}:
-            tags.update({'liquidation_gap', 'preferential_repayment', 'asset_disposal'})
-        if matched & {'WF11', 'WF18'} or (case or {}).get('corrections'):
-            tags.update({'spouse_property', 'correction_insufficient'})
-        for precedent in precedents:
-            if tags.intersection(precedent['issue_tags']):
-                strategies.append({'code': precedent['id'], 'title': precedent['case_number'] + ' 관련 검토',
-                    'description': precedent['holding_summary'], 'actions': precedent['strategy_candidates'],
-                    'required_evidence': precedent['required_evidence'],
-                    'source_refs': [{'id': precedent['id'], 'title': precedent['case_number'], 'url': precedent['source_url']}],
-                    'limits': precedent['excluded_inferences'], 'precedent_outcome': precedent['outcome']})
+    from . import legal_knowledge_graph, strategy_context, dashboard_insights
+    features = strategy_context.graph_features(strategy_context.build(case or {}, calculation), calculation)
+    knowledge = legal_knowledge_graph.retrieve(features, dashboard_insights.knowledge_policy(case or {}))
+    for match in knowledge['matches']:
+        if match['kind'] in {'case', 'court_rule'}:
+            strategies.append({'code': match['id'], 'title': match['title'],
+                'description': match['summary'], 'actions': match['actions'],
+                'required_evidence': match['required_evidence'], 'source_refs': [match['source']],
+                'limits': match['limits'], 'precedent_outcome': match.get('outcome'),
+                'origin': 'public_issue_match'})
     return {'reasons': reasons, 'strategies': strategies, 'source_refs': refs,
+            'knowledge': knowledge, 'knowledge_signature': knowledge['signature'],
             'retrieved_cases': sources, 'decision': 'review_required' if reasons else 'prepare_documents',
             'scope': '문서 작성 진행 판단이며 법원 인가 확률이 아님'}
 
@@ -549,17 +559,7 @@ async def advance(case, document_checks=None, progress=None):
         return
     from . import extraction_readiness
     incomplete = []
-    active_requests = {request['id']:request for request in case.get('requests', [])
-                       if request.get('status') not in INACTIVE and not request.get('no_longer_required')}
-    latest_sources = {request_id:next((document['id'] for document in reversed(case.get('documents', []))
-        if document.get('request_id') == request_id and document.get('status') not in {'rejected','superseded','quarantined'}), None)
-        for request_id in active_requests}
-    for document in case.get('documents', []):
-        if document.get('status') in {'rejected','superseded','quarantined'} or document.get('source_type') == 'meeting':
-            continue
-        request_id = document.get('request_id')
-        if request_id and (request_id not in active_requests or latest_sources[request_id] != document['id']):
-            continue
+    for document in extraction_readiness.active_documents(case):
         state = extraction_readiness.document_state(case, document)
         if not state['can_review']:
             incomplete.append({'code': 'DOCUMENT_EXTRACTION_INCOMPLETE', 'stage': 'ocr',
@@ -686,19 +686,13 @@ async def advance(case, document_checks=None, progress=None):
     strategy['approval_estimate'] = await asyncio.to_thread(approval_estimator.estimate, case, calculation)
     case['approval_estimate'] = strategy['approval_estimate']
     report('legal_analysis', 3, '계산 결과와 법률 근거를 바탕으로 쟁점·전략을 독립 검증하고 있습니다.')
-    reasoning = await run_strategy_verification(
-        {'court_id': case.get('court_id'), 'case_type': case.get('case_type', 'personal_rehabilitation'),
-         'employment_type': inputs.get('income', {}).get('kind') or 'unknown',
-         'income_basis': inputs.get('income', {}).get('basis') or 'unknown',
-         'facts': {i['key']: i['value'] for i in items if isinstance(i.get('value'), (int, float, bool))},
-         'input_revision': case['input_revision']}, calculation, sources_legal or strategy['source_refs'])
-    strategy.update(id=store.uid('strategy'), verification=reasoning, calculation_id=calculation['id'],
+    from . import strategy_context
+    reasoning = await run_strategy_verification(strategy_context.build(case, calculation),
+        calculation, sources_legal or strategy['source_refs'])
+    strategy.update(id=store.uid('strategy'), verification=reasoning, calculation_id=calculation['id'], input_revision=case['input_revision'],
                     structured_data_id=structured['id'], created_at=store.now())
     case.setdefault('strategy_analyses', []).append(strategy)
-    for finding in reasoning.get('findings', []):
-        strategy['strategies'].append({'code': finding.get('code'), 'title': '추가 전략 검토',
-            'description': finding.get('strategy', ''), 'reason': finding.get('reason', ''),
-            'source_refs': finding.get('source_refs', [])})
+    strategy['strategies'].extend(strategy_context.finding_cards(reasoning))
     if not reasoning.get('passed'):
         strategy['reasons'].append({'code': 'STRATEGY_VERIFICATION', 'reason': '법률 쟁점·전략의 독립 검증이 완료되지 않았습니다.'})
     if strategy['reasons']:

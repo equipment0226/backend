@@ -14,7 +14,7 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from . import document_facts, human_review_evidence, legal_calculator, store
 
-VERSION = 'typed-evidence-mapping-v6-original-detail-fields'
+VERSION = 'typed-evidence-mapping-v7-current-source-scope'
 DIRECT = {'client_name', 'resident_id', 'address', 'phone', 'employer', 'employer_address',
           'employer_phone', 'employment_period', 'employment_start', 'job_title', 'housing_type',
           'housing_deposit', 'housing_cost', 'household_size', 'dependent_count', 'employment_type',
@@ -23,8 +23,9 @@ DIRECT = {'client_name', 'resident_id', 'address', 'phone', 'employer', 'employe
 
 
 def sources(case):
+    from .extraction_readiness import active_documents
     result = []
-    for doc in case.get('documents', []):
+    for doc in active_documents(case):
         if doc.get('status') != 'verified' or doc.get('automated_check', {}).get('coverage_status') == 'identity_conflict':
             continue
         pages = doc.get('page_texts') or [{'page': 1, 'text': doc.get('text', '')}]

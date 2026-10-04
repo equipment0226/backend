@@ -76,10 +76,14 @@ def register(app, current_user, staff, authorize, change, visible, on_applicatio
             raise HTTPException(404, '테스트 자료를 제공하지 않는 환경입니다.')
 
     @app.get('/api/portal/testing-materials')
-    def testing_materials(user=Depends(current_user)):
+    def testing_materials(case_id: str = '', user=Depends(current_user)):
         fresh_testing(user)
         from .testing_materials import current
-        path = current()['bundle']
+        case = authorize(case_id, user) if case_id else None
+        try:
+            path = current(case.get('client_name') if case else None)['bundle']
+        except FileNotFoundError:
+            raise HTTPException(404, '이 사건 이름에 맞는 연습자료가 없습니다. 직접 준비한 같은 사람의 자료를 제출해 주세요.')
         if not path.is_file():
             raise HTTPException(404, '가상 자료 묶음이 준비되지 않았습니다.')
         return FileResponse(path, filename='새출발_연습자료.zip', media_type='application/zip')
