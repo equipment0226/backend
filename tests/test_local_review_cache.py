@@ -15,14 +15,12 @@ class CompleteReviewCacheTests(unittest.IsolatedAsyncioTestCase):
         self.addCleanup(verification.clear_local_verification_cache)
 
     async def negative(self, data):
-        with patch.object(model_client, 'generate', new=AsyncMock(return_value=reply([
-                {'i':1,'v':'mismatch','e':'E1','r':'period'}]))):
+        with patch.object(model_client, 'generate', new=AsyncMock(return_value=reply({'1': 'period'}))):
             return await verification.run_local_verification('ocr', data)
 
     async def test_complete_semantic_negative_is_reused_without_promoting_or_mutating_it(self):
         data = payload(1)
-        with patch.object(model_client, 'generate', new=AsyncMock(return_value=reply([
-                {'i':1,'v':'mismatch','e':'E1','r':'period'}]))) as generate:
+        with patch.object(model_client, 'generate', new=AsyncMock(return_value=reply({'1': 'period'}))) as generate:
             first = await verification.run_local_verification_batched('ocr', data)
             second = await verification.run_local_verification_batched('ocr', data)
             self.assertEqual(generate.await_count, 1)
@@ -40,6 +38,9 @@ class CompleteReviewCacheTests(unittest.IsolatedAsyncioTestCase):
         data = payload(7)
         def first_negative(messages, schema, **kwargs):
             wire = json.loads(messages[1]['content'])
+            if schema['properties']['checks']['type'] == 'object':
+                return reply({str(item['i']): 'period' if i == 0 else 'match'
+                              for i, item in enumerate(wire['items'])})
             return reply([{'i':item['i'], 'v':'mismatch' if i == 0 else 'supported',
                            'e':item['evidence'][0], 'r':'period' if i == 0 else 'match'}
                           for i,item in enumerate(wire['items'])])
@@ -115,7 +116,7 @@ class CompleteReviewCacheTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_complete_missing_finding_with_explicit_no_source_stays_negative(self):
         data = payload(1)
-        response = reply([{'i':1,'v':'missing','e':None,'r':'missing'}])
+        response = reply({'1': 'missing'})
         with patch.object(model_client, 'generate', new=AsyncMock(return_value=response)) as generate:
             first = await verification._verify_cached_batch('ocr', data)
             second = await verification._verify_cached_batch('ocr', data)
