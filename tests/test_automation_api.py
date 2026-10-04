@@ -13,7 +13,7 @@ from unittest.mock import patch
 os.environ.setdefault('DEBTOFF_DEMO_MODE', '1')
 from fastapi.testclient import TestClient
 from apps.api.main import app
-from apps.api import automation, corpus, domain, store
+from apps.api import automation, corpus, domain, extraction_readiness, store
 
 
 class AutomationApiTests(unittest.TestCase):
@@ -169,13 +169,27 @@ class AutomationApiTests(unittest.TestCase):
         self.assertEqual(self.post('/document-scopes', {'application_date': '2026-99-99'}).status_code, 422)
 
     def test_withdrawal_keeps_history_resolves_notice_and_rejects_duplicate(self):
-        response = self.post('/requests/req-one/withdraw', {'reason': '현재 사건에서 불필요한 요청 확인'})
+        before = self.read()
+        with patch('apps.api.ax_service.maybe_schedule', return_value=None) as schedule:
+            response = self.post('/requests/req-one/withdraw', {'reason': ' 현재 사건에서 불필요한 요청 확인 '})
+        schedule.assert_called_once()
         self.assertEqual(response.status_code, 200, response.text)
         body = response.json()
         self.assertEqual(body['requests'][0]['status'], 'withdrawn')
+        self.assertTrue(body['requests'][0]['no_longer_required'])
         self.assertTrue(body['requests'][0]['manual_override'])
+        self.assertEqual(body['requests'][0]['version'], 2)
+        self.assertEqual(body['requests'][0]['withdrawn_by'], 'staff')
+        self.assertEqual(body['requests'][0]['withdrawal_reason'], '현재 사건에서 불필요한 요청 확인')
         self.assertEqual(body['requests'][0]['document_ids'], ['doc-one'])
         self.assertTrue(body['request_history'][-1]['reason'])
+        self.assertEqual(body['request_history'][-1]['previous_status'], 'fulfilled')
+        self.assertEqual(body['documents'][0]['sha256'], before['documents'][0]['sha256'])
+        self.assertEqual(body['documents'][0]['status'], 'verified')
+        self.assertGreater(body['input_revision'], before['input_revision'])
+        self.assertTrue(body['drafts'][0]['stale'])
+        self.assertEqual(extraction_readiness.active_documents(body), [])
+        self.assertFalse(any(row['code'] == 'DOCUMENT_REQUIRED' for row in domain.blockers(body)))
         self.assertNotIn('customer', {n['id'] for n in body['notifications']})
         self.assertTrue(all(n['audience'] == 'staff' for n in body['notifications']))
         customer_notice = next(n for n in self.read('client')['notifications'] if n['id'] == 'customer')
@@ -186,6 +200,34 @@ class AutomationApiTests(unittest.TestCase):
         again = self.post('/requests/req-one/withdraw', {'reason': '중복 요청 철회를 시도합니다.'})
         self.assertEqual(again.status_code, 422)
         self.assertEqual(again.json()['code'], 'REQUEST_WITHDRAWN')
+
+    def test_withdrawal_requires_staff_scope_reason_and_current_version(self):
+        version = self.read()['version']
+        payload = {'reason': '현재 사건에서 불필요한 요청 확인'}
+        self.assertEqual(self.post('/requests/req-one/withdraw', payload, role='client').status_code, 403)
+        self.assertEqual(self.post('/requests/req-one/withdraw', {'reason': '     '}).status_code, 422)
+        self.assertEqual(self.post('/requests/other-case-request/withdraw', payload).status_code, 422)
+        self.assertEqual(self.read()['version'], version)
+        response = self.post('/requests/req-one/withdraw', payload, role='lawyer', version=version)
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertEqual(response.json()['requests'][0]['withdrawn_by'], 'lawyer')
+        self.assertEqual(self.post('/requests/req-one/withdraw', payload, version=version).status_code, 409)
+
+    def test_metadata_correction_keeps_withdrawn_source_historical(self):
+        response = self.post('/requests/req-one/withdraw', {'reason': '현재 사건에서 불필요한 요청 확인'})
+        self.assertEqual(response.status_code, 200, response.text)
+        response = self.post('/documents/doc-one/metadata', {
+            'metadata': {'institution': '가상은행', 'issued_at': '2026-10-03'},
+            'reason': '보관된 원문 발급일과 기관을 대조하였습니다.'})
+        self.assertEqual(response.status_code, 200, response.text)
+        body = response.json()
+        self.assertEqual(body['requests'][0]['status'], 'withdrawn')
+        self.assertTrue(body['requests'][0]['manual_override'])
+        self.assertEqual(body['requests'][0]['document_ids'], ['doc-one'])
+        self.assertEqual(extraction_readiness.active_documents(body), [])
+        self.assertEqual(body['documents'][0]['document_metadata']['institution'], '가상은행')
+        customer_notice = next(n for n in self.read('client')['notifications'] if n['id'] == 'customer')
+        self.assertTrue(customer_notice['resolved_at'])
 
     def test_notification_visibility_read_authorization_and_version(self):
         self.assertEqual([n['id'] for n in self.read('client')['notifications']], ['customer'])

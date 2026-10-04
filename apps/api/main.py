@@ -1144,7 +1144,10 @@ def document_metadata(case_id: str, doc_id: str, data: DocumentMetadata, user=De
         domain.invalidate(case, '서류 범위 판독값 수정')
         doc.update(document_metadata=data.metadata, metadata_review={'actor':user['id'],'reason':data.reason,'at':store.now()})
         if doc.get('request_id'):
-            domain.item(case, 'requests', doc['request_id'])['status'] = 'received'
+            request = domain.item(case, 'requests', doc['request_id'])
+            # Correcting an archived original does not restore an excluded request.
+            if request.get('status') not in automation.INACTIVE and not request.get('no_longer_required'):
+                request['status'] = 'received'
     return change(case_id, user, data.expected_version, 'document.metadata', apply)
 
 
@@ -1195,11 +1198,18 @@ def document_scopes(case_id: str, data: DocumentScopes, user=Depends(staff)):
 def withdraw_request(case_id: str, request_id: str, data: Reason, user=Depends(staff)):
     def apply(case):
         req = domain.item(case, 'requests', request_id)
-        domain.require(req['status'] not in automation.INACTIVE, 'REQUEST_WITHDRAWN', '이미 철회된 요청입니다.')
+        domain.require(req['status'] not in automation.INACTIVE and not req.get('no_longer_required'),
+                       'REQUEST_WITHDRAWN', '이미 제외된 요청입니다.')
+        reason = data.reason.strip()
+        domain.require(len(reason) >= 5, 'REASON_REQUIRED', '제외하는 이유를 5자 이상 기록하세요.')
         domain.invalidate(case, '불필요 서류 요청 철회')
-        req.update(status='withdrawn', manual_override=True, withdrawal_reason=data.reason, withdrawn_at=store.now())
+        timestamp, previous = store.now(), req['status']
+        req.update(status='withdrawn', no_longer_required=True, manual_override=True,
+                   withdrawal_reason=reason, withdrawn_at=timestamp, withdrawn_by=user['id'],
+                   version=req.get('version', 1) + 1)
         case.setdefault('request_history', []).append({'id':store.uid('reqevt'),'request_id':request_id,
-            'action':'withdrawn','reason':data.reason,'actor':user['id'],'at':store.now()})
+            'action':'withdrawn','reason':reason,'actor':user['id'],'at':timestamp,
+            'previous_status':previous,'scope_key':req.get('scope_key')})
         automation.sync_request_notifications(case)
     return change(case_id, user, data.expected_version, 'request.withdrawn', apply)
 
