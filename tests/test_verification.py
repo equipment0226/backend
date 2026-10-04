@@ -182,8 +182,8 @@ class EvidenceLoopTests(unittest.IsolatedAsyncioTestCase):
             cached = await verify.run_local_verification_batched('ocr', local_payload())
             self.assertNotEqual(cached['findings'][0]['quote'], 'tampered caller result')
 
-    async def test_failed_or_unavailable_checks_are_never_cached(self):
-        for output in [reply(local_output(status='mismatch')), reply(local_output(), done_reason='length')]:
+    async def test_unavailable_or_incomplete_checks_are_never_cached(self):
+        for output in [reply({'checks': []}), reply(local_output(), done_reason='length')]:
             with patch.object(model_client, 'generate', new=AsyncMock(return_value=output)) as generate:
                 for _ in range(2):
                     result = await verify.run_local_verification_batched('ocr', local_payload())

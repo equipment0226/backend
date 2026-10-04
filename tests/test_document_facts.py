@@ -22,7 +22,7 @@ def values(rows, key):
 class TypedDocumentTests(unittest.TestCase):
     def test_job_title_keeps_department_text_without_inventing_unknown_position(self):
         rows = facts.extract(sources('재직증명서\n담당업무: 물류 관리 / 급여 지급일: 매월 25일'))
-        job = next(row for row in rows if row['key'] == 'job_title')
+        job = next(row for row in rows if row['key'] == 'job_duties')
         self.assertEqual(job['value'], '물류 관리')
         self.assertIn('담당업무: 물류 관리', job['quote'])
         self.assertFalse(any(row['key'] == 'job_title' for row in facts.extract(sources('직책: 미확인'))))

@@ -162,13 +162,13 @@
           "label": "변제기간(개월)",
           "page": 0,
           "rect": [
-            386,
-            779,
-            413,
-            797
+            370,
+            778,
+            400,
+            796
           ],
           "required": true,
-          "font_size": 8,
+          "font_size": 10,
           "read_only": true,
           "source_kind": "approved_calculation"
         },
@@ -177,13 +177,13 @@
           "label": "월 변제예정액",
           "page": 0,
           "rect": [
-            455,
-            779,
-            490,
-            797
+            453,
+            778,
+            488,
+            796
           ],
           "required": true,
-          "font_size": 6,
+          "font_size": 8,
           "read_only": true,
           "source_kind": "approved_calculation"
         },
@@ -192,10 +192,10 @@
           "label": "환급은행",
           "page": 1,
           "rect": [
-            396,
-            195,
-            451,
-            213
+            427,
+            181,
+            514,
+            198
           ],
           "required": false,
           "font_size": 9,
@@ -207,10 +207,10 @@
           "label": "환급계좌",
           "page": 1,
           "rect": [
-            59,
-            214,
-            199,
-            233
+            68,
+            201,
+            179,
+            218
           ],
           "required": false,
           "font_size": 9,
@@ -297,9 +297,9 @@
           "label": "금융기관명",
           "page": 0,
           "rect": [
-            334,
+            336,
             225,
-            360,
+            359.5,
             241
           ],
           "required": false,
@@ -312,10 +312,70 @@
           "label": "계좌번호",
           "page": 0,
           "rect": [
-            318,
+            315.5,
             246,
-            387,
+            388.5,
             259
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_name_2",
+          "label": "두 번째 금융기관명",
+          "page": 0,
+          "rect": [
+            411,
+            225,
+            435,
+            241
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_account_2",
+          "label": "두 번째 계좌번호",
+          "page": 0,
+          "rect": [
+            393,
+            246,
+            463,
+            259
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_balance_1",
+          "label": "첫 번째 계좌 잔액",
+          "page": 0,
+          "rect": [
+            317,
+            259,
+            387,
+            271
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "bank_balance_2",
+          "label": "두 번째 계좌 잔액",
+          "page": 0,
+          "rect": [
+            393,
+            259,
+            463,
+            271
           ],
           "required": false,
           "font_size": 7,
@@ -342,10 +402,40 @@
           "label": "보험회사",
           "page": 0,
           "rect": [
-            326,
-            275,
-            360,
+            336,
+            272,
+            361,
             289
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "insurance_policy",
+          "label": "보험 증권번호",
+          "page": 0,
+          "rect": [
+            315.5,
+            291,
+            388.5,
+            304
+          ],
+          "required": false,
+          "font_size": 7,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "insurance_surrender",
+          "label": "보험 해약반환금 상세",
+          "page": 0,
+          "rect": [
+            317,
+            304,
+            387,
+            317
           ],
           "required": false,
           "font_size": 7,
@@ -643,9 +733,9 @@
           "label": "월평균 수입",
           "page": 0,
           "rect": [
-            454,
+            456,
             394,
-            508,
+            503,
             412
           ],
           "required": true,
@@ -705,7 +795,7 @@
           "rect": [
             477,
             479,
-            524,
+            522,
             497
           ],
           "required": true,
@@ -718,13 +808,13 @@
           "label": "추가생계비 사유",
           "page": 1,
           "rect": [
-            62,
-            402,
-            531,
-            539
+            63,
+            487,
+            523,
+            766
           ],
           "required": false,
-          "font_size": 10,
+          "font_size": 11,
           "read_only": false,
           "source_kind": "evidence_or_staff"
         }
@@ -795,7 +885,7 @@
           "label": "임차보증금",
           "page": 0,
           "rect": [
-            314,
+            321,
             604,
             399,
             622
@@ -821,13 +911,13 @@
           "source_kind": "evidence_or_staff"
         },
         {
-          "key": "landlord",
-          "label": "임차계약 상대방 성명",
+          "key": "tenant_name",
+          "label": "임차인 성명",
           "page": 0,
           "rect": [
-            323,
+            326,
             641,
-            384,
+            415,
             659
           ],
           "required": false,
@@ -840,13 +930,13 @@
           "label": "부채 경위 및 신청에 이른 사정",
           "page": 1,
           "rect": [
-            61,
-            414,
+            62,
+            470,
             528,
             745
           ],
           "required": true,
-          "font_size": 10,
+          "font_size": 11,
           "read_only": false,
           "source_kind": "evidence_or_staff"
         },
@@ -906,25 +996,40 @@
           "label": "채무자 성명",
           "page": 0,
           "rect": [
-            124,
-            206,
-            310,
-            224
+            161,
+            334,
+            350,
+            353
           ],
           "required": true,
+          "font_size": 12,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "case_year_suffix",
+          "label": "사건번호 연도(20 이후)",
+          "page": 0,
+          "rect": [
+            173,
+            305,
+            192,
+            322
+          ],
+          "required": false,
           "font_size": 9,
           "read_only": false,
           "source_kind": "evidence_or_staff"
         },
         {
-          "key": "case_number",
-          "label": "사건번호",
+          "key": "case_sequence",
+          "label": "사건 일련번호",
           "page": 0,
           "rect": [
-            131,
-            179,
-            341,
-            197
+            220,
+            305,
+            259,
+            322
           ],
           "required": false,
           "font_size": 9,
@@ -936,13 +1041,13 @@
           "label": "대리인 성명",
           "page": 0,
           "rect": [
-            124,
-            232,
-            310,
-            250
+            161,
+            364,
+            350,
+            383
           ],
           "required": false,
-          "font_size": 9,
+          "font_size": 12,
           "read_only": false,
           "source_kind": "evidence_or_staff"
         },
@@ -952,9 +1057,9 @@
           "page": 0,
           "rect": [
             350,
-            641,
-            477,
-            661
+            672,
+            474,
+            692
           ],
           "required": true,
           "font_size": 12,
@@ -996,7 +1101,7 @@
           "label": "변제 시작 연도",
           "page": 1,
           "rect": [
-            77,
+            78,
             224,
             108,
             242
@@ -1011,9 +1116,9 @@
           "label": "변제 시작 월",
           "page": 1,
           "rect": [
-            136,
+            135,
             224,
-            150,
+            148,
             242
           ],
           "required": true,
@@ -1056,9 +1161,9 @@
           "label": "변제 종료 월",
           "page": 1,
           "rect": [
-            306,
+            300,
             224,
-            322,
+            313,
             242
           ],
           "required": true,
@@ -1071,9 +1176,9 @@
           "label": "변제 종료 일",
           "page": 1,
           "rect": [
-            346,
+            340,
             224,
-            362,
+            358,
             242
           ],
           "required": true,
@@ -1086,9 +1191,9 @@
           "label": "변제기간 개월",
           "page": 1,
           "rect": [
-            409,
+            408,
             224,
-            431,
+            426,
             242
           ],
           "required": true,
@@ -1101,9 +1206,9 @@
           "label": "월평균 수입",
           "page": 1,
           "rect": [
-            423,
+            422,
             327,
-            474,
+            472,
             345
           ],
           "required": true,
@@ -1118,7 +1223,7 @@
           "rect": [
             255,
             386,
-            296,
+            294,
             404
           ],
           "required": true,
@@ -1266,13 +1371,13 @@
           "label": "월 변제예정액",
           "page": 3,
           "rect": [
-            402,
-            258,
-            486,
-            276
+            393,
+            287,
+            446,
+            305
           ],
           "required": true,
-          "font_size": 8,
+          "font_size": 9,
           "read_only": true,
           "source_kind": "approved_calculation"
         },
@@ -1281,13 +1386,13 @@
           "label": "총 변제예정액",
           "page": 3,
           "rect": [
-            152,
-            278,
-            242,
-            296
+            168,
+            307,
+            232,
+            325
           ],
           "required": true,
-          "font_size": 9,
+          "font_size": 10,
           "read_only": true,
           "source_kind": "approved_calculation"
         },
@@ -1296,10 +1401,10 @@
           "label": "변제개월",
           "page": 3,
           "rect": [
-            404,
-            395,
-            429,
-            413
+            450,
+            406,
+            468,
+            424
           ],
           "required": true,
           "font_size": 9,
@@ -1311,10 +1416,10 @@
           "label": "변제횟수",
           "page": 3,
           "rect": [
-            121,
-            415,
-            162,
-            433
+            145,
+            426,
+            163,
+            444
           ],
           "required": true,
           "font_size": 9,
@@ -2072,6 +2177,51 @@
           "source_kind": "evidence_or_staff"
         },
         {
+          "key": "income_start_year",
+          "label": "소득 확인 시작 연도",
+          "page": 0,
+          "rect": [
+            135,
+            422,
+            175,
+            443
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "income_start_month",
+          "label": "소득 확인 시작 월",
+          "page": 0,
+          "rect": [
+            193,
+            422,
+            220,
+            443
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
+          "key": "income_start_day",
+          "label": "소득 확인 시작 일",
+          "page": 0,
+          "rect": [
+            237,
+            422,
+            258,
+            443
+          ],
+          "required": false,
+          "font_size": 9,
+          "read_only": false,
+          "source_kind": "evidence_or_staff"
+        },
+        {
           "key": "income_manwon",
           "label": "월평균 소득(만원)",
           "page": 0,
@@ -2288,9 +2438,9 @@
           "page": 0,
           "rect": [
             214,
-            419.0,
+            417.0,
             514,
-            454.0
+            435.0
           ],
           "required": false,
           "font_size": 8,
@@ -2393,9 +2543,9 @@
           "page": 0,
           "rect": [
             214,
-            528.5,
+            526.5,
             514,
-            563.5
+            544.5
           ],
           "required": false,
           "font_size": 8,
@@ -2498,9 +2648,9 @@
           "page": 0,
           "rect": [
             214,
-            638.0,
+            636.0,
             514,
-            673.0
+            654.0
           ],
           "required": false,
           "font_size": 8,
@@ -2603,9 +2753,9 @@
           "page": 0,
           "rect": [
             214,
-            747.5,
+            745.5,
             514,
-            782.5
+            763.5
           ],
           "required": false,
           "font_size": 8,

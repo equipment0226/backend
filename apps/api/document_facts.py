@@ -11,11 +11,12 @@ import hashlib
 import json
 import re
 
-VERSION = 'document-facts-v1'
+VERSION = 'document-facts-v4-policy-identities'
 LABELS = {
     'income_gross': '공제 전 급여', 'income_net': '실수령 소득', 'income_deductions': '급여 공제 합계',
     'income_deduction': '급여 공제 항목', 'income_period': '소득 확인기간',
     'creditor_principal': '채권자별 원금', 'creditor_interest': '채권자별 이자', 'creditor_total': '채권자별 채무 합계',
+    'loan_principal_payment': '약정 원금 상환액', 'loan_interest_payment': '지급 이자',
     'cash_balance': '계좌별 예금잔액', 'housing_deposit': '임차보증금', 'housing_cost': '월 주거비',
     'living_expenses': '실제 월 생활지출', 'household_size': '실제 가구원 수', 'dependent_count': '부양가족 진술 인원',
     'employment_type': '소득 형태', 'real_estate_ownership': '부동산 보유 기재',
@@ -24,9 +25,19 @@ LABELS = {
     'bank_living_expense': '기간별 생활비 출금', 'bank_debt_repayment': '기간별 상환 출금',
     'bank_inflow': '거래 입금', 'bank_outflow': '거래 출금', 'insurance_surrender': '보험 해약환급금',
     'tax_arrears': '세금 체납액', 'employer': '근무처', 'account_scope': '계좌 범위', 'query_scope': '자료 조회 범위',
-    'client_name': '자료 대상자 성명', 'resident_id': '주민등록번호 기재', 'address': '주소',
+    'client_name': '자료 대상자 성명', 'resident_id': '주민등록번호 기재', 'address': '주소', 'phone': '본인 휴대전화',
+    'retirement_expected': '예상 퇴직금 총액(공제 전)', 'retirement_kind': '퇴직급여 제도 기재',
+    'retirement_pension_balance': '퇴직연금 적립금 기재',
+    'prior_proceedings': '과거 회생·파산 등 이용 이력 진술',
+    'education': '최종 학력 진술', 'career_history': '과거 경력 진술',
+    'marriage_history': '혼인·이혼 이력 진술', 'housing_start': '현 거주 시작일 진술',
     'employer_address': '근무처 주소', 'employer_phone': '근무처 연락처', 'employment_period': '재직 기간',
-    'job_title': '직위·담당 업무',
+    'job_title': '직위·직책', 'job_duties': '담당 업무', 'postal_code': '주소에 기재된 우편번호',
+    'insurance_name': '보험회사', 'insurance_policy': '보험 증권번호',
+    'bank_name_2': '두 번째 예금 금융기관', 'bank_account_2': '두 번째 예금 계좌',
+    'bank_balance_1': '첫 번째 계좌 잔액', 'bank_balance_2': '두 번째 계좌 잔액',
+    'income_start_year': '소득 확인 시작 연도', 'income_start_month': '소득 확인 시작 월',
+    'income_start_day': '소득 확인 시작 일',
     'employment_start': '입사일', 'housing_type': '거주 형태', 'housing_owner': '주택 소유자 기재',
     'housing_tenant': '임차인 기재', 'creditor_name': '채권자', 'creditor_cause': '차입 원인 기재',
     'creditor_address': '채권자 주소', 'creditor_kind': '담보 기재', 'institution': '금융기관',
@@ -87,6 +98,11 @@ def _context(text):
     if ranges:
         match, _ = ranges[0]
         meta.update(period_start=_date(match.group(1)), period_end=_date(match.group(2), True))
+    else:
+        pay_month = re.search(r'(?:급여월|급여\s*귀속월|귀속\s*월)\s*[:：]\s*((?:19|20)\d{2}[-./년]\s*\d{1,2}월?)(?!\d)', text)
+        if pay_month:
+            meta.update(period_start=_date(pay_month.group(1)), period_end=_date(pay_month.group(1), True),
+                        period_kind='pay_month', period_quote=pay_month.group())
     for key, pattern in (
         ('institution', r'(?:금융기관|채권자|은행명)\s*[:：]\s*([^\n/;|]+)'),
         ('account_key', r'(?:계좌번호|계좌)\s*[:：]\s*([A-Za-z0-9*＊Xx●•-]{3,})'),
@@ -181,6 +197,8 @@ MONEY_LABELS = [
     ('income_deductions', r'(?:공제\s*(?:액|총액|합계)|총\s*공제(?:액)?|공제액\s*계)', 'deductions'),
     ('income_deduction', r'(?:소득세|지방소득세|국민연금|건강보험료?|고용보험료?|장기요양보험료?)', 'deductions'),
     ('creditor_principal', r'(?<!상환\s)원금', None), ('creditor_interest', r'이자(?:액)?', None),
+    ('loan_principal_payment', r'(?:원금\s*(?:상환|납부|납입)(?:액|금액)?|상환\s*원금)', 'payment'),
+    ('loan_interest_payment', r'(?:이자\s*(?:납부|납입|지급)(?:액|금액)?|(?<![미불])(?:지급|납부|납입)\s*이자)', 'payment'),
     ('creditor_total', r'(?:채무|부채|대출)\s*(?:합계|총액|잔액)', None),
     ('cash_balance', r'예금\s*잔액|예금(?=\s*[:：])|(?:조회\s*)?(?:시작|종료|기말|현재)\s*잔액', None),
     ('housing_deposit', r'(?:임차|임대차|전세)\s*보증금', None),
@@ -189,7 +207,69 @@ MONEY_LABELS = [
     ('insurance_surrender', r'해약\s*환급금|해지\s*환급금', None),
     ('tax_arrears', r'(?:국세|지방세|세금)?\s*체납\s*(?:액|금액)|조세\s*채무', None),
     ('pension_assessed_income', r'(?:월\s*)?기준\s*소득(?:월액)?', 'assessment'),
+    ('retirement_expected', r'(?:예상\s*퇴직금(?:\s*총액)?|퇴직금\s*(?:예상액|예상\s*총액|총액))', 'expected_gross'),
+    ('retirement_pension_balance', r'퇴직연금\s*(?:적립금|적립액|잔액|평가금액)', 'pension_balance'),
 ]
+
+
+def _retirement_kind(segment):
+    """A benefit amount or ordinary salary never identifies the retirement scheme."""
+    match = re.search(r'퇴직\s*(?:급여|금|연금)\s*(?:제도|유형|종류)\s*[:：]\s*(.+)', segment)
+    if not match or UNKNOWN.search(match.group(1)):
+        return None
+    declared = match.group(1)
+    # Conflicting/negative plan declarations remain unclassified; no exemption
+    # percentage or legal treatment is inferred from any label.
+    if re.match(r'일반\s*퇴직금|퇴직금\s*제도', declared):
+        ordinary = re.sub(r'\(\s*퇴직연금\s*미가입\s*\)', '', declared)
+        if NEGATIVE.search(ordinary) or re.search(r'미가입|미적용|확정\s*[급기]여|\b(?:DB|DC|IRP)\b', ordinary, re.I):
+            return None
+        return '일반 퇴직금'
+    pension_kinds = []
+    for label, pattern in [('확정급여형(DB) 퇴직연금', r'확정\s*급여형|\bDB\b'),
+                           ('확정기여형(DC) 퇴직연금', r'확정\s*기여형|\bDC\b'),
+                           ('개인형(IRP) 퇴직연금', r'개인형|\bIRP\b')]:
+        if re.search(pattern, declared, re.I):
+            pension_kinds.append(label)
+    if pension_kinds:
+        return pension_kinds[0] if len(pension_kinds) == 1 and not NEGATIVE.search(declared) else None
+    return '퇴직연금(유형 미확인)' if re.match(r'퇴직연금', declared) and not NEGATIVE.search(declared) else None
+
+
+def _personal_phones(text, segment, offset):
+    named = list(re.finditer(r'(?m)^\s*(?:성명|신청인(?:\s*성명)?|채무자|본인)\s*[:：]\s*[가-힣]{2,5}(?=\s|[/;|.,]|$)', text[:offset + len(segment)]))
+    subject_named = bool(named)
+    prior_context = text[named[-1].end():offset] if named else ''
+    intervening_owner = re.search(r'(?m)^\s*(?:배우자|보호자|가족|부모|자녀|직장|근무처|회사|사업장|채권자|담당자|대표자|임대인)', prior_context)
+    for clause in re.finditer(r'[^/;|]+', segment):
+        value = clause.group()
+        match = re.search(r'(?:(본인|신청인|채무자)(?:의)?\s*)?(?:휴대\s*전화|휴대폰|연락처|전화번호)\s*[:：]\s*((?:01[016789]|\+82[- ]?1[016789])[- ]?\d{3,4}[- ]?\d{4})(?!\d)', value)
+        if not match or not (match.group(1) or subject_named) or UNKNOWN.search(value):
+            continue
+        if not match.group(1) and intervening_owner:
+            continue
+        if re.search(r'배우자|보호자|가족|부모|자녀|직장|근무처|회사|사업장|채권자|담당자|대표자|임대인', value[:match.start()]):
+            continue
+        yield match.group(2).strip(), clause.start(), clause.end()
+
+
+def _listed_absences(segment):
+    """Bind an explicit negative predicate only to its enumerated subjects."""
+    if UNKNOWN.search(segment):
+        return
+    subject = r'(?:부동산|자동차|차량|보험(?:\s*계약)?|임차\s*보증금)'
+    pattern = re.compile(r'(?<![가-힣])(' + subject + r'(?:\s*[·ㆍ,]\s*' + subject + r')*)\s*(?:은|는|이|가)?\s*없(?:습니다|어요|음|다)(?=$|[\s.!])')
+    keys = {'부동산': ('real_estate_ownership', False), '자동차': ('vehicle_ownership', False),
+            '차량': ('vehicle_ownership', False), '보험': ('insurance_contracts', False),
+            '보험계약': ('insurance_contracts', False), '임차보증금': ('housing_deposit', 0)}
+    for match in pattern.finditer(segment):
+        if re.search(r'(?:건강|사회|고용|산재|다른|추가)\s*$|(?:배우자|남편|아내|부모|자녀|가족)(?:의)?\s*$', segment[:match.start()]):
+            continue
+        clause = re.split(r'[.!?;]', segment[max(0, segment.rfind('.', 0, match.start()) + 1):], 1)[0]
+        if UNKNOWN.search(clause) or re.search(r'과거|예전|당시|종전|없지\s*않|없는\s*것은\s*아', clause):
+            continue
+        for item in re.split(r'[·ㆍ,]', match.group(1)):
+            yield keys[re.sub(r'\s+', '', item)]
 
 
 def extract(sources):
@@ -240,10 +320,21 @@ def extract(sources):
                 local_meta = {key: value for key, value in local_meta.items() if key not in {'as_of', 'as_of_kind', 'as_of_quote'}}
             meta.update(local_meta)
             matches = [(key, basis, match) for key, pattern, basis in MONEY_LABELS for match in re.finditer(pattern, segment)]
+            matches = [(key, basis, match) for key, basis, match in matches if not (
+                key in {'creditor_principal', 'creditor_interest'} and any(
+                    other_key.startswith('loan_') and other.start() <= match.start() and other.end() >= match.end()
+                    for other_key, _, other in matches))]
             for key, basis, label in matches:
                 tail = segment[label.end():]
                 number = re.match(r'\s*(?:은|는|이|가|:|：)?\s*(' + NUMBER + ')', tail)
                 if not number:
+                    continue
+                # A year/date, interest rate or term following a label is not
+                # a won amount. Keep unitless monetary table cells supported.
+                numeric_tail = tail[number.start(1):].lstrip()
+                after_number = tail[number.end(1):]
+                if re.match(DATE, numeric_tail) or (not re.search(r'원|억|만', number.group(1)) and
+                        re.match(r'\s*(?:[-./]\s*\d|[%％]|년|월|일|개월|명|건)', after_number)):
                     continue
                 amount = _money(number.group(1), multiplier)
                 if amount is None:
@@ -253,6 +344,9 @@ def extract(sources):
                 if any(other.start() > label.start() and other.end() <= amount_start for _, _, other in matches):
                     continue
                 before = segment[:label.start()]
+                if key in {'creditor_principal', 'creditor_interest'} and re.search(r'(?:매월|월)\s*$', before):
+                    key = 'loan_principal_payment' if key == 'creditor_principal' else 'loan_interest_payment'
+                    basis = 'payment'
                 frequency, months = None, None
                 monthly = re.search(r'매월|(?<![가-힣\d])월\s*(?:총\s*)?(?:평균|실수령|급여|공제|소득|차임|세|주거|생활|지출)', segment[max(0, label.start()-12):label.end()])
                 explicit_months = re.search(r'(?:직전|최근)?\s*(\d{1,2})\s*개월', before)
@@ -271,6 +365,10 @@ def extract(sources):
                     elif meta.get('period_start'):
                         frequency = 'period'
                 actual_multiplier = 1 if re.search(r'원|억|만', number.group(1)) else multiplier
+                if key.startswith('retirement_'):
+                    frequency, months = None, None
+                if key.startswith('loan_') and re.search(r'(?:매월|월)\s*$', before):
+                    frequency = 'monthly'
                 details = {'basis': basis, 'amount_basis': basis, 'frequency': frequency,
                            'unit_multiplier': actual_multiplier}
                 if actual_multiplier != 1:
@@ -280,10 +378,30 @@ def extract(sources):
                 if key == 'income_deduction':
                     details['deduction_kind'] = label.group()
                 if key == 'cash_balance':
+                    if re.search(r'퇴직\s*(?:금|연금|급여)|\b(?:DB|DC|IRP)\b', segment, re.I):
+                        continue
                     details['balance_kind'] = 'opening' if re.search(r'시작', label.group()) else 'closing'
                 if key.startswith('creditor_'):
                     details['scope'] = 'creditor' if meta.get('institution') or re.search(r'부채\s*증명|채무\s*확인', text) else 'unspecified'
                 add(key, amount, line.start(), line.end(), **details)
+            scheme = _retirement_kind(segment)
+            if scheme:
+                add('retirement_kind', scheme, line.start(), line.end(), unit='category')
+            for phone, start, end in _personal_phones(text, segment, line.start()):
+                add('phone', phone, line.start() + start, line.start() + end, subject='document_person')
+            # These are attributed statements, not court-certified absence of
+            # prior discharge, marriage or litigation. Silence is never "none".
+            for key, pattern in (
+                ('prior_proceedings', r'(?:과거\s*절차(?:\s*이용)?\s*(?:이력|상세)?|(?:과거\s*)?(?:개인회생|회생|파산|면책)(?:\s*[·ㆍ,/및]\s*(?:개인회생|회생|파산|면책))*\s*(?:절차\s*)?(?:신청\s*)?(?:이력|이용\s*이력))\s*[:：]\s*(.+)'),
+                ('education', r'최종\s*학력\s*[:：]\s*(.+)'),
+                ('career_history', r'과거\s*경력\s*[:：]\s*(.+)'),
+                ('marriage_history', r'(?:혼인|결혼|이혼)(?:\s*[·ㆍ/]\s*(?:혼인|결혼|이혼))*\s*이력\s*[:：]\s*(.+)'),
+                ('housing_start', r'(?:현\s*)?거주\s*(?:시작일|개시일|시작\s*시점)\s*[:：]\s*(.+)'),
+            ):
+                statement = re.search(pattern, segment)
+                if statement and not UNKNOWN.search(statement.group(1)) and '?' not in segment:
+                    add(key, statement.group(1).strip(), line.start(), line.end(),
+                        source_assertion='party_statement', legally_confirmed=False)
             family_balance = re.search(r'가족\s*(?:채무|차용금)\s*잔액\s*[:：]?\s*(' + NUMBER + ')', segment)
             if family_balance:
                 add('family_debt_balance', _money(family_balance.group(1), multiplier), line.start(), line.end(),
@@ -304,6 +422,21 @@ def extract(sources):
                 add('pension_membership', '현재 가입 유지', line.start(), line.end())
             if re.search(r'무상\s*거주|무료\s*거주', segment) and not NEGATIVE.search(segment):
                 add('housing_type', '무상거주', line.start(), line.end())
+            housing = re.search(r'(?:임대차\s*종류|거주\s*형태|주거\s*형태)\s*(?:[:：]\s*|\s+)([^/;|]+)', segment)
+            if housing and not (UNKNOWN.search(housing.group(1)) or NEGATIVE.search(housing.group(1))):
+                declared = housing.group(1)
+                if '월세' in declared and '전세' not in declared:
+                    add('housing_type', '월세', line.start(), line.end())
+                elif '전세' in declared and '월세' not in declared:
+                    add('housing_type', '전세', line.start(), line.end())
+            # Restrict a count to the subject's total held contracts. A separate
+            # "other insurance absent" clause must not negate an existing policy.
+            insurance = re.match(r'\s*(?:현재\s*)?보유\s*보험\s*계약\s*[:：]?\s*(\d+)\s*건(?=$|[\s/;|,.])', segment)
+            if insurance:
+                clause = re.split(r'[/;|]', segment, 1)[0]
+                if not (UNKNOWN.search(clause) or re.search(r'과거|예전|아님|아니|아닙|[?]', clause)):
+                    add('insurance_contracts', int(insurance.group(1)) > 0, line.start(), line.end(),
+                        declared_contract_count=int(insurance.group(1)))
             if re.search(r'담보\s*없|무담보', segment):
                 add('creditor_kind', '무담보', line.start(), line.end(), scope='document_statement')
             if re.search(r'부족한\s*생활비.*차용|원리금\s*상환\s*부담|채무가\s*늘어난|차입\s*경위', segment):
@@ -317,20 +450,27 @@ def extract(sources):
                 ('insurance_contracts', r'(?:보유\s*)?보험\s*계약\s*[:：]?\s*없'),
                 ('housing_ownership', r'소유자\s*본인\s*여부\s*[:：]?\s*(?:아니오|아님)'),
             ):
-                if re.search(pattern, segment):
+                match = re.search(pattern, segment)
+                prefix = segment[:match.start()] if match else ''
+                if match and not re.search(r'다른|추가|과거|예전|배우자|부모|자녀|가족', prefix) and not UNKNOWN.search(segment[match.end():]):
                     add(key, False, line.start(), line.end())
+            for key, value in _listed_absences(segment):
+                # A stated absence is still a source claim, never proof of a
+                # legal exemption or of a different asset's value.
+                add(key, value, line.start(), line.end(), explicit_absence=True)
             period = RANGE.search(segment)
             if period and re.search(r'소득|급여|지급|확인기간', segment):
                 add('income_period', period.group(), line.start(), line.end(),
                     period_start=_date(period.group(1)), period_end=_date(period.group(2), True))
             for key, pattern in [
-                ('job_title', r'(?:담당\s*업무|직무|직위|직책)\s*[:：]\s*([^\n/;|]+)'),
+                ('job_title', r'(?:직위|직책)\s*[:：]\s*([^\n/;|]+)'),
+                ('job_duties', r'(?:담당\s*업무|직무)\s*[:：]\s*([^\n/;|]+)'),
                 ('client_name', r'(?:성명|채무자|예금주|조회대상|가입자|본인)\s*[:：]\s*([가-힣]{2,5})(?=\s|[/;.,]|$)'),
                 ('resident_id', r'주민\s*등록\s*번호\s*[:：]\s*(\d{6}\s*-?\s*[\d*＊●]{7})'),
-                ('address', r'(?<!처\s)(?<!자\s)(?:거주지|거주\s*주소|^주소)\s*[:：]\s*([^\n/;|]+)'),
+                ('address', r'^\s*(?:주소|실거주\s*주소|거주지|거주\s*주소)\s*[:：]\s*([^\n/;|]+)'),
                 ('employer', r'(?:근무처|회사명|직장명|사업장명|사업장)\s*[:：]\s*([^\n/;|]+)'),
-                ('employer_address', r'(?:근무처|회사|사업장)\s*(?:주소|소재지)\s*[:：]\s*([^\n/;|]+)'),
-                ('employer_phone', r'(?:근무처|회사|사업장)\s*(?:전화|연락처)\s*[:：]\s*([\d()+ -]+)'),
+                ('employer_address', r'(?:근무처|회사|사업장|직장)\s*(?:주소|소재지)\s*[:：]\s*([^\n/;|]+)'),
+                ('employer_phone', r'(?:근무처|회사|사업장|직장)\s*(?:전화(?:번호)?|연락처)\s*[:：]\s*([\d()+ -]+)'),
                 ('employment_period', r'(?:재직\s*기간|근무\s*기간)\s*[:：]\s*([^\n/;|]+)'),
                 ('employment_start', r'(?:입사일|입사\s*일자)\s*[:：]\s*(' + DATE + ')'),
                 ('housing_owner', r'(?:주택\s*소유자|임대인|거주지\s*소유자)\s*[:：]\s*([^\n/;|]+)'),
@@ -339,6 +479,8 @@ def extract(sources):
                 ('creditor_cause', r'(?:차입\s*원인|대출\s*목적|차입금\s*용도|차용\s*용도)\s*[:：]\s*([^\n/;|]+)'),
                 ('creditor_address', r'채권자\s*(?:주소|소재지)\s*[:：]\s*([^\n/;|]+)'),
                 ('institution', r'(?:금융기관|은행명)\s*[:：]\s*([^\n/;|]+)'),
+                ('insurance_name', r'보험\s*(?:회사|회사명)\s*[:：]\s*([^\n/;|]+)'),
+                ('insurance_policy', r'(?:보험\s*)?증권\s*번호\s*[:：]\s*([A-Za-z0-9*＊Xx●•-]{3,})'),
                 ('account_key', r'(?:계좌번호|계좌)\s*[:：]\s*([A-Za-z0-9*＊Xx●•-]{3,})'),
                 ('loan_key', r'(?:대출번호|채권번호|약정번호|계약번호)\s*[:：]\s*([A-Za-z0-9*＊Xx●•-]{3,})'),
                 ('account_scope', r'(?:전체\s*계좌|본인\s*계좌|계좌\s*목록)\s*[:：]\s*([^\n;]+)'),
@@ -346,7 +488,14 @@ def extract(sources):
             ]:
                 match = re.search(pattern, segment)
                 if match and not UNKNOWN.search(match.group(1)):
-                    add(key, match.group(1).strip(), line.start(), line.end())
+                    value = match.group(1).strip()
+                    if key == 'address':
+                        postcode = re.match(r'(?:\(\s*)?(?:우편번호|우)\s*[:：]?\s*(\d{5})(?:\s*\))?\s+', value)
+                        if postcode:
+                            add('postal_code', postcode.group(1), line.start(), line.end())
+                            value = value[postcode.end():].strip()
+                    if value:
+                        add(key, value, line.start(), line.end())
         for employment in employment_observations(text):
             add('employment_type', employment['value'], employment['start'], employment['end'], unit='category')
         salary_title = re.search(r'급여\s*명세서|급료\s*명세서|근로\s*소득\s*원천\s*징수', text[:300])

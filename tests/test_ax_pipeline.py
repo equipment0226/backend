@@ -145,11 +145,15 @@ class AXPipelineAPITests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         from fastapi.testclient import TestClient
-        from apps.api import ax_engine, main, store
+        from apps.api import ax_engine, corpus, main, store
         cls.main, cls.store, cls.engine = main, store, ax_engine
         cls.temp = tempfile.TemporaryDirectory(prefix="debtoff-ax-pipeline-")
         cls.data_patch = patch.object(store, "DATA_DIR", Path(cls.temp.name))
         cls.data_patch.start()
+        # Keep collected law texts paired with this isolated store's assessments.
+        # A developer's unassessed corpus must not block synthetic requests.
+        cls.corpus_patch = patch.object(corpus, "CORPUS_DIR", Path(cls.temp.name) / "corpus")
+        cls.corpus_patch.start()
         cls.auto_patch = patch.dict("os.environ", {"DEBTOFF_AUTO_AX": "1"})
         cls.auto_patch.start()
         cls.pool = DeferredPool()
@@ -171,6 +175,7 @@ class AXPipelineAPITests(unittest.TestCase):
         cls.client_context.__exit__(None, None, None)
         cls.pool_patch.stop()
         cls.auto_patch.stop()
+        cls.corpus_patch.stop()
         cls.data_patch.stop()
         cls.temp.cleanup()
 
@@ -335,7 +340,7 @@ class AXPipelineAPITests(unittest.TestCase):
         for key in ("client_name", "court_id", "region", "case_type", "version", "input_revision"):
             self.assertEqual(before[key], after[key])
 
-    def test_classification_correction_stales_old_and_removes_repayment_section(self):
+    def test_classification_correction_preserves_history_until_gated_regeneration(self):
         case, _ = self.intake()
         old = case["drafts"][-1]["id"]
         response = self.client.post("/api/cases/" + case["id"] + "/intake-review", headers=self.headers["staff"],
@@ -346,9 +351,10 @@ class AXPipelineAPITests(unittest.TestCase):
         self.assertEqual(updated["case_type"], "other")
         self.assertGreater(updated["input_revision"], case["input_revision"])
         self.assertTrue(next(d for d in updated["drafts"] if d["id"] == old)["stale"])
-        current = updated["drafts"][-1]
-        self.assertNotIn("repayment_plan", {s["id"] for s in current["sections"]})
-        self.assertNotIn("개인회생 신청서", current["sections"][0]["title"])
+        self.assertEqual(len(updated['drafts']), len(case['drafts']))
+        self.assertEqual(updated['drafts'][-1]['sections'], case['drafts'][-1]['sections'])
+        self.assertFalse(any(not draft['stale'] for draft in updated['drafts']))
+        self.assertEqual(updated['ax_pipeline']['status'], 'queued')
         self.assertEqual(updated["intake_review"]["actor"], "담당 직원")
 
     def test_case_classification_does_not_activate_or_modify_legal_registry(self):
@@ -407,7 +413,13 @@ class AXPipelineAPITests(unittest.TestCase):
         self.assertTrue(all(f["status"] == "quarantined" for f in updated["facts"]))
         self.assertEqual(updated["consultation"]["status"], "quarantined")
         self.assertEqual(updated["messages"][-1]["status"], "quarantined")
-        draft = updated["drafts"][-1]
+        self.assertEqual(len(updated['drafts']), len(case['drafts']))
+        self.assertTrue(all(draft['stale'] for draft in updated['drafts']))
+        self.assertEqual(updated['drafts'][-1]['sections'], case['drafts'][-1]['sections'])
+        # The old version remains in history. Even an explicitly requested future
+        # draft must not reuse quarantined evidence from that former identity.
+        from apps.api import drafting
+        draft = drafting.generate(copy.deepcopy(updated), '격리 자료 제외 단위 검사')
         values = [field["value"] for section in draft["sections"] for field in section["fields"] if field["key"] == "monthly_income"]
         self.assertTrue(values)
         self.assertTrue(all(value is None for value in values))

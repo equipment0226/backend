@@ -22,7 +22,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from pydantic import BaseModel, Field, ConfigDict, StrictInt, StrictFloat, StrictStr, StrictBool
 
-from . import domain, store, ax_service, drafting, rulebook, automation, download_names, accounts, notifications, intake_workflow
+from . import domain, store, ax_service, drafting, rulebook, automation, download_names, accounts, notifications, intake_workflow, source_review
 
 ROOT = store.ROOT
 DEMO_MODE = os.getenv('DEBTOFF_DEMO_MODE', '1') == '1'
@@ -190,6 +190,8 @@ def visible(case, user):
     case['approval_estimate'] = estimate(case)
     case['ax_runs']=ax_service.case_runs(case)
     ax_service.project_active_pipeline(case, case['ax_runs'])
+    from . import extraction_readiness
+    extraction_readiness.project(case)
     if not case.get('ax_pipeline'):
         # Older cases still show their actual waiting stage before their first
         # AX event. Reading a case never fabricates a completed verification.
@@ -517,6 +519,12 @@ async def upload(case_id:str,file:UploadFile=File(...),request_id:str=Form(defau
         pending=[p['page'] for p in pages if not p.get('text','').strip()]
         c['documents'][-1].update(extraction_method='mixed' if len(methods)>1 else next(iter(methods),'unreadable'),ocr_summary={'ocr_pages':[p['page'] for p in pages if p.get('extraction_method')=='ocr'],'unreadable_pages':pending,'page_count':len(pages),'review_required':any(p.get('requires_review') for p in pages)})
         if pending and any(p.get('text','').strip() for p in pages):c['documents'][-1]['extraction_status']='partial'
+        # Finish deterministic extraction with the upload. Later AI checks may
+        # disagree with values, but must not expose a half-populated review form.
+        from . import extraction_readiness
+        extracted=extraction_readiness.candidates(c['documents'][-1])
+        ax_service.enrich_candidates(c,extracted)
+        extraction_readiness.capture(c,c['documents'][-1],extracted)
         if request_item:
             request_item['document_ids'].append(doc_id)
             request_item['status']='received'
@@ -548,23 +556,9 @@ class Verify(Payload):
 @app.post('/api/cases/{case_id}/documents/{doc_id}/verify')
 def verify(case_id:str,doc_id:str,data:Verify,user=Depends(staff)):
     def apply(c):
-        doc=domain.item(c,'documents',doc_id)
+        doc=source_review.reviewable_document(c,doc_id)
         domain.invalidate(c,'원문 검증 변경')
-        doc.update(**data.model_dump(exclude={'expected_version'}),verified_by=user['name'],verified_at=store.now())
-        doc['status']='verified' if data.scope_confirmed and data.content_confirmed and data.person_confirmed else 'needs_more'
-        doc['public_status']='담당자 확인 완료' if doc['status']=='verified' else '추가 확인 필요'
-        doc['auto_verified'] = False
-        if doc['request_id']:
-            r=domain.item(c,'requests',doc['request_id'])
-            r['status']='fulfilled' if doc['status']=='verified' else 'needs_more'
-            if doc['status']=='verified':
-                r.pop('public_review_note', None)
-        if doc['status']=='verified':
-            doc['manual_verification'] = {'signature': automation.document_review_signature(c, doc),
-                                          'verified_at': doc['verified_at'], 'verified_by': doc['verified_by'],
-                                          'verified_by_id': user['id']}
-        else:
-            doc.pop('manual_verification', None)
+        source_review.apply_document(c,doc,data,user)
     return change(case_id,user,data.expected_version,'document.verified',apply)
 
 
@@ -916,29 +910,29 @@ class FindingReview(Reason):
 @app.post('/api/cases/{case_id}/ax-runs/{run_id}/findings/{finding_id}/{decision}')
 def finding_review(case_id:str,run_id:str,finding_id:str,decision:Literal['apply','dismiss'],data:FindingReview,user=Depends(staff)):
     authorize(case_id,user)
-    return visible(ax_service.apply_finding(case_id,run_id,finding_id,user,data.expected_version,data.reason,data.period,decision=='dismiss'),user)
+    saved=ax_service.apply_finding(case_id,run_id,finding_id,user,data.expected_version,data.reason,data.period,decision=='dismiss')
+    if decision=='apply':
+        ax_service.maybe_schedule(saved,user,POOL,trigger='분석 제안 반영')
+    return visible(saved,user)
 
 
 class CandidateReview(Reason):
     decision: Literal['accept','correct','reject']
-    value: StrictStr | StrictInt | StrictFloat | list | dict | None=None
+    value: StrictStr | StrictInt | StrictFloat | StrictBool | list | dict | None=None
 
 
 @app.post('/api/cases/{case_id}/extraction-candidates/{candidate_id}/review')
 def candidate_review(case_id:str,candidate_id:str,data:CandidateReview,user=Depends(staff)):
     def apply(c):
         candidate=domain.item(c,'extraction_candidates',candidate_id)
-        domain.require(candidate.get('status') not in ('superseded','quarantined'),'INACTIVE_CANDIDATE','대체되거나 격리된 값은 바로 채택할 수 없습니다. 원문을 재확인하고 다시 분석하세요.')
-        domain.require(candidate.get('status')!='rejected' or data.decision!='accept','REJECTED_CANDIDATE','반려한 값은 원문과 함께 수정 검토하세요.')
-        if data.decision=='correct':
-            domain.require(data.value is not None,'VALUE_REQUIRED','수정할 값을 입력하세요.')
-            domain.require(len(store.dumps(data.value))<=10000,'VALUE_SIZE','수정값이 너무 깁니다.')
-            if candidate['key'] in ('monthly_income','total_debt','living_expenses','assets_total','household_size','housing_cost','housing_deposit'):
-                domain.require(type(data.value) is int and data.value>=0,'VALUE_TYPE','금액·인원은 0 이상의 정수로 입력하세요.')
-            candidate.update(original_value=candidate.get('original_value',candidate['value']),value=data.value,origin='human_correction')
+        source_review.validate_candidate(candidate,data.decision,data.value)
         domain.invalidate(c,'추출값 검토 반영')
-        candidate.update(status='rejected' if data.decision=='reject' else 'accepted',review={'decision':data.decision,'reason':data.reason,'actor':user['name'],'at':store.now()})
-        drafting.generate(c,'추출값 검토 반영')
+        document=next((doc for doc in c.get('documents',[]) if doc['id']==candidate.get('document_id')),None)
+        source_review.apply_candidate(candidate,data.decision,data.value,data.reason,user,document=document,case=c)
+        # Preserve the authored document versions and their review metadata.
+        # change() queues the evidence/analysis/document pipeline for this edit;
+        # a synchronous generic draft would replace that verified writing with
+        # unreviewed placeholder prose before the pipeline has run.
     return change(case_id,user,data.expected_version,'candidate.reviewed',apply)
 
 
@@ -995,7 +989,8 @@ def intake_review(case_id:str,data:IntakeReview,user=Depends(staff)):
                 candidate.update(original_value=candidate.get('original_value',candidate['value']),value=data.client_name,status='accepted',origin='human_correction',review=c['intake_review'])
         if c['case_type'] in ('personal_rehabilitation','bankruptcy_review'):
             ax_service.ensure_requests(c,rulebook.evaluate_case(c)['required_documents'])
-        drafting.generate(c,'사건 분류 검토 반영')
+        # Classification edits invalidate old outputs but do not author replacements.
+        # The scheduled pipeline checks extraction and review completion first.
     return change(case_id,user,data.expected_version,'intake.reviewed',apply)
 
 
@@ -1280,6 +1275,7 @@ from .extended_routes import attach as attach_document_workflow
 attach_document_workflow(app, staff, authorize, change)
 from .document_review_routes import attach as attach_document_review
 attach_document_review(app, staff, authorize, change)
+source_review.attach(app, staff, change)
 from .filing_routes import attach as attach_filing_workflow
 attach_filing_workflow(app, staff, authorize, change, extract_file)
 

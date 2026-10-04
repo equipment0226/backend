@@ -21,7 +21,7 @@ import pymupdf
 ROOT=Path(__file__).resolve().parents[2]
 DATA=ROOT/'data'/'court_forms'
 SOURCES=json.loads((DATA/'sources.json').read_text(encoding='utf-8'))
-RENDERER_VERSION='court-evidence-fields-v4'
+RENDERER_VERSION='court-evidence-fields-v5-asset-details'
 # Original national forms use a subset of 휴먼명조 and Type3 glyphs. A subset
 # cannot render arbitrary new names. Prefer a locally licensed full face;
 # HMFMOLD.TTF is 휴먼옛체 (Yet R), not 휴먼명조, and is intentionally excluded.
@@ -50,8 +50,14 @@ def _definitions():
         f('court_prefix','제출법원(법원 앞 부분)',1,[350,718,471,737],True,12)]},
       'D5101':{'title':'재산목록','pages':[0], 'fields':[
         f('cash','현금',0,[157,202,218,221]),f('bank_balance','예금 총액',0,[157,225,218,264],True),
-        f('bank_name','금융기관명',0,[336,225,359.5,241]),f('bank_account','계좌번호',0,[318,246,387,259],False,7),
+        f('bank_name','금융기관명',0,[336,225,359.5,241]),f('bank_account','계좌번호',0,[315.5,246,388.5,259],False,7),
+        f('bank_name_2','두 번째 금융기관명',0,[411,225,435,241],False,7),
+        f('bank_account_2','두 번째 계좌번호',0,[393,246,463,259],False,7),
+        f('bank_balance_1','첫 번째 계좌 잔액',0,[317,259,387,271],False,7),
+        f('bank_balance_2','두 번째 계좌 잔액',0,[393,259,463,271],False,7),
         f('insurance_surrender','보험해약환급금',0,[157,272,218,311],True),f('insurance_name','보험회사',0,[336,272,361,289],False,7),
+        f('insurance_policy','보험 증권번호',0,[315.5,291,388.5,304],False,7),
+        f('insurance_surrender','보험 해약반환금 상세',0,[317,304,387,317],False,7),
         f('vehicle_value','자동차 가액',0,[157,319,218,340]),f('housing_deposit','임차보증금 반환예상액',0,[157,348,218,406],True),
         f('address','임차물건',0,[318,347,537,362],True,7),f('lease_terms','보증금 및 월세',0,[318,364,537,385],False,8),
         f('real_estate_value','부동산 순가액',0,[157,413,218,498]),f('retirement_value','예상퇴직금 가액',0,[157,655,218,674]),
@@ -106,7 +112,11 @@ def _definitions():
         f('client_name','성명',0,[136,180,277,220],True),f('resident_id','주민등록번호',0,[373,180,520,220],True),
         f('address','주소',0,[136,229,520,264],True),f('employer','직장명',0,[136,271,280,311],True),
         f('employer_phone','직장전화',0,[373,271,520,311]),f('employer_address','직장주소',0,[136,321,520,348],True),
-        f('employment_period','근무기간',0,[136,357,520,384],True),f('income_manwon','월평균 소득(만원)',0,[365,421,421,443],True)]},
+        f('employment_period','근무기간',0,[136,357,520,384],True),
+        f('income_start_year','소득 확인 시작 연도',0,[135,422,175,443]),
+        f('income_start_month','소득 확인 시작 월',0,[193,422,220,443]),
+        f('income_start_day','소득 확인 시작 일',0,[237,422,258,443]),
+        f('income_manwon','월평균 소득(만원)',0,[365,421,421,443],True)]},
       'D5106':{'title':'개인회생채권자목록','pages':[0,1], 'fields':[
         f('total_debt','채권현재액 총합계',0,[152,181,216,203],True,8),f('principal_total','원금합계',0,[152,209,216,222],True,8),
         f('interest_total','이자합계',0,[152,226,216,240],True,8),f('secured_debt','담보부채권액 합계',0,[295,181,359,240]),
@@ -264,6 +274,28 @@ def _values(case,fields,calculation):
         for key in summary:origins[key]={'type':'legal_calculation','id':calculation.get('id'),'status':calculation.get('status','review_required')}
         for key in CALC_KEYS|{'monthly_income','household_size','total_debt'}:
             if key in values:origins[key]={'type':'legal_calculation','id':calculation.get('id'),'status':calculation_origin}
+        retirement = next((row for row in calculation.get('asset_calculations', [])
+                           if row.get('id') == 'retirement_expected'), None)
+        if retirement and retirement.get('liquidation_value') is not None:
+            # The printed retirement box excludes the reviewed deductions; a
+            # source's expected gross retirement benefit is not this net value.
+            values['retirement_value'] = retirement['liquidation_value']
+            origins['retirement_value'] = {'type':'legal_calculation','id':calculation['id'],'status':calculation_origin}
+            assets = inputs.get('assets', [])
+            # In this supported layout the retirement exclusion is already in
+            # its row. Do not subtract it again as an exemption below the sum.
+            if assets and all(asset.get('secured_deduction') == 0 and asset.get('disposal_cost') == 0
+                              and type(asset.get('exempt_deduction')) is int for asset in assets):
+                retirement_input = next((asset for asset in assets if asset['id']=='retirement_expected'), None)
+                if retirement_input:
+                    values['assets_total'] = sum(asset['owned_value'] for asset in assets) - retirement_input['exempt_deduction']
+                    values['exempt_value'] = sum(asset['exempt_deduction'] for asset in assets if asset['id']!='retirement_expected')
+                    for key in ('assets_total','exempt_value'):
+                        origins[key] = {'type':'legal_calculation','id':calculation['id'],'status':calculation_origin}
+            else:
+                # Other lien/disposal combinations need an explicit property
+                # schedule; retaining the gross total would contradict this row.
+                values['assets_total'] = None
         for i,row in enumerate(calculation.get('creditor_allocations',[])):
             for key,value in row.items():values[f'allocations.{i}.{key}']=value
             values[f'allocations.{i}.number']=i+1
@@ -316,14 +348,18 @@ def preview(case,template_id='D5100',fields=None,calculation=None):
             fits=layout is not None
             entry['fits_original_field']=fits
             entry['render_layout']=layout
-            if not fits:overflow.append(item['key'])
+            if not fits:
+                overflow.append(item['key'])
+                entry['annex_reference_layout']=_field_layout(item,'별지',original_chars[item['page']])
     measure.close()
     warnings=['공식 원본의 빈칸에 값을 배치한 검토용 초안입니다. 서명·동의·기각사유 부존재 진술은 자동 확정하지 않습니다.',
       '서식에 포함된 과거 작성요령·비용 안내의 현재 효력은 별도로 대조해야 합니다.']
     if not calculation and any(f['key'] in CALC_KEYS for f in output):warnings.append('원문에서 확인한 금액과 코드 산술은 기재합니다. 법률 판단 제안은 미승인 상태이며 미확정 비용·생계비·면제재산을 0원으로 간주하지 않습니다.')
     if template_id=='D5106':warnings.append('첫 4개 채권자는 원본 표에 배치하며 추가 채권자는 별지에 전부 보존합니다. 담보·다툼·전부명령 부속서류는 별도 검토합니다.')
     if template_id=='BUSAN-ATTACHMENTS':warnings.append('제출 여부 체크는 원본 증빙과 대조 후 담당자가 표시합니다. 업로드만으로 제출 완료를 표시하지 않습니다.')
-    if overflow:warnings.append('원본 칸에 들어가지 않는 값은 별지에 보존됩니다. 배치 검토 필요: '+', '.join(overflow))
+    if overflow:
+        overflow_labels = list(dict.fromkeys(item['label'] for item in output if item['key'] in overflow))
+        warnings.append('원본 칸에 들어가지 않는 값은 별지에 보존됩니다. 배치 검토 필요: '+', '.join(overflow_labels))
     known={f['key'] for f in output}
     extras=[{'key':k,'value':v} for k,v in _flatten(fields or {}).items() if k not in known and v is not None]
     from . import evidence_mapping
@@ -425,7 +461,8 @@ def _field_layout(field,text,original_chars):
 
 
 def _display(value,key=None):
-    if key in {'bank_name','refund_bank'} and isinstance(value,str) and value.endswith('은행'):return value[:-2]
+    if key in {'bank_name','bank_name_2','refund_bank'} and isinstance(value,str) and value.endswith('은행'):return value[:-2]
+    if key=='insurance_name' and isinstance(value,str) and value.endswith('생명'):return value[:-2]
     if isinstance(value,bool):return '예' if value else '아니오'
     if isinstance(value,(int,float)):
         if key and (key.endswith(('_year','_month','_day')) or key in ('months','household_size','median_percent')):return str(value)
@@ -516,7 +553,10 @@ def render_pdf(template_id,case,fields=None,calculation=None):
         if layout is not None:
             for line in layout:
                 if line['text']:p.insert_text((line['x'],line['baseline']),line['text'],fontname=font,fontsize=line['font_size'],color=(0,0,0))
-        else:overflow.append({'key':field['key'],'label':field['label'],'value':value})
+        else:
+            overflow.append({'key':field['key'],'label':field['label'],'value':value})
+            for line in field.get('annex_reference_layout') or []:
+                p.insert_text((line['x'],line['baseline']),line['text'],fontname=font,fontsize=line['font_size'],color=(0,0,0))
     # Review annex keeps every unmapped or overflowing value; no silent truncation.
     lines=['원본: '+template['source']['title'],
       '원본 URL: '+template['source']['url'],'사건: '+str(case.get('client_name','')),'관할 후보: '+str(case.get('court_name','')),

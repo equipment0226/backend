@@ -118,6 +118,57 @@ class ObsoleteWorkerTests(unittest.TestCase):
         self.assertIn('8', [run['id'] for run in runs])
         self.assertEqual(len(runs), 6)
 
+    def retry_record(self, *, status='needs_review', retryable=False):
+        run = {'id': store.uid('ax'), 'kind': 'case_review', 'status': status,
+               'pipeline': {'stage': 'human_review', 'status': 'waiting',
+                            'retryable_verification': retryable}}
+        with store.db() as con:
+            con.execute('INSERT INTO ax_runs VALUES (?,?,?,?,?,?)',
+                        (run['id'], self.case['id'], ax_service.fingerprint(self.case),
+                         'same-law', status, store.dumps(run)))
+        return run
+
+    def test_unavailable_verification_can_retry_after_human_review_and_deduplicates(self):
+        old = self.retry_record(retryable=True)
+        pool = Mock()
+        queued = ax_service.schedule(self.case, self.user, pool)
+        self.assertNotEqual(queued['run_id'], old['id'])
+        self.assertEqual(queued['status'], 'queued')
+        for status in ('queued', 'running'):
+            with store.db() as con:
+                row = con.execute('SELECT body FROM ax_runs WHERE id=?', (queued['run_id'],)).fetchone()
+                active = json.loads(row['body'])
+                active.update(status=status, pipeline={'stage':'human_review', 'retryable_verification':True})
+                con.execute('UPDATE ax_runs SET status=?,body=? WHERE id=?',
+                            (status, store.dumps(active), queued['run_id']))
+            reused = ax_service.schedule(self.case, self.user, pool)
+            self.assertEqual(reused, {'run_id':queued['run_id'], 'status':status, 'reused':True})
+        self.assertEqual(pool.submit.call_count, 1)
+
+    def test_ordinary_human_review_does_not_repeat_without_infrastructure_failure(self):
+        old = self.retry_record(retryable=False)
+        pool = Mock()
+        result = ax_service.schedule(self.case, self.user, pool)
+        self.assertEqual(result, {'run_id':old['id'], 'status':'needs_review', 'reused':True})
+        pool.submit.assert_not_called()
+
+    def test_retryable_human_review_keeps_same_input_three_attempt_limit(self):
+        for _ in range(3):
+            self.retry_record(retryable=True)
+        pool = Mock()
+        with self.assertRaises(domain.DomainError) as raised:
+            ax_service.schedule(self.case, self.user, pool)
+        self.assertEqual(raised.exception.code, 'AX_BUDGET')
+        pool.submit.assert_not_called()
+
+    def test_retry_flag_never_supersedes_older_matching_active_job(self):
+        active = self.retry_record(status='running', retryable=True)
+        self.retry_record(retryable=True)
+        pool = Mock()
+        result = ax_service.schedule(self.case, self.user, pool)
+        self.assertEqual(result, {'run_id':active['id'], 'status':'running', 'reused':True})
+        pool.submit.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,3551 @@
+{
+  "synthetic": true,
+  "purpose": "공식 원본 입력 항목과 가상 증빙의 대응. 지원 여부는 실제 추출·작성 결과로 검증하며 정답을 앱에 주입하지 않음.",
+  "templates": [
+    {
+      "template_id": "D5100",
+      "title": "개인회생절차 개시신청서",
+      "official_pdf": "data\\court_forms\\originals\\D5100.pdf",
+      "official_pdf_sha256": "2449f207014269b2d9921002e12269eaa230747bc883e1d8c6edfa7c04bdb3a3",
+      "official_pages_read": 3,
+      "official_text_characters": 3365,
+      "fields": [
+        {
+          "key": "client_name",
+          "label": "신청인 성명",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "성명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "resident_id",
+          "label": "주민등록번호",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "무효 예시 주민등록번호",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "registered_address",
+          "label": "주민등록상 주소",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "주민등록상 주소",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "address",
+          "label": "현주소",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01",
+            "FIX17"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf",
+            "documents/17_주거용 임대차계약서_연습용.pdf"
+          ],
+          "source_item": "주소·임차물건",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "service_address",
+          "label": "송달장소",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX26"
+          ],
+          "source_files": [
+            "documents/26_채무발생 경위 및 생활현황 진술_연습용.pdf"
+          ],
+          "source_item": "송달장소 희망은 상세상담에서 확인",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "phone",
+          "label": "휴대전화",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "본인 연락처",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "lawyer_name",
+          "label": "대리인 성명",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "대리인 성명",
+          "category": "appointment_and_manual_entry",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "lawyer_address",
+          "label": "대리인 주소",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "대리인 주소",
+          "category": "appointment_and_manual_entry",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "lawyer_phone",
+          "label": "대리인 전화",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "대리인 전화",
+          "category": "appointment_and_manual_entry",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "lawyer_email",
+          "label": "대리인 이메일",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "대리인 이메일",
+          "category": "appointment_and_manual_entry",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "months",
+          "label": "변제기간(개월)",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제기간(개월)",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_deposit",
+          "label": "월 변제예정액",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 변제예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "refund_bank",
+          "label": "환급은행",
+          "page": 2,
+          "required": false,
+          "source_document_ids": [
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "환급계좌로 사용할지 담당자 선택 필요",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "refund_account",
+          "label": "환급계좌",
+          "page": 2,
+          "required": false,
+          "source_document_ids": [
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "환급계좌로 사용할지 담당자 선택 필요",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "court_prefix",
+          "label": "제출법원(법원 앞 부분)",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "제출법원(법원 앞 부분)",
+          "category": "confirmed_jurisdiction",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        }
+      ]
+    },
+    {
+      "template_id": "D5101",
+      "title": "재산목록",
+      "official_pdf": "data\\court_forms\\originals\\D5101.pdf",
+      "official_pdf_sha256": "dfb60a11eca8baf0b3dbfff3f6147f1290711670cdb3b5f06a16f950a169b519",
+      "official_pages_read": 2,
+      "official_text_characters": 2408,
+      "fields": [
+        {
+          "key": "cash",
+          "label": "현금",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX05"
+          ],
+          "source_files": [
+            "documents/05_계좌통합조회 및 잔액확인_연습용.pdf"
+          ],
+          "source_item": "수중현금 없음",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "bank_balance",
+          "label": "예금 총액",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX15",
+            "FIX16"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf"
+          ],
+          "source_item": "기준일별 계좌잔액의 합계",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "bank_name",
+          "label": "금융기관명",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "첫 번째 예금 금융기관명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "bank_account",
+          "label": "계좌번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "첫 번째 예금 계좌 식별",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "bank_name_2",
+          "label": "두 번째 금융기관명",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX16"
+          ],
+          "source_files": [
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf"
+          ],
+          "source_item": "두 번째 예금 금융기관명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "bank_account_2",
+          "label": "두 번째 계좌번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX16"
+          ],
+          "source_files": [
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf"
+          ],
+          "source_item": "두 번째 예금 계좌 식별",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "bank_balance_1",
+          "label": "첫 번째 계좌 잔액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "첫 번째 계좌 기준일 잔액",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "bank_balance_2",
+          "label": "두 번째 계좌 잔액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX16"
+          ],
+          "source_files": [
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf"
+          ],
+          "source_item": "두 번째 계좌 기준일 잔액",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "insurance_surrender",
+          "label": "보험해약환급금",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX20"
+          ],
+          "source_files": [
+            "documents/20_보험 해약환급금 확인서_연습용.pdf"
+          ],
+          "source_item": "해약환급금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "insurance_name",
+          "label": "보험회사",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX20"
+          ],
+          "source_files": [
+            "documents/20_보험 해약환급금 확인서_연습용.pdf"
+          ],
+          "source_item": "보험회사",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "insurance_policy",
+          "label": "보험 증권번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX20"
+          ],
+          "source_files": [
+            "documents/20_보험 해약환급금 확인서_연습용.pdf"
+          ],
+          "source_item": "보험 증권번호",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "insurance_surrender",
+          "label": "보험 해약반환금 상세",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX20"
+          ],
+          "source_files": [
+            "documents/20_보험 해약환급금 확인서_연습용.pdf"
+          ],
+          "source_item": "해약환급금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "vehicle_value",
+          "label": "자동차 가액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX23"
+          ],
+          "source_files": [
+            "documents/23_자동차 소유 조회확인_연습용.pdf"
+          ],
+          "source_item": "자동차 없음",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "housing_deposit",
+          "label": "임차보증금 반환예상액",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX17",
+            "FIX18"
+          ],
+          "source_files": [
+            "documents/17_주거용 임대차계약서_연습용.pdf",
+            "documents/18_보증금 및 차임 납부확인_연습용.pdf"
+          ],
+          "source_item": "미반환 임차보증금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "address",
+          "label": "임차물건",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01",
+            "FIX17"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf",
+            "documents/17_주거용 임대차계약서_연습용.pdf"
+          ],
+          "source_item": "주소·임차물건",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "lease_terms",
+          "label": "보증금 및 월세",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX17"
+          ],
+          "source_files": [
+            "documents/17_주거용 임대차계약서_연습용.pdf"
+          ],
+          "source_item": "보증금·월차임·계약기간",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "real_estate_value",
+          "label": "부동산 순가액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX22"
+          ],
+          "source_files": [
+            "documents/22_지적전산자료 조회결과_연습용.pdf"
+          ],
+          "source_item": "소유 부동산 없음",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "retirement_value",
+          "label": "예상퇴직금 가액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX21"
+          ],
+          "source_files": [
+            "documents/21_예상퇴직금 확인서_연습용.pdf"
+          ],
+          "source_item": "예상 총액에서 압류금지범위 등을 판단한 뒤 가액 결정",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "assets_total",
+          "label": "재산 합계",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX15",
+            "FIX16",
+            "FIX17",
+            "FIX20",
+            "FIX21"
+          ],
+          "source_files": [
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/17_주거용 임대차계약서_연습용.pdf",
+            "documents/20_보험 해약환급금 확인서_연습용.pdf",
+            "documents/21_예상퇴직금 확인서_연습용.pdf"
+          ],
+          "source_item": "관측 재산 합계와 청산가치는 별개",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "exempt_value",
+          "label": "면제재산 신청금액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "면제재산 신청금액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "liquidation_value",
+          "label": "청산가치",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "청산가치",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        }
+      ]
+    },
+    {
+      "template_id": "D5103",
+      "title": "수입 및 지출에 관한 목록",
+      "official_pdf": "data\\court_forms\\originals\\D5103.pdf",
+      "official_pdf_sha256": "d0cfca8e9b6994c1e061827c9d532b4c79e8ef7eb6bb0a48a69fbe5e350cdb04",
+      "official_pages_read": 3,
+      "official_text_characters": 2391,
+      "fields": [
+        {
+          "key": "employer",
+          "label": "직장명",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "근무처",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "job_title",
+          "label": "직위",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "직위·업무",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_label",
+          "label": "수입 명목",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "급여",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_period_label",
+          "label": "수입 기간구분",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "월평균",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "monthly_income",
+          "label": "월 수입 금액",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "각 월 실지급액 및 급여입금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "annual_income",
+          "label": "연간 환산 금액",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "월급×12 환산",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_seizure",
+          "label": "압류·가압류 여부",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "급여 압류·가압류 없음",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "annual_income",
+          "label": "연 수입",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "월급×12 환산",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "monthly_income",
+          "label": "월평균 수입",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "각 월 실지급액 및 급여입금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "household_size",
+          "label": "생계비 가구수",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01",
+            "FIX03"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf",
+            "documents/03_가족관계증명서 상세_연습용.pdf"
+          ],
+          "source_item": "세대수 사실과 법률상 부양인원은 별개",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "median_income",
+          "label": "기준 중위소득",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "기준 중위소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "median_percent",
+          "label": "중위소득 적용비율",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "중위소득 적용비율",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "recognized_living_cost",
+          "label": "예상 생계비",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "예상 생계비",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "additional_cost_reason",
+          "label": "추가생계비 사유",
+          "page": 2,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "추가생계비 사유",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        }
+      ]
+    },
+    {
+      "template_id": "D5105",
+      "title": "진술서",
+      "official_pdf": "data\\court_forms\\originals\\D5105.pdf",
+      "official_pdf_sha256": "a5b0427bd9a13809e0bda0b374e3e87aefebf0a6511f1ce2d2d4e26f60353f2a",
+      "official_pages_read": 3,
+      "official_text_characters": 2195,
+      "fields": [
+        {
+          "key": "employer",
+          "label": "최근 직장명",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "근무처",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "job_title",
+          "label": "최근 직위",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "직위·업무",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "housing_deposit",
+          "label": "임차보증금",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX17",
+            "FIX18"
+          ],
+          "source_files": [
+            "documents/17_주거용 임대차계약서_연습용.pdf",
+            "documents/18_보증금 및 차임 납부확인_연습용.pdf"
+          ],
+          "source_item": "미반환 임차보증금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "housing_cost",
+          "label": "월 임대료",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX17",
+            "FIX18",
+            "FIX27"
+          ],
+          "source_files": [
+            "documents/17_주거용 임대차계약서_연습용.pdf",
+            "documents/18_보증금 및 차임 납부확인_연습용.pdf",
+            "documents/27_월 생활지출 명세_연습용.pdf"
+          ],
+          "source_item": "월 차임·납부내역",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "tenant_name",
+          "label": "임차인 성명",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "임차인 성명",
+          "category": "manual_or_unsupported",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "statement",
+          "label": "부채 경위 및 신청에 이른 사정",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX26",
+            "FIX29",
+            "FIX11",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/26_채무발생 경위 및 생활현황 진술_연습용.pdf",
+            "documents/29_과거 치료비 납입 및 차입금 사용내역_연습용.pdf",
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "구체 경위·지속소득·채무구성·상환곤란 원문",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "prior_proceedings",
+          "label": "과거 절차 상세",
+          "page": 3,
+          "required": true,
+          "source_document_ids": [
+            "FIX26"
+          ],
+          "source_files": [
+            "documents/26_채무발생 경위 및 생활현황 진술_연습용.pdf"
+          ],
+          "source_item": "과거 회생·파산·면책 이력 없음 진술",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        }
+      ]
+    },
+    {
+      "template_id": "D5110",
+      "title": "변제계획안(가용소득만으로 변제)",
+      "official_pdf": "data\\court_forms\\originals\\D5110.pdf",
+      "official_pdf_sha256": "6bf54e0d45c2cb92da553bea33033d7da0a1b419fdc9b5ba60f789aec5a61532",
+      "official_pages_read": 7,
+      "official_text_characters": 7003,
+      "fields": [
+        {
+          "key": "client_name",
+          "label": "채무자 성명",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "성명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "case_year_suffix",
+          "label": "사건번호 연도(20 이후)",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "사건번호 연도(20 이후)",
+          "category": "manual_or_unsupported",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "case_sequence",
+          "label": "사건 일련번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "사건 일련번호",
+          "category": "manual_or_unsupported",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "lawyer_name",
+          "label": "대리인 성명",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "대리인 성명",
+          "category": "appointment_and_manual_entry",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "court_prefix",
+          "label": "제출법원",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "제출법원",
+          "category": "confirmed_jurisdiction",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "client_name",
+          "label": "채무자 성명",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "성명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "employer",
+          "label": "급여 지급처",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "근무처",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "start_year",
+          "label": "변제 시작 연도",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제 시작 연도",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "start_month",
+          "label": "변제 시작 월",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제 시작 월",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "start_day",
+          "label": "변제 시작 일",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제 시작 일",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "end_year",
+          "label": "변제 종료 연도",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제 종료 연도",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "end_month",
+          "label": "변제 종료 월",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제 종료 월",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "end_day",
+          "label": "변제 종료 일",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제 종료 일",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "months",
+          "label": "변제기간 개월",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제기간 개월",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_income",
+          "label": "월평균 수입",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "각 월 실지급액 및 급여입금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "household_size",
+          "label": "채무자·피부양자 수",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX01",
+            "FIX03"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf",
+            "documents/03_가족관계증명서 상세_연습용.pdf"
+          ],
+          "source_item": "세대수 사실과 법률상 부양인원은 별개",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "base_living_cost",
+          "label": "기준 중위소득 60%",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "기준 중위소득 60%",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "recognized_living_cost",
+          "label": "조정된 생계비",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "조정된 생계비",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_income",
+          "label": "월평균 수입",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "각 월 실지급액 및 급여입금",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "recognized_living_cost",
+          "label": "월평균 생계비",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월평균 생계비",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_disposable_income",
+          "label": "월평균 가용소득",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월평균 가용소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_trustee_fee",
+          "label": "회생위원 보수",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "회생위원 보수",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_creditor_capacity",
+          "label": "월 실제 가용소득",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 실제 가용소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "months",
+          "label": "변제횟수",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제횟수",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 실제 가용소득",
+          "page": 2,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 실제 가용소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_creditor_capacity",
+          "label": "월 변제예정액",
+          "page": 4,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 변제예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액",
+          "page": 4,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 변제예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "months",
+          "label": "변제개월",
+          "page": 4,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제개월",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "months",
+          "label": "변제횟수",
+          "page": 4,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제횟수",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "client_name",
+          "label": "채무자 성명",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "성명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "monthly_disposable_income",
+          "label": "월 가용소득",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 가용소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_trustee_fee",
+          "label": "월 보수",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 보수",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "monthly_creditor_capacity",
+          "label": "월 실제 가용소득",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 실제 가용소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "months",
+          "label": "변제횟수",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "변제횟수",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 실제 가용소득",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 실제 가용소득",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocation_principal_total",
+          "label": "확정 원금 합계",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "확정 원금 합계",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocation_monthly_total",
+          "label": "월 변제예정액 합계",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 변제예정액 합계",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액 합계",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 변제예정액 합계",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocation_principal_total",
+          "label": "채권 원금 총계 G",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권 원금 총계 G",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocation_monthly_total",
+          "label": "월 변제예정액 총계 H",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "월 변제예정액 총계 H",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액 총계 I",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 변제예정액 총계 I",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "principal_repayment_percent",
+          "label": "원금 변제율(소수 둘째자리 반올림)",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "원금 변제율(소수 둘째자리 반올림)",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "liquidation_value",
+          "label": "청산가치",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "청산가치",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "total_creditor_payment",
+          "label": "총 변제예정액",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 변제예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "present_value",
+          "label": "총 변제액 현재가치",
+          "page": 7,
+          "required": true,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "총 변제액 현재가치",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.0.number",
+          "label": "배분1 채권번호",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분1 채권번호",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.0.name",
+          "label": "배분1 채권자",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분1 채권자",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.0.principal",
+          "label": "배분1 확정원금",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분1 확정원금",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.0.monthly_payment",
+          "label": "배분1 월예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분1 월예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.0.total_payment",
+          "label": "배분1 총예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분1 총예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.1.number",
+          "label": "배분2 채권번호",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분2 채권번호",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.1.name",
+          "label": "배분2 채권자",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분2 채권자",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.1.principal",
+          "label": "배분2 확정원금",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분2 확정원금",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.1.monthly_payment",
+          "label": "배분2 월예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분2 월예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.1.total_payment",
+          "label": "배분2 총예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분2 총예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.2.number",
+          "label": "배분3 채권번호",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분3 채권번호",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.2.name",
+          "label": "배분3 채권자",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분3 채권자",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.2.principal",
+          "label": "배분3 확정원금",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분3 확정원금",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.2.monthly_payment",
+          "label": "배분3 월예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분3 월예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.2.total_payment",
+          "label": "배분3 총예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분3 총예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.3.number",
+          "label": "배분4 채권번호",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분4 채권번호",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.3.name",
+          "label": "배분4 채권자",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분4 채권자",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.3.principal",
+          "label": "배분4 확정원금",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분4 확정원금",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.3.monthly_payment",
+          "label": "배분4 월예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분4 월예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.3.total_payment",
+          "label": "배분4 총예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분4 총예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.4.number",
+          "label": "배분5 채권번호",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분5 채권번호",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.4.name",
+          "label": "배분5 채권자",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분5 채권자",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.4.principal",
+          "label": "배분5 확정원금",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분5 확정원금",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.4.monthly_payment",
+          "label": "배분5 월예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분5 월예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        },
+        {
+          "key": "allocations.4.total_payment",
+          "label": "배분5 총예정액",
+          "page": 7,
+          "required": false,
+          "source_document_ids": [
+            "FIX11",
+            "FIX15",
+            "FIX16",
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf",
+            "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+            "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "배분5 총예정액",
+          "category": "legal_judgment_or_calculation",
+          "automatic_mapping_status": "review_or_manual_entry_required",
+          "not_automatically_confirmed": true
+        }
+      ]
+    },
+    {
+      "template_id": "D5115",
+      "title": "소득증명서(급여소득자용)",
+      "official_pdf": "data\\court_forms\\originals\\D5115.pdf",
+      "official_pdf_sha256": "383ab06c476b1ced150cbbea3d029f6a95cb744cf60e5950400145f862a0140d",
+      "official_pages_read": 1,
+      "official_text_characters": 368,
+      "fields": [
+        {
+          "key": "client_name",
+          "label": "성명",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "성명",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "resident_id",
+          "label": "주민등록번호",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf"
+          ],
+          "source_item": "무효 예시 주민등록번호",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "address",
+          "label": "주소",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX01",
+            "FIX17"
+          ],
+          "source_files": [
+            "documents/01_주민등록표 등본_연습용.pdf",
+            "documents/17_주거용 임대차계약서_연습용.pdf"
+          ],
+          "source_item": "주소·임차물건",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "employer",
+          "label": "직장명",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "근무처",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "employer_phone",
+          "label": "직장전화",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "직장 전화",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "employer_address",
+          "label": "직장주소",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "직장 주소",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "employment_period",
+          "label": "근무기간",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX12"
+          ],
+          "source_files": [
+            "documents/12_재직증명서 및 근로조건확인서_연습용.pdf"
+          ],
+          "source_item": "입사일~현재",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_start_year",
+          "label": "소득 확인 시작 연도",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "현재 월소득을 확인한 급여기간 시작 연도(2025년). 입사연도가 아님",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_start_month",
+          "label": "소득 확인 시작 월",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "현재 월소득을 확인한 급여기간 시작 월(10월)",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_start_day",
+          "label": "소득 확인 시작 일",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "현재 월소득을 확인한 급여기간 시작 일(1일)",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "income_manwon",
+          "label": "월평균 소득(만원)",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX11"
+          ],
+          "source_files": [
+            "documents/11_급여명세서 12개월_연습용.pdf"
+          ],
+          "source_item": "월 실수령액의 만원 환산",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        }
+      ]
+    },
+    {
+      "template_id": "D5106",
+      "title": "개인회생채권자목록",
+      "official_pdf": "data\\court_forms\\originals\\D5106.pdf",
+      "official_pdf_sha256": "2fc6594a66284e882ec07e194607d5a4a9319fc03b1899fee2afac7e8e0abc7c",
+      "official_pages_read": 8,
+      "official_text_characters": 10180,
+      "fields": [
+        {
+          "key": "total_debt",
+          "label": "채권현재액 총합계",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "원금+이자 합계",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "principal_total",
+          "label": "원금합계",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자별 원금 합계",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "interest_total",
+          "label": "이자합계",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "미지급이자 합계",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "secured_debt",
+          "label": "담보부채권액 합계",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "각 부채증명서의 담보없음",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "unsecured_debt",
+          "label": "무담보채권액 합계",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX06",
+            "FIX07",
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "무담보 채권 합계",
+          "category": "documentary_fact",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.number",
+          "label": "채권자1 번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.name",
+          "label": "채권자1 명칭",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.cause",
+          "label": "채권자1 발생원인",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.address",
+          "label": "채권자1 주소",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.principal",
+          "label": "채권자1 원금",
+          "page": 1,
+          "required": true,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.interest",
+          "label": "채권자1 이자",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.0.basis",
+          "label": "채권자1 산정근거",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX06"
+          ],
+          "source_files": [
+            "documents/06_부채증명서_가상새봄은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.number",
+          "label": "채권자2 번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.name",
+          "label": "채권자2 명칭",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.cause",
+          "label": "채권자2 발생원인",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.address",
+          "label": "채권자2 주소",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.principal",
+          "label": "채권자2 원금",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.interest",
+          "label": "채권자2 이자",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.1.basis",
+          "label": "채권자2 산정근거",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX07"
+          ],
+          "source_files": [
+            "documents/07_부채증명서_가상한결저축은행_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.number",
+          "label": "채권자3 번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.name",
+          "label": "채권자3 명칭",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.cause",
+          "label": "채권자3 발생원인",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.address",
+          "label": "채권자3 주소",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.principal",
+          "label": "채권자3 원금",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.interest",
+          "label": "채권자3 이자",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.2.basis",
+          "label": "채권자3 산정근거",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [
+            "FIX08"
+          ],
+          "source_files": [
+            "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf"
+          ],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "creditor_detail",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.number",
+          "label": "채권자4 번호",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.name",
+          "label": "채권자4 명칭",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.cause",
+          "label": "채권자4 발생원인",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.address",
+          "label": "채권자4 주소",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.principal",
+          "label": "채권자4 원금",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.interest",
+          "label": "채권자4 이자",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        },
+        {
+          "key": "creditors.3.basis",
+          "label": "채권자4 산정근거",
+          "page": 1,
+          "required": false,
+          "source_document_ids": [],
+          "source_files": [],
+          "source_item": "채권자명·발생원인·주소·연락처·원금·이자·산정근거",
+          "category": "not_applicable_empty_row",
+          "automatic_mapping_status": "verify_parser_output_against_original",
+          "not_automatically_confirmed": false
+        }
+      ]
+    }
+  ],
+  "unmapped_original_items": [
+    {
+      "template": "D5105",
+      "items": [
+        "최종 학력",
+        "이전 직업 경력",
+        "과거 혼인·이혼",
+        "거주 시작일",
+        "과거 소송·집행"
+      ],
+      "source_document_ids": [
+        "FIX04",
+        "FIX12",
+        "FIX26"
+      ],
+      "status": "자료 존재·현재 원본 좌표 자동 기재 미지원"
+    },
+    {
+      "template": "D5103",
+      "items": [
+        "가족관계 전체 표"
+      ],
+      "source_document_ids": [
+        "FIX03"
+      ],
+      "status": "자료 존재·현재 원본 좌표 자동 기재 미지원"
+    },
+    {
+      "template": "D5115",
+      "items": [
+        "대표자명",
+        "증명서 작성일",
+        "대표 서명"
+      ],
+      "source_document_ids": [
+        "FIX12"
+      ],
+      "status": "기명·날짜 자료 존재 / 서명 공란·자동 서명 금지"
+    },
+    {
+      "template": "D5106",
+      "items": [
+        "발생일",
+        "만기",
+        "채권자 전화·팩스",
+        "자세한 산정근거"
+      ],
+      "source_document_ids": [
+        "FIX06",
+        "FIX07",
+        "FIX08"
+      ],
+      "status": "자료 존재 / 현재 매핑 밖 항목은 별지·수기 확인"
+    },
+    {
+      "template": "D5100",
+      "items": [
+        "대리인 선임",
+        "송달장소 결정",
+        "환급계좌 선택"
+      ],
+      "source_document_ids": [
+        "FIX01",
+        "FIX15",
+        "FIX26"
+      ],
+      "status": "선임·선택 필요 / 자동확정 금지"
+    }
+  ],
+  "legal_judgment_example": "legal_review_inputs.json",
+  "expected_is_not_source": "manifest.json은 테스트 비교용이며 증빙 또는 추출 입력으로 사용하지 않습니다."
+}

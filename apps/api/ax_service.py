@@ -19,7 +19,7 @@ def knowledge_signature(case=None):
         from .ax_engine import HARNESS_VERSION
         from .prompt_registry import signature
         from .automation import VERSION
-        from . import legal_watch, court_forms, grounded_drafting, auto_documents, workflow_contract
+        from . import legal_watch, court_forms, grounded_drafting, auto_documents, workflow_contract, document_facts, evidence_mapping, verification
         court_file = store.ROOT / 'data/court_request_rules.json'
         court_policy = json.loads(court_file.read_text(encoding='utf-8')) if court_file.exists() else {}
         court_id = (case or {}).get('court_id')
@@ -32,6 +32,7 @@ def knowledge_signature(case=None):
                              court_forms.RENDERER_VERSION, court_forms.SOURCES,
                              auto_documents.VERIFICATION_VERSION,
                              grounded_drafting.VERSION, grounded_drafting.writing_policy(),
+                             document_facts.VERSION, evidence_mapping.VERSION, verification.VERSION,
                              workflow_contract.VERSION, workflow_contract.STAGES])
     except (ImportError,OSError,ValueError):return 'unavailable'
 
@@ -119,9 +120,18 @@ def schedule(case,user,pool,kind='case_review',trigger='직원 분석 요청'):
     with store.db() as con:
         con.execute('BEGIN IMMEDIATE')
         previous=con.execute('SELECT * FROM ax_runs WHERE case_id=? AND signature=? AND knowledge_signature=? ORDER BY rowid DESC',(case['id'],signature,ks)).fetchall()
+        # A retry marker describes a finished verification failure. It must never
+        # bypass a matching in-flight job, even if its progress retains the flag.
         for row in previous:
             old=json.loads(row['body'])
-            retryable_model_failure=bool(old.get('error') and old.get('metrics',{}).get('model_status')=='failed') or old.get('pipeline',{}).get('stage')=='verification_waiting'
+            if old.get('kind')==kind and row['status'] in ('queued','running'):
+                return {'run_id':row['id'],'status':row['status'],'reused':True}
+        for row in previous:
+            old=json.loads(row['body'])
+            pipeline=old.get('pipeline',{})
+            retryable_model_failure=(bool(old.get('error') and old.get('metrics',{}).get('model_status')=='failed')
+                or pipeline.get('stage')=='verification_waiting'
+                or pipeline.get('retryable_verification') is True)
             if old.get('kind')==kind and row['status'] not in ('failed','stale','cancelled') and not retryable_model_failure:
                 return {'run_id':row['id'],'status':row['status'],'reused':True}
         domain.require(len(previous)<3,'AX_BUDGET','동일한 자료의 재분석 상한입니다. 실패 또는 근거 변경을 확인하세요.')
@@ -277,6 +287,10 @@ def worker(run_id,case):
                     if candidate.get('document_id') in unsafe:
                         candidate.update(status='quarantined',quarantine_reason='서류 인물 불일치')
                 enrich_candidates(c,[x for x in result.get('extracted_facts',[]) if x.get('document_id') not in unsafe])
+                from . import extraction_readiness
+                for source_document in c.get('documents',[]):
+                    if source_document.get('id') not in unsafe and source_document.get('source_type')!='meeting':
+                        extraction_readiness.capture(c,source_document)
                 for check in result.get('document_checks',[]):
                     doc=next((d for d in c['documents'] if d['id']==check.get('document_id')),None)
                     if not doc:continue
@@ -402,7 +416,8 @@ def apply_finding(case_id,run_id,finding_id,user,expected_version,reason,period=
                     corr.update(answer=action.get('answer') or finding['observation'],status='draft',ai_source=run_id)
             else:raise domain.DomainError('ACTION_NOT_ALLOWED','이 제안은 자동 업무 반영을 지원하지 않습니다.')
             finding.update(review_status='applied',applied_target_id=target_id)
-            drafting.generate(case,'검토 제안을 업무에 반영')
+            # Preserve authored versions. The endpoint schedules the pipeline only
+            # after this transaction commits; its evidence gates own regeneration.
         else:finding['review_status']='dismissed'
         finding.update(reviewed_by=user['name'],review_reason=reason,reviewed_at=store.now())
         case['version']+=1;case['updated_at']=store.now()
@@ -410,5 +425,7 @@ def apply_finding(case_id,run_id,finding_id,user,expected_version,reason,period=
         case['audit'].append({'id':store.uid('ev'),'action':'ax.finding.dismissed' if dismiss else 'ax.finding.applied','actor':user['name'],'role':user['role'],'at':store.now(),'from_version':before['version'],'to_version':case['version'],'previous_hash':store.digest(before)})
         con.execute('UPDATE cases SET version=?,body=? WHERE id=?',(case['version'],store.dumps(case),case_id))
         con.execute('INSERT INTO history VALUES (?,?,?,?)',(case_id,case['version'],store.dumps(case),store.now()))
-        con.execute('UPDATE ax_runs SET signature=?,body=? WHERE id=?',(fingerprint(case),store.dumps(run),run_id))
+        # A finding's source run still describes the pre-edit evidence. Rewriting
+        # its signature would make schedule() reuse that old verdict for new data.
+        con.execute('UPDATE ax_runs SET body=? WHERE id=?',(store.dumps(run),run_id))
     return case

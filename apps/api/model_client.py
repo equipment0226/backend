@@ -151,11 +151,12 @@ def _active_legal_signature(structured_payload=None):
 
 async def generate(messages: list[dict], schema: dict, timeout=120, max_tokens=600,
                    *, task_role="local", structured_payload=None,
-                   review_stage='strategy', review_attempt='auto') -> dict:
+                   review_stage='strategy', review_attempt='auto', local_context_tokens=None) -> dict:
     config = provider_config(task_role)
     if task_role != 'strategy_verification' or config['provider'] != 'deepseek':
         return await _generate_uncached(messages, schema, timeout, max_tokens,
-                                        task_role=task_role, structured_payload=structured_payload)
+                                        task_role=task_role, structured_payload=structured_payload,
+                                        local_context_tokens=local_context_tokens)
     from .verification import safe_strategy_messages, StrategyReview
     from . import reasoning_cache
     # Privacy validation precedes even a cache read: no caller can smuggle a raw
@@ -199,7 +200,7 @@ async def generate(messages: list[dict], schema: dict, timeout=120, max_tokens=6
 
 
 async def _generate_uncached(messages: list[dict], schema: dict, timeout=120, max_tokens=600,
-                   *, task_role="local", structured_payload=None) -> dict:
+                   *, task_role="local", structured_payload=None, local_context_tokens=None) -> dict:
     config = provider_config(task_role)
     if task_role == "strategy_verification":
         # Do not trust caller-provided messages or schemas, even when it claims
@@ -219,13 +220,29 @@ async def _generate_uncached(messages: list[dict], schema: dict, timeout=120, ma
                    # https://api-docs.deepseek.com/guides/thinking_mode/
                    "thinking": {"type": "enabled"}, "reasoning_effort": "high", "max_tokens": max_tokens}
     else:
+        if local_context_tokens is not None and (task_role not in LOCAL_ROLES or type(local_context_tokens) is not int or not 2048 <= local_context_tokens <= 8192):
+            raise ValueError('INVALID_LOCAL_CONTEXT_LIMIT')
+        context_tokens=local_context_tokens or 8192
+        # UTF-8 bytes conservatively bound tokens, including constrained schema
+        # and chat framing. Do not let the runtime silently trim source messages.
+        input_bound=sum(len(str(message.get('content','')).encode('utf-8')) for message in messages)
+        input_bound+=len(json.dumps(schema,ensure_ascii=False,separators=(',',':')).encode('utf-8'))+512
+        available=context_tokens-input_bound
+        if available < min(max_tokens,128):
+            raise ModelClientError('LOCAL_CONTEXT_LIMIT','원문 전체와 검증 형식을 보존할 수 있도록 입력 범위를 더 나누어야 합니다.')
+        output_limit=min(max_tokens,available)
         endpoint = _endpoint() + "/api/chat"
         local_key = configured("OLLAMA_API_KEY")
         headers = {"Authorization": "Bearer " + local_key} if local_key else {}
         payload = {"model": config["model"], "messages": messages, "format": schema,
                    "stream": False, "keep_alive": "5m",
-                   "options": {"temperature": 0, "num_ctx": 8192 if task_role == 'grounded_drafting' else 32768 if task_role != "local" else 4096,
-                               "num_predict": max_tokens}}
+                   # Keep the same trained context and loader options across
+                   # consultation/OCR/writing calls so the CPU runner is reusable.
+                   # Explicit mmap avoids anonymous model-copy pressure on this
+                   # 16GB Windows host. Smaller prefill batches reduce scratch RAM.
+                   # Official option handling: github.com/ollama/ollama/blob/main/server/sched.go
+                   "options": {"temperature": 0, "num_ctx": context_tokens,
+                               "num_predict": output_limit, "use_mmap": True, "num_batch": 128}}
     async with httpx.AsyncClient(timeout=httpx.Timeout(timeout, connect=10), follow_redirects=False,
                                  trust_env=False, headers=headers) as client:
         response = await asyncio.wait_for(client.post(endpoint, json=payload), timeout=timeout)
@@ -238,7 +255,8 @@ async def _generate_uncached(messages: list[dict], schema: dict, timeout=120, ma
         response.raise_for_status()
         raw = response.json()
     if config["provider"] == "ollama":
-        return {**raw, **config, "request_wall_seconds": round(time.perf_counter() - started, 3)}
+        return {**raw, **config, "request_wall_seconds": round(time.perf_counter() - started, 3),
+                'context_tokens':context_tokens,'input_token_upper_bound':input_bound,'output_token_limit':output_limit}
     choice = raw["choices"][0]
     usage = raw.get("usage", {})
     # Never retain provider reasoning_content; only the requested structured answer.

@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
-from apps.api import automation, domain, legal_calculator, store, grounded_drafting
+from apps.api import automation, ax_service, domain, extraction_readiness, legal_calculator, store, grounded_drafting
 
 
 def fixture():
@@ -20,6 +20,9 @@ def fixture():
     case['extraction_candidates'] = [{'id': 'income1', 'key': 'monthly_income', 'value': 2800000,
                                       'document_id': 'pay', 'source_id': 'doc:pay', 'source_type': 'case_document',
                                       'quote': '월 소득 2800000원', 'status': 'candidate'}]
+    extracted = extraction_readiness.candidates(case['documents'][0])
+    ax_service.enrich_candidates(case, extracted, 'pay')
+    extraction_readiness.capture(case, case['documents'][0], extracted)
     inputs = legal_calculator.example_payload()
     for row in [inputs['income']] + inputs['assets'] + inputs['creditors']:
         row['evidence_ids'] = ['pay']
@@ -27,7 +30,10 @@ def fixture():
 
 
 async def supported(kind, payload, **kwargs):
-    return {'status': 'passed', 'passed': True, 'checked_item_ids': [i['id'] for i in payload['items']], 'findings': []}
+    from apps.api.verification import VERSION
+    return {'status': 'passed', 'passed': True, 'version': VERSION, 'error': None,
+            'checked_item_ids': [i['id'] for i in payload['items']],
+            'findings': [{'item_id': i['id'], 'status': 'supported'} for i in payload['items']]}
 
 
 class AutomationTests(unittest.TestCase):
@@ -80,6 +86,20 @@ class AutomationTests(unittest.TestCase):
         self.run_pipeline()
         self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
 
+    def test_received_reference_document_waits_for_its_unified_review(self):
+        from apps.api import ax_service, extraction_readiness
+        reference = copy.deepcopy(self.case['documents'][0])
+        reference.update(id='additional-source', request_id=None, status='received')
+        reference.pop('extraction_manifest', None)
+        self.case['documents'].append(reference)
+        ax_service.enrich_candidates(self.case, extraction_readiness.candidates(reference))
+        extraction_readiness.capture(self.case, reference)
+        self.run_pipeline()
+        self.assertEqual(self.case['ax_pipeline']['stage'], 'verification_waiting')
+        self.assertIn('DOCUMENT_REVIEW_PENDING', {r['code'] for r in self.case['ax_pipeline']['reasons']})
+        self.assertFalse(self.case.get('drafts'))
+        self.mapping.assert_not_awaited()
+
     def test_wrong_kind_re_requests_customer_and_does_not_generate(self):
         self.run_pipeline([{'document_id': 'pay', 'catalog_id': 'D38'}])
         self.assertEqual(self.case['requests'][0]['status'], 'needs_more')
@@ -104,34 +124,144 @@ class AutomationTests(unittest.TestCase):
         self.assertEqual(self.case['requests'][0]['status'], 'needs_more')
         self.assertNotIn('drafts', self.case)
 
-    def test_ocr_failure_still_builds_review_draft_without_legal_analysis(self):
-        async def result(kind, payload):
-            return {'status': 'needs_review', 'passed': False} if kind == 'ocr' else await supported(kind, payload)
+    def test_ocr_failure_builds_review_draft_and_preserves_partial_analysis(self):
+        async def result(kind, payload, **kwargs):
+            checked = await supported(kind, payload)
+            return {**checked, 'status': 'needs_review', 'passed': False,
+                    'findings': [{'item_id': row['id'], 'status': 'uncertain'} for row in payload['items']]
+                    } if kind == 'ocr' else checked
         self.local.side_effect = result
-        self.run_pipeline()
+        progress = []
+        asyncio.run(automation.advance(self.case, progress=progress.append))
         self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
-        self.strategy.assert_not_awaited()
+        self.strategy.assert_awaited_once()
+        self.assertEqual(self.case['strategy_analyses'][-1]['decision'], 'review_required')
+        self.assertEqual(self.case['strategy_analyses'][-1]['evidence_status'], 'semantic_review_pending')
         self.assertTrue(any(n['kind'] == 'review_request' for n in self.case['notifications']))
         self.assertTrue(self.case['drafts'])
         steps = {step['id']: step['status'] for step in self.case['ax_pipeline']['steps']}
         self.assertEqual(steps['ocr'], 'review_required')
         self.assertEqual(steps['analysis'], 'review_required')
         self.assertFalse(self.case['drafts'][-1]['submission_ready'])
+        later = [row for row in progress if row['stage'] in {'legal_analysis','drafting','document_verification'}]
+        self.assertTrue(later)
+        self.assertTrue(all(next(step for step in row['steps'] if step['id']=='ocr')['status']=='review_required' for row in later))
 
-    def test_ocr_outage_creates_preliminary_documents_without_repeated_local_timeouts(self):
+    def test_ocr_outage_waits_without_new_analysis_or_documents_and_preserves_existing_versions(self):
         self.manual_review()
+        original = self.existing_outputs()
         self.local.side_effect = AsyncMock(return_value={'status': 'unavailable', 'passed': False,
             'error': {'code': 'MODEL_TIMEOUT', 'message': '검증 시간 초과'}})
         self.run_pipeline()
         self.assertEqual(self.local.call_count, 1)
-        self.narrative.assert_not_awaited()
-        draft = self.case['drafts'][-1]
-        self.assertEqual(draft['ai_review']['status'], 'unavailable')
-        self.assertFalse(draft['ai_review']['passed'])
-        self.assertFalse(draft['submission_ready'])
-        self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
-        self.assertTrue(all(field['value'] is None for section in draft['sections'] for field in section['fields'] if field['key'] != 'client_name'))
+        self.assert_waiting_without_downstream(original)
+        self.assertTrue(self.case['ax_pipeline']['retryable_verification'])
+
+    def existing_outputs(self):
+        """Prior generated/reviewed versions must survive an incomplete new check."""
+        self.case['drafts'] = [{'id': 'old-draft', 'sections': [{'id': 'statement', 'content': '기존 근거 작성 본문'}],
+                               'input_revision': 1, 'stale': False, 'ai_review': {'status': 'needs_review', 'passed': False}}]
+        self.case['court_documents'] = [{'id': 'old-pdf', 'sha256': 'original-pdf-hash',
+            'fields': {'statement': '기존 서식 본문'}, 'ai_review': {'status': 'passed', 'passed': True}, 'stale': False}]
+        self.case['legal_calculations'] = [{'id': 'old-calculation', 'summary': {'monthly_income': 2800000}, 'stale': False}]
+        self.case['strategy_analyses'] = [{'id': 'old-strategy', 'decision': 'review_required', 'stale': False}]
+        return {key: copy.deepcopy(self.case[key]) for key in ('drafts', 'court_documents', 'legal_calculations', 'strategy_analyses')}
+
+    def assert_waiting_without_downstream(self, previous=None):
+        self.assertEqual(self.case['ax_pipeline']['stage'], 'verification_waiting')
         self.mapping.assert_not_awaited()
+        self.strategy.assert_not_awaited()
+        self.narrative.assert_not_awaited()
+        for key in ('drafts', 'court_documents', 'legal_calculations', 'strategy_analyses'):
+            self.assertEqual(self.case.get(key, []), (previous or {}).get(key, []))
+
+    def test_false_ocr_pass_with_partial_coverage_cannot_start_downstream_work(self):
+        self.manual_review()
+        original = self.existing_outputs()
+        async def partial(kind, payload, **kwargs):
+            checked = await supported(kind, payload)
+            checked['checked_item_ids'] = checked['checked_item_ids'][:-1]
+            return checked
+        self.local.side_effect = partial
+        self.run_pipeline()
+        self.assert_waiting_without_downstream(original)
+        self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'OCR_VERIFICATION_INCOMPLETE')
+
+    def test_negative_ocr_missing_findings_is_incomplete_even_with_all_checked_ids(self):
+        self.manual_review()
+        async def partial(kind, payload, **kwargs):
+            checked = await supported(kind, payload)
+            return {**checked, 'status': 'needs_review', 'passed': False, 'findings': []}
+        self.local.side_effect = partial
+        self.run_pipeline()
+        self.assert_waiting_without_downstream()
+
+    def test_unattempted_ocr_batch_is_not_complete_despite_passed_flag(self):
+        self.manual_review()
+        async def partial(kind, payload, **kwargs):
+            return {**await supported(kind, payload), 'unattempted_batch_count': 1}
+        self.local.side_effect = partial
+        self.run_pipeline()
+        self.assert_waiting_without_downstream()
+
+    def test_no_structured_items_waits_without_fabricating_calculation_or_document(self):
+        document = self.case['documents'][0]
+        document.update(text='추가 사정에 관한 별도 설명입니다.', page_texts=[])
+        self.case['extraction_candidates'] = []
+        extraction_readiness.capture(self.case, document)
+        self.manual_review()
+        original = self.existing_outputs()
+        self.run_pipeline()
+        self.assert_waiting_without_downstream(original)
+        self.local.assert_not_called()
+        self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'NO_STRUCTURED_EVIDENCE')
+
+    def test_incomplete_parser_receipt_does_not_start_ocr_or_analysis(self):
+        self.manual_review()
+        self.case['extraction_candidates'] = self.case['extraction_candidates'][:1]
+        self.run_pipeline()
+        self.assert_waiting_without_downstream()
+        self.local.assert_not_called()
+        self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'DOCUMENT_EXTRACTION_INCOMPLETE')
+
+    def test_complete_negative_ocr_is_reused_without_promoting_it_to_pass(self):
+        async def result(kind, payload, **kwargs):
+            from apps.api.verification import VERSION
+            checked = await supported(kind, payload)
+            return {**checked, 'status':'needs_review', 'passed':False, 'version':VERSION,
+                    'findings':[{'item_id':item['id'],'status':'uncertain'} for item in payload['items']]} if kind=='ocr' else checked
+        self.local.side_effect = result
+        self.run_pipeline()
+        self.case['extraction_candidates'][0]['status'] = 'accepted'
+        self.case['input_revision'] += 1
+        self.run_pipeline()
+        self.assertEqual(sum(call.args[0]=='ocr' for call in self.local.call_args_list), 1)
+        self.assertEqual(self.narrative.await_count, 1)
+        self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
+        self.assertEqual(next(step for step in self.case['ax_pipeline']['steps'] if step['id']=='ocr')['status'], 'review_required')
+        self.assertFalse(self.case['drafts'][-1]['submission_ready'])
+
+    def test_incomplete_negative_ocr_is_not_reused(self):
+        async def result(kind, payload, **kwargs):
+            return {'status':'needs_review','passed':False,'checked_item_ids':[]} if kind=='ocr' else await supported(kind,payload)
+        self.local.side_effect = result
+        self.run_pipeline()
+        self.run_pipeline()
+        self.assertEqual(sum(call.args[0]=='ocr' for call in self.local.call_args_list), 2)
+        self.assert_waiting_without_downstream()
+
+    def test_human_correction_invalidates_negative_ocr_reuse(self):
+        async def result(kind, payload, **kwargs):
+            from apps.api.verification import VERSION
+            checked = await supported(kind,payload)
+            return {**checked,'status':'needs_review','passed':False,'version':VERSION,
+                    'findings':[{'item_id':item['id'],'status':'uncertain'} for item in payload['items']]} if kind=='ocr' else checked
+        self.local.side_effect = result
+        self.run_pipeline()
+        self.case['extraction_candidates'][0].update(status='accepted',origin='human_correction',value=3200000)
+        self.case['input_revision'] += 1
+        self.run_pipeline()
+        self.assertEqual(sum(call.args[0]=='ocr' for call in self.local.call_args_list), 2)
 
     def manual_review(self, bind=True):
         doc = self.case['documents'][0]
@@ -165,11 +295,10 @@ class AutomationTests(unittest.TestCase):
         self.run_pipeline()
         self.assertEqual(doc['status'], 'verified')
         self.assertEqual(self.case['requests'][0]['status'], 'fulfilled')
-        self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'OCR_SOURCE_UNREADABLE')
+        self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'DOCUMENT_EXTRACTION_INCOMPLETE')
         self.assertFalse(any(n.get('audience') == 'client' for n in self.case.get('notifications', [])))
-        self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
-        self.assertEqual([call.args[0] for call in self.local.call_args_list], ['document'])
-        self.assertFalse(self.case['drafts'][-1]['submission_ready'])
+        self.assert_waiting_without_downstream()
+        self.local.assert_not_called()
 
     def test_manual_review_invalidates_when_file_version_or_scope_changes(self):
         for target, field, changed in [('document', 'version', 2), ('document', 'text', '변경된 원문'),
@@ -223,10 +352,53 @@ class AutomationTests(unittest.TestCase):
                    'pending_changes': [{'source_id': 'current-rule', 'reason': '경과규정 변경'}]}
         with patch('apps.api.legal_watch.case_policy_status', return_value=pending):
             self.run_pipeline()
-        self.assertEqual([call.args[0] for call in self.local.call_args_list], ['document_selection', 'document'])
+        self.assertEqual([call.args[0] for call in self.local.call_args_list], ['document_selection', 'ocr', 'document'])
         self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
         self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'LEGAL_CHANGE_REVIEW')
         self.assertTrue(self.case['drafts'][-1]['human_review_required'])
+
+    def test_pending_legal_change_cannot_bypass_incomplete_ocr(self):
+        self.manual_review()
+        original = self.existing_outputs()
+        self.local.side_effect = AsyncMock(return_value={'status': 'unavailable', 'passed': False,
+            'error': {'code': 'MODEL_TIMEOUT', 'message': '원문 대조 시간 초과'}})
+        with patch('apps.api.legal_watch.case_policy_status', return_value={
+                'signature': 'changed-law', 'pending_changes': [{'source_id': 'law', 'reason': '법령 변경'}]}):
+            self.run_pipeline()
+        self.assert_waiting_without_downstream(original)
+        self.assertEqual(self.case['ax_pipeline']['reasons'][0]['code'], 'OCR_VERIFICATION_INCOMPLETE')
+
+    def test_legal_policy_hold_preserves_completed_negative_ocr_as_review_required(self):
+        async def negative(kind, payload, **kwargs):
+            checked = await supported(kind, payload)
+            return {**checked, 'status': 'needs_review', 'passed': False,
+                    'findings': [{'item_id': item['id'], 'status': 'uncertain'} for item in payload['items']]
+                    } if kind == 'ocr' else checked
+        self.local.side_effect = negative
+        with patch('apps.api.legal_watch.case_policy_status', return_value={
+                'signature': 'changed-law', 'pending_changes': [{'source_id': 'law', 'reason': '법령 변경'}]}):
+            self.run_pipeline()
+        self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
+        stages = {step['id']: step['status'] for step in self.case['ax_pipeline']['steps']}
+        self.assertEqual(stages['ocr'], 'review_required')
+        self.assertEqual(stages['analysis'], 'review_required')
+        self.assertTrue({'LEGAL_CHANGE_REVIEW', 'OCR_VERIFICATION'} <=
+                        {reason['code'] for reason in self.case['ax_pipeline']['reasons']})
+
+    def test_unverified_court_rule_preserves_completed_negative_ocr(self):
+        self.case['court_request_plan'] = {'coverage': 'unverified'}
+        async def negative(kind, payload, **kwargs):
+            checked = await supported(kind, payload)
+            return {**checked, 'status': 'needs_review', 'passed': False,
+                    'findings': [{'item_id': item['id'], 'status': 'uncertain'} for item in payload['items']]
+                    } if kind == 'ocr' else checked
+        self.local.side_effect = negative
+        self.run_pipeline()
+        self.assertEqual(self.case['ax_pipeline']['stage'], 'human_review')
+        self.assertEqual(next(step for step in self.case['ax_pipeline']['steps'] if step['id'] == 'ocr')['status'],
+                         'review_required')
+        self.assertTrue({'COURT_RULE_UNVERIFIED', 'OCR_VERIFICATION'} <=
+                        {reason['code'] for reason in self.case['ax_pipeline']['reasons']})
 
     def test_grounded_writing_failure_preserves_available_artifacts_and_review_hold(self):
         self.narrative.return_value = {'status': 'unavailable', 'sections': [], 'verification': {'passed': False}}

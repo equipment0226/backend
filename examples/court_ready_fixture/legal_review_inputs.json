@@ -1,0 +1,151 @@
+{
+  "synthetic": true,
+  "evidence": false,
+  "automatic_application_allowed": false,
+  "requires_explicit_lawyer_review": true,
+  "title": "가상의 법률 판단을 직접 입력해 보는 연습안 · 법원 결정 또는 현재 승인값 아님",
+  "policy_id": "kr-rehab-2026-v1",
+  "as_of": "2026-10-04",
+  "inputs": {
+    "recognized_household_size": 1,
+    "living_cost_mode": "seoul_median_60",
+    "base_living_cost": 1538543,
+    "additional_living_cost": 111457,
+    "months": 36,
+    "prepaid_months": 0,
+    "monthly_trustee_fee": 0,
+    "preapproval_costs_paid": true,
+    "objection": false,
+    "annual_discount_rate": 0.05,
+    "income": {
+      "kind": "wage",
+      "basis": "net",
+      "monthly_amount": 3450000,
+      "taxes_and_social_insurance": 0,
+      "business_expenses": 0,
+      "period": "2025-10-01 ~ 2026-09-30",
+      "evidence_document_ids": [
+        "FIX11",
+        "FIX12",
+        "FIX15"
+      ]
+    },
+    "assets": [
+      {
+        "id": "bank_balance",
+        "label": "예금2계좌",
+        "owned_value": 2500000,
+        "secured_deduction": 0,
+        "exempt_deduction": 0,
+        "disposal_cost": 0,
+        "evidence_document_ids": [
+          "FIX15",
+          "FIX16"
+        ]
+      },
+      {
+        "id": "housing_deposit",
+        "label": "임차보증금",
+        "owned_value": 12000000,
+        "secured_deduction": 0,
+        "exempt_deduction": 0,
+        "disposal_cost": 0,
+        "evidence_document_ids": [
+          "FIX17",
+          "FIX18"
+        ]
+      },
+      {
+        "id": "insurance_surrender",
+        "label": "보험해약환급금",
+        "owned_value": 2400000,
+        "secured_deduction": 0,
+        "exempt_deduction": 0,
+        "disposal_cost": 0,
+        "evidence_document_ids": [
+          "FIX20"
+        ]
+      },
+      {
+        "id": "retirement_expected",
+        "label": "일반퇴직금 예상총액",
+        "owned_value": 17508189,
+        "secured_deduction": 0,
+        "exempt_deduction": 0,
+        "disposal_cost": 0,
+        "evidence_document_ids": [
+          "FIX21"
+        ]
+      }
+    ],
+    "creditors": [
+      {
+        "id": "loan-1",
+        "name": "가상새봄은행",
+        "kind": "unsecured",
+        "principal": 31500000,
+        "interest": 700000,
+        "evidence_document_ids": [
+          "FIX06"
+        ]
+      },
+      {
+        "id": "loan-2",
+        "name": "가상한결저축은행",
+        "kind": "unsecured",
+        "principal": 23000000,
+        "interest": 500000,
+        "evidence_document_ids": [
+          "FIX07"
+        ]
+      },
+      {
+        "id": "loan-3",
+        "name": "가상디딤캐피탈",
+        "kind": "unsecured",
+        "principal": 13000000,
+        "interest": 300000,
+        "evidence_document_ids": [
+          "FIX08"
+        ]
+      }
+    ],
+    "decisions": {
+      "household_reason": "본인 단독 생계·부양관계를 확인했다고 가정한 1인 검토안.",
+      "living_cost_reason": "기본60%와 실제지출 차액을 추가생계비로 인정한다고 가정한 비교안. 법원 인정·허용항목 검토 필요.",
+      "asset_reason": "보호범위를 확정하기 전 공제0으로 보수적으로 비교하는 연습안. 특히 퇴직금 압류금지범위와 주거보증금 면제는 별도 검토해야 하며 실제 제출값으로 사용할 수 없음.",
+      "debt_reason": "3개 대출의 원금·유예된 미지급이자와 최근납입 내역을 대조했다고 가정함.",
+      "fee_reason": "가상 연습에서 회생위원 보수0, 사전 비용납부 완료를 선택한 조건. 실제 납부증빙이나 법원 보수 결정이 존재한다는 뜻이 아님.",
+      "objection_reason": "계산 비교를 위한 이의없음 가정. 실제 송달·채권자 이의 여부는 미확정.",
+      "period_reason": "일반36개월을 선택한 가상 계획. 수행가능성 및 기간예외 검토 후 결정.",
+      "discount_reason": "등록된 서울 계산정책의 연5% 비교안을 선택한 예시이며 적용 기준 확인 필요."
+    }
+  },
+  "court_form_fields": {
+    "D5110": {
+      "start_year": 2026,
+      "start_month": 11,
+      "start_day": 25,
+      "end_year": 2029,
+      "end_month": 10,
+      "end_day": 25
+    }
+  },
+  "court_form_field_reason": "가상 변제계획 작성일정 선택(법원결정 아님). 신청일에서 자동 추정하지 않은 담당자 입력 예시.",
+  "not_proven_by_documents": [
+    "recognized_household_size",
+    "living_cost_mode",
+    "base_living_cost",
+    "additional_living_cost",
+    "months",
+    "prepaid_months",
+    "monthly_trustee_fee",
+    "preapproval_costs_paid",
+    "objection",
+    "annual_discount_rate",
+    "asset 공제",
+    "변제 시작·종료일"
+  ],
+  "form_variant": "D5110 가용소득만으로 변제. 자산 매각대금 투입 계획 없음.",
+  "reference_policy_sha256": "dd9bb97efea0ff5fe5097d8ac850f26768b37fbf93696869b42158ce08c05fbb"
+}

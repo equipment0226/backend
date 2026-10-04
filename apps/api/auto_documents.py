@@ -167,6 +167,7 @@ async def verify_artifacts(case, records, calculation, progress=None):
     A draft's pass is never copied to its PDF. Generated pages are comparison
     targets only, not evidence sources that can prove their own correctness.
     """
+    import copy
     from .verification import run_local_verification_batched
     from .legal_watch import case_policy_status
     from . import evidence_mapping, statement_authoring
@@ -179,6 +180,7 @@ async def verify_artifacts(case, records, calculation, progress=None):
     # Recompute from the independently submitted originals, never from a preview
     # or from generated PDF text. Arithmetic displays have their own code source.
     packet = evidence_mapping.build(case)
+    sources.extend(copy.deepcopy(packet.get('human_review_sources', [])))
     typed_by_id = {row['id']: row for row in packet['facts']}
     typed_code_sources = {}
     for key, origin in packet['origins'].items():
@@ -190,7 +192,9 @@ async def verify_artifacts(case, records, calculation, progress=None):
         sources.append({'id': source_id, 'kind': 'code_calculation', 'version': packet['version'],
             'text': store.dumps({'field': key, 'value': packet['form_values'][key], 'operation': origin['operation'],
                 'operands': [{'key': row['key'], 'value': row['value'], 'quote': row['quote'],
-                              'source_id': row['document_id'], 'page': row['page']} for row in operands]}),
+                              'source_id': row['source_id'] if row.get('source_type') == 'human_review' else row['document_id'],
+                              'source_type': row.get('source_type'), 'document_id': row['document_id'],
+                              'page': row['page']} for row in operands]}),
             'source_signature': packet['source_signature'], 'original_source_ids': origin['source_ids']})
     calc_id = 'calculation:' + calculation['id'] if calculation.get('id') else None
     summary = calculation.get('summary', {})
@@ -204,8 +208,19 @@ async def verify_artifacts(case, records, calculation, progress=None):
         derived['recognized_living_cost'] = summary['base_living_cost'] + summary['additional_living_cost']
     if type(summary.get('unsecured_debt')) is int and type(summary.get('secured_debt')) is int:
         derived['total_debt'] = summary['unsecured_debt'] + summary['secured_debt']
+    retirement = next((row for row in calculation.get('asset_calculations', [])
+                       if row.get('id') == 'retirement_expected'), None)
+    assets = calculation.get('inputs', {}).get('assets', [])
+    if retirement:
+        derived['retirement_value'] = retirement.get('liquidation_value')
+        retirement_input = next((row for row in assets if row.get('id') == 'retirement_expected'), None)
+        if retirement_input and all(row.get('secured_deduction') == 0 and row.get('disposal_cost') == 0
+                                    and type(row.get('exempt_deduction')) is int for row in assets):
+            derived['assets_total'] = sum(row['owned_value'] for row in assets) - retirement_input['exempt_deduction']
+            derived['exempt_value'] = sum(row['exempt_deduction'] for row in assets if row['id'] != 'retirement_expected')
     if calc_id:
         sources.append({'id': calc_id, 'text': store.dumps({'summary': summary, 'display_conversions': derived,
+            'asset_calculations': calculation.get('asset_calculations', []), 'asset_inputs': assets,
             'recognized_household_size': calculation.get('inputs', {}).get('recognized_household_size'),
             'living_cost_mode': calculation.get('inputs', {}).get('living_cost_mode'),
             'median_percent': 60 if calculation.get('inputs', {}).get('living_cost_mode') == 'seoul_median_60' else None})})
@@ -232,9 +247,9 @@ async def verify_artifacts(case, records, calculation, progress=None):
     # unique for strict source binding in the local verification boundary.
     sources = list({source['id']: source for source in sources}.values())
     allowed = {source['id'] for source in sources}
-    # A staff correction is a comparison target, never its own supporting
-    # source. Recheck it against independently submitted, reviewed originals
-    # and the completed interview; the local model must reject new inventions.
+    # Free-form document edits are comparison targets, never their own proof.
+    # Bound extraction corrections above remain explicit staff audit records;
+    # they do not relabel the original OCR as correct or bypass an AI check.
     correction_evidence = [d['id'] for d in documents if d.get('status') == 'verified']
     if 'consultation:notes' in allowed:
         correction_evidence.append('consultation:notes')
@@ -289,13 +304,18 @@ async def verify_artifacts(case, records, calculation, progress=None):
                         record_issues.append({'code': 'PROPOSED_LEGAL_INPUT_REVIEW', 'key': field['key'],
                             'reason': '법률 판단 제안은 계산·변호사 승인 전이며 원문 사실과 구별합니다.'})
                         continue
-                    if origin.get('type') == 'deterministic_evidence':
+                    if origin.get('type') in {'deterministic_evidence', 'human_review'}:
                         fresh_origin = packet['origins'].get(field['key'], {})
                         if (packet['form_values'].get(field['key']) != value or fresh_origin != origin
                                 or preview.get('evidence_source_signature') != packet['source_signature']):
                             record_issues.append({'code': 'DETERMINISTIC_FIELD_CHANGED', 'key': field['key']})
                             continue
                         refs = list(origin['source_ids'])
+                        if origin.get('type') == 'human_review':
+                            refs.extend(origin.get('review_source_ids', []))
+                            if not origin.get('review_source_ids'):
+                                record_issues.append({'code': 'ARTIFACT_FIELD_EVIDENCE_MISSING', 'key': field['key']})
+                                continue
                         if field['key'] in typed_code_sources:
                             refs.insert(0, typed_code_sources[field['key']])
                     elif origin.get('type') in {'legal_calculation', 'legal_calculation_input', 'creditor_list_order'}:
@@ -358,7 +378,7 @@ async def verify_artifacts(case, records, calculation, progress=None):
                 patterns = case.get('strategy_analyses', [])[-1].get('outcome_patterns', []) if case.get('strategy_analyses') else []
                 result = await run_local_verification_batched('document', {'sources': sources + public_sources, 'items': items,
                     'context': {'prior_outcome_checks': [p for p in patterns if p.get('template_id') == record.get('template_id')],
-                                'scope': '과거 결과는 누락·증빙 대조 우선순위로만 사용. 현재 원문 근거를 대체하지 않는다.'}},
+                                'scope': '과거 결과는 누락·증빙 대조 우선순위로만 사용. 현재 원문 근거를 대체하지 않는다. human_review는 현재 원문에 연결된 담당자 교정 기록이며, 수정 후 값의 출력 일치와 기존 OCR과의 차이를 구분해 확인한다. 교정 기록을 원문 자체나 AI 통과로 간주하지 않는다.'}},
                     **({'progress': report_batch} if progress else {}))
                 if result.get('status') == 'unavailable':
                     verification_unavailable = result.get('error') or {

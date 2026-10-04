@@ -1,0 +1,1945 @@
+{
+  "synthetic": true,
+  "loans": [
+    {
+      "name": "가상새봄은행",
+      "loan": "TEST-LOAN-JW-A",
+      "principal": 31500000,
+      "interest": 700000,
+      "first_amount": 45000000,
+      "started": "2021-03-15",
+      "maturity": "2026-12-15",
+      "monthly_principal": 600000,
+      "annual_rate": "0.072",
+      "address": "서울특별시 가상구 금융연습로 11 3층",
+      "phone": "02-0000-0001",
+      "cause": "신용대출 · 치료비 및 생활비, 기존 고금리 채무 대환",
+      "account": 0,
+      "opening_principal": 38700000,
+      "schedule": [
+        {
+          "month": "2025-10",
+          "opening_principal": 38700000,
+          "principal_paid": 600000,
+          "interest_paid": 232200,
+          "payment": 832200,
+          "closing_principal": 38100000
+        },
+        {
+          "month": "2025-11",
+          "opening_principal": 38100000,
+          "principal_paid": 600000,
+          "interest_paid": 228600,
+          "payment": 828600,
+          "closing_principal": 37500000
+        },
+        {
+          "month": "2025-12",
+          "opening_principal": 37500000,
+          "principal_paid": 600000,
+          "interest_paid": 225000,
+          "payment": 825000,
+          "closing_principal": 36900000
+        },
+        {
+          "month": "2026-01",
+          "opening_principal": 36900000,
+          "principal_paid": 600000,
+          "interest_paid": 221400,
+          "payment": 821400,
+          "closing_principal": 36300000
+        },
+        {
+          "month": "2026-02",
+          "opening_principal": 36300000,
+          "principal_paid": 600000,
+          "interest_paid": 217800,
+          "payment": 817800,
+          "closing_principal": 35700000
+        },
+        {
+          "month": "2026-03",
+          "opening_principal": 35700000,
+          "principal_paid": 600000,
+          "interest_paid": 214200,
+          "payment": 814200,
+          "closing_principal": 35100000
+        },
+        {
+          "month": "2026-04",
+          "opening_principal": 35100000,
+          "principal_paid": 600000,
+          "interest_paid": 210600,
+          "payment": 810600,
+          "closing_principal": 34500000
+        },
+        {
+          "month": "2026-05",
+          "opening_principal": 34500000,
+          "principal_paid": 600000,
+          "interest_paid": 207000,
+          "payment": 807000,
+          "closing_principal": 33900000
+        },
+        {
+          "month": "2026-06",
+          "opening_principal": 33900000,
+          "principal_paid": 600000,
+          "interest_paid": 203400,
+          "payment": 803400,
+          "closing_principal": 33300000
+        },
+        {
+          "month": "2026-07",
+          "opening_principal": 33300000,
+          "principal_paid": 600000,
+          "interest_paid": 199800,
+          "payment": 799800,
+          "closing_principal": 32700000
+        },
+        {
+          "month": "2026-08",
+          "opening_principal": 32700000,
+          "principal_paid": 600000,
+          "interest_paid": 196200,
+          "payment": 796200,
+          "closing_principal": 32100000
+        },
+        {
+          "month": "2026-09",
+          "opening_principal": 32100000,
+          "principal_paid": 600000,
+          "interest_paid": 192600,
+          "payment": 792600,
+          "closing_principal": 31500000
+        }
+      ]
+    },
+    {
+      "name": "가상한결저축은행",
+      "loan": "TEST-LOAN-JW-B",
+      "principal": 23000000,
+      "interest": 500000,
+      "first_amount": 30000000,
+      "started": "2022-09-20",
+      "maturity": "2027-03-20",
+      "monthly_principal": 300000,
+      "annual_rate": "0.09",
+      "address": "서울특별시 가상구 금융연습로 22 5층",
+      "phone": "02-0000-0002",
+      "cause": "신용대출 · 임차보증금과 이사비, 기존 채무 상환",
+      "account": 0,
+      "opening_principal": 26600000,
+      "schedule": [
+        {
+          "month": "2025-10",
+          "opening_principal": 26600000,
+          "principal_paid": 300000,
+          "interest_paid": 199500,
+          "payment": 499500,
+          "closing_principal": 26300000
+        },
+        {
+          "month": "2025-11",
+          "opening_principal": 26300000,
+          "principal_paid": 300000,
+          "interest_paid": 197250,
+          "payment": 497250,
+          "closing_principal": 26000000
+        },
+        {
+          "month": "2025-12",
+          "opening_principal": 26000000,
+          "principal_paid": 300000,
+          "interest_paid": 195000,
+          "payment": 495000,
+          "closing_principal": 25700000
+        },
+        {
+          "month": "2026-01",
+          "opening_principal": 25700000,
+          "principal_paid": 300000,
+          "interest_paid": 192750,
+          "payment": 492750,
+          "closing_principal": 25400000
+        },
+        {
+          "month": "2026-02",
+          "opening_principal": 25400000,
+          "principal_paid": 300000,
+          "interest_paid": 190500,
+          "payment": 490500,
+          "closing_principal": 25100000
+        },
+        {
+          "month": "2026-03",
+          "opening_principal": 25100000,
+          "principal_paid": 300000,
+          "interest_paid": 188250,
+          "payment": 488250,
+          "closing_principal": 24800000
+        },
+        {
+          "month": "2026-04",
+          "opening_principal": 24800000,
+          "principal_paid": 300000,
+          "interest_paid": 186000,
+          "payment": 486000,
+          "closing_principal": 24500000
+        },
+        {
+          "month": "2026-05",
+          "opening_principal": 24500000,
+          "principal_paid": 300000,
+          "interest_paid": 183750,
+          "payment": 483750,
+          "closing_principal": 24200000
+        },
+        {
+          "month": "2026-06",
+          "opening_principal": 24200000,
+          "principal_paid": 300000,
+          "interest_paid": 181500,
+          "payment": 481500,
+          "closing_principal": 23900000
+        },
+        {
+          "month": "2026-07",
+          "opening_principal": 23900000,
+          "principal_paid": 300000,
+          "interest_paid": 179250,
+          "payment": 479250,
+          "closing_principal": 23600000
+        },
+        {
+          "month": "2026-08",
+          "opening_principal": 23600000,
+          "principal_paid": 300000,
+          "interest_paid": 177000,
+          "payment": 477000,
+          "closing_principal": 23300000
+        },
+        {
+          "month": "2026-09",
+          "opening_principal": 23300000,
+          "principal_paid": 300000,
+          "interest_paid": 174750,
+          "payment": 474750,
+          "closing_principal": 23000000
+        }
+      ]
+    },
+    {
+      "name": "가상디딤캐피탈",
+      "loan": "TEST-LOAN-JW-C",
+      "principal": 13000000,
+      "interest": 300000,
+      "first_amount": 18000000,
+      "started": "2023-08-10",
+      "maturity": "2027-08-10",
+      "monthly_principal": 200000,
+      "annual_rate": "0.12",
+      "address": "서울특별시 가상구 금융연습로 33 4층",
+      "phone": "02-0000-0003",
+      "cause": "신용대출 · 누적 이자 상환과 긴급 생활자금",
+      "account": 1,
+      "opening_principal": 15400000,
+      "schedule": [
+        {
+          "month": "2025-10",
+          "opening_principal": 15400000,
+          "principal_paid": 200000,
+          "interest_paid": 154000,
+          "payment": 354000,
+          "closing_principal": 15200000
+        },
+        {
+          "month": "2025-11",
+          "opening_principal": 15200000,
+          "principal_paid": 200000,
+          "interest_paid": 152000,
+          "payment": 352000,
+          "closing_principal": 15000000
+        },
+        {
+          "month": "2025-12",
+          "opening_principal": 15000000,
+          "principal_paid": 200000,
+          "interest_paid": 150000,
+          "payment": 350000,
+          "closing_principal": 14800000
+        },
+        {
+          "month": "2026-01",
+          "opening_principal": 14800000,
+          "principal_paid": 200000,
+          "interest_paid": 148000,
+          "payment": 348000,
+          "closing_principal": 14600000
+        },
+        {
+          "month": "2026-02",
+          "opening_principal": 14600000,
+          "principal_paid": 200000,
+          "interest_paid": 146000,
+          "payment": 346000,
+          "closing_principal": 14400000
+        },
+        {
+          "month": "2026-03",
+          "opening_principal": 14400000,
+          "principal_paid": 200000,
+          "interest_paid": 144000,
+          "payment": 344000,
+          "closing_principal": 14200000
+        },
+        {
+          "month": "2026-04",
+          "opening_principal": 14200000,
+          "principal_paid": 200000,
+          "interest_paid": 142000,
+          "payment": 342000,
+          "closing_principal": 14000000
+        },
+        {
+          "month": "2026-05",
+          "opening_principal": 14000000,
+          "principal_paid": 200000,
+          "interest_paid": 140000,
+          "payment": 340000,
+          "closing_principal": 13800000
+        },
+        {
+          "month": "2026-06",
+          "opening_principal": 13800000,
+          "principal_paid": 200000,
+          "interest_paid": 138000,
+          "payment": 338000,
+          "closing_principal": 13600000
+        },
+        {
+          "month": "2026-07",
+          "opening_principal": 13600000,
+          "principal_paid": 200000,
+          "interest_paid": 136000,
+          "payment": 336000,
+          "closing_principal": 13400000
+        },
+        {
+          "month": "2026-08",
+          "opening_principal": 13400000,
+          "principal_paid": 200000,
+          "interest_paid": 134000,
+          "payment": 334000,
+          "closing_principal": 13200000
+        },
+        {
+          "month": "2026-09",
+          "opening_principal": 13200000,
+          "principal_paid": 200000,
+          "interest_paid": 132000,
+          "payment": 332000,
+          "closing_principal": 13000000
+        }
+      ]
+    }
+  ],
+  "banks": [
+    {
+      "name": "가상새봄은행",
+      "account": "TEST-JIWOO-A-001",
+      "closing": 1800000,
+      "opening": 114300,
+      "transactions": [
+        {
+          "date": "2025-10-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 3564300
+        },
+        {
+          "date": "2025-10-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 2454300
+        },
+        {
+          "date": "2025-10-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 1804300
+        },
+        {
+          "date": "2025-10-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 1694300
+        },
+        {
+          "date": "2025-10-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 1634300
+        },
+        {
+          "date": "2025-10-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 1554300
+        },
+        {
+          "date": "2025-10-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 832200,
+          "balance": 722100
+        },
+        {
+          "date": "2025-10-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 499500,
+          "balance": 222600
+        },
+        {
+          "date": "2025-11-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 3672600
+        },
+        {
+          "date": "2025-11-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 2562600
+        },
+        {
+          "date": "2025-11-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 1912600
+        },
+        {
+          "date": "2025-11-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 1802600
+        },
+        {
+          "date": "2025-11-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 1742600
+        },
+        {
+          "date": "2025-11-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 1662600
+        },
+        {
+          "date": "2025-11-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 828600,
+          "balance": 834000
+        },
+        {
+          "date": "2025-11-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 497250,
+          "balance": 336750
+        },
+        {
+          "date": "2025-12-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 3786750
+        },
+        {
+          "date": "2025-12-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 2676750
+        },
+        {
+          "date": "2025-12-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2026750
+        },
+        {
+          "date": "2025-12-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 1916750
+        },
+        {
+          "date": "2025-12-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 1856750
+        },
+        {
+          "date": "2025-12-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 1776750
+        },
+        {
+          "date": "2025-12-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 825000,
+          "balance": 951750
+        },
+        {
+          "date": "2025-12-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 495000,
+          "balance": 456750
+        },
+        {
+          "date": "2026-01-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 3906750
+        },
+        {
+          "date": "2026-01-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 2796750
+        },
+        {
+          "date": "2026-01-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2146750
+        },
+        {
+          "date": "2026-01-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2036750
+        },
+        {
+          "date": "2026-01-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 1976750
+        },
+        {
+          "date": "2026-01-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 1896750
+        },
+        {
+          "date": "2026-01-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 821400,
+          "balance": 1075350
+        },
+        {
+          "date": "2026-01-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 492750,
+          "balance": 582600
+        },
+        {
+          "date": "2026-02-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4032600
+        },
+        {
+          "date": "2026-02-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 2922600
+        },
+        {
+          "date": "2026-02-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2272600
+        },
+        {
+          "date": "2026-02-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2162600
+        },
+        {
+          "date": "2026-02-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2102600
+        },
+        {
+          "date": "2026-02-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2022600
+        },
+        {
+          "date": "2026-02-28",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 817800,
+          "balance": 1204800
+        },
+        {
+          "date": "2026-02-28",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 490500,
+          "balance": 714300
+        },
+        {
+          "date": "2026-03-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4164300
+        },
+        {
+          "date": "2026-03-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3054300
+        },
+        {
+          "date": "2026-03-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2404300
+        },
+        {
+          "date": "2026-03-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2294300
+        },
+        {
+          "date": "2026-03-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2234300
+        },
+        {
+          "date": "2026-03-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2154300
+        },
+        {
+          "date": "2026-03-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 814200,
+          "balance": 1340100
+        },
+        {
+          "date": "2026-03-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 488250,
+          "balance": 851850
+        },
+        {
+          "date": "2026-04-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4301850
+        },
+        {
+          "date": "2026-04-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3191850
+        },
+        {
+          "date": "2026-04-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2541850
+        },
+        {
+          "date": "2026-04-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2431850
+        },
+        {
+          "date": "2026-04-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2371850
+        },
+        {
+          "date": "2026-04-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2291850
+        },
+        {
+          "date": "2026-04-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 810600,
+          "balance": 1481250
+        },
+        {
+          "date": "2026-04-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 486000,
+          "balance": 995250
+        },
+        {
+          "date": "2026-05-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4445250
+        },
+        {
+          "date": "2026-05-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3335250
+        },
+        {
+          "date": "2026-05-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2685250
+        },
+        {
+          "date": "2026-05-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2575250
+        },
+        {
+          "date": "2026-05-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2515250
+        },
+        {
+          "date": "2026-05-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2435250
+        },
+        {
+          "date": "2026-05-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 807000,
+          "balance": 1628250
+        },
+        {
+          "date": "2026-05-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 483750,
+          "balance": 1144500
+        },
+        {
+          "date": "2026-06-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4594500
+        },
+        {
+          "date": "2026-06-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3484500
+        },
+        {
+          "date": "2026-06-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2834500
+        },
+        {
+          "date": "2026-06-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2724500
+        },
+        {
+          "date": "2026-06-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2664500
+        },
+        {
+          "date": "2026-06-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2584500
+        },
+        {
+          "date": "2026-06-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 803400,
+          "balance": 1781100
+        },
+        {
+          "date": "2026-06-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 481500,
+          "balance": 1299600
+        },
+        {
+          "date": "2026-07-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4749600
+        },
+        {
+          "date": "2026-07-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3639600
+        },
+        {
+          "date": "2026-07-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 2989600
+        },
+        {
+          "date": "2026-07-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 2879600
+        },
+        {
+          "date": "2026-07-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2819600
+        },
+        {
+          "date": "2026-07-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2739600
+        },
+        {
+          "date": "2026-07-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 799800,
+          "balance": 1939800
+        },
+        {
+          "date": "2026-07-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 479250,
+          "balance": 1460550
+        },
+        {
+          "date": "2026-08-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 4910550
+        },
+        {
+          "date": "2026-08-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3800550
+        },
+        {
+          "date": "2026-08-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 3150550
+        },
+        {
+          "date": "2026-08-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 3040550
+        },
+        {
+          "date": "2026-08-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 2980550
+        },
+        {
+          "date": "2026-08-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 2900550
+        },
+        {
+          "date": "2026-08-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 796200,
+          "balance": 2104350
+        },
+        {
+          "date": "2026-08-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 477000,
+          "balance": 1627350
+        },
+        {
+          "date": "2026-09-25",
+          "description": "급여",
+          "counterparty": "가상다온물류 주식회사",
+          "deposit": 3450000,
+          "withdrawal": 0,
+          "balance": 5077350
+        },
+        {
+          "date": "2026-09-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-B-002",
+          "deposit": 0,
+          "withdrawal": 1110000,
+          "balance": 3967350
+        },
+        {
+          "date": "2026-09-27",
+          "description": "주거비",
+          "counterparty": "가상임대인 이새움",
+          "deposit": 0,
+          "withdrawal": 650000,
+          "balance": 3317350
+        },
+        {
+          "date": "2026-09-27",
+          "description": "공과금",
+          "counterparty": "가상공공요금센터",
+          "deposit": 0,
+          "withdrawal": 110000,
+          "balance": 3207350
+        },
+        {
+          "date": "2026-09-27",
+          "description": "통신비",
+          "counterparty": "가상통신",
+          "deposit": 0,
+          "withdrawal": 60000,
+          "balance": 3147350
+        },
+        {
+          "date": "2026-09-28",
+          "description": "보험료",
+          "counterparty": "가상온기생명",
+          "deposit": 0,
+          "withdrawal": 80000,
+          "balance": 3067350
+        },
+        {
+          "date": "2026-09-29",
+          "description": "대출 원리금",
+          "counterparty": "가상새봄은행",
+          "deposit": 0,
+          "withdrawal": 792600,
+          "balance": 2274750
+        },
+        {
+          "date": "2026-09-29",
+          "description": "대출 원리금",
+          "counterparty": "가상한결저축은행",
+          "deposit": 0,
+          "withdrawal": 474750,
+          "balance": 1800000
+        }
+      ],
+      "monthly": [
+        {
+          "month": "2025-10",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1331700,
+          "deposits": 3450000,
+          "withdrawals": 3341700,
+          "closing": 222600
+        },
+        {
+          "month": "2025-11",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1325850,
+          "deposits": 3450000,
+          "withdrawals": 3335850,
+          "closing": 336750
+        },
+        {
+          "month": "2025-12",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1320000,
+          "deposits": 3450000,
+          "withdrawals": 3330000,
+          "closing": 456750
+        },
+        {
+          "month": "2026-01",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1314150,
+          "deposits": 3450000,
+          "withdrawals": 3324150,
+          "closing": 582600
+        },
+        {
+          "month": "2026-02",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1308300,
+          "deposits": 3450000,
+          "withdrawals": 3318300,
+          "closing": 714300
+        },
+        {
+          "month": "2026-03",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1302450,
+          "deposits": 3450000,
+          "withdrawals": 3312450,
+          "closing": 851850
+        },
+        {
+          "month": "2026-04",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1296600,
+          "deposits": 3450000,
+          "withdrawals": 3306600,
+          "closing": 995250
+        },
+        {
+          "month": "2026-05",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1290750,
+          "deposits": 3450000,
+          "withdrawals": 3300750,
+          "closing": 1144500
+        },
+        {
+          "month": "2026-06",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1284900,
+          "deposits": 3450000,
+          "withdrawals": 3294900,
+          "closing": 1299600
+        },
+        {
+          "month": "2026-07",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1279050,
+          "deposits": 3450000,
+          "withdrawals": 3289050,
+          "closing": 1460550
+        },
+        {
+          "month": "2026-08",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1273200,
+          "deposits": 3450000,
+          "withdrawals": 3283200,
+          "closing": 1627350
+        },
+        {
+          "month": "2026-09",
+          "salary": 3450000,
+          "living": 900000,
+          "repayment": 1267350,
+          "deposits": 3450000,
+          "withdrawals": 3277350,
+          "closing": 1800000
+        }
+      ]
+    },
+    {
+      "name": "가상온유은행",
+      "account": "TEST-JIWOO-B-002",
+      "closing": 700000,
+      "opening": 496000,
+      "transactions": [
+        {
+          "date": "2025-10-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1606000
+        },
+        {
+          "date": "2025-10-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1156000
+        },
+        {
+          "date": "2025-10-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1056000
+        },
+        {
+          "date": "2025-10-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1006000
+        },
+        {
+          "date": "2025-10-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 856000
+        },
+        {
+          "date": "2025-10-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 354000,
+          "balance": 502000
+        },
+        {
+          "date": "2025-11-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1612000
+        },
+        {
+          "date": "2025-11-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1162000
+        },
+        {
+          "date": "2025-11-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1062000
+        },
+        {
+          "date": "2025-11-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1012000
+        },
+        {
+          "date": "2025-11-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 862000
+        },
+        {
+          "date": "2025-11-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 352000,
+          "balance": 510000
+        },
+        {
+          "date": "2025-12-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1620000
+        },
+        {
+          "date": "2025-12-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1170000
+        },
+        {
+          "date": "2025-12-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1070000
+        },
+        {
+          "date": "2025-12-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1020000
+        },
+        {
+          "date": "2025-12-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 870000
+        },
+        {
+          "date": "2025-12-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 350000,
+          "balance": 520000
+        },
+        {
+          "date": "2026-01-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1630000
+        },
+        {
+          "date": "2026-01-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1180000
+        },
+        {
+          "date": "2026-01-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1080000
+        },
+        {
+          "date": "2026-01-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1030000
+        },
+        {
+          "date": "2026-01-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 880000
+        },
+        {
+          "date": "2026-01-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 348000,
+          "balance": 532000
+        },
+        {
+          "date": "2026-02-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1642000
+        },
+        {
+          "date": "2026-02-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1192000
+        },
+        {
+          "date": "2026-02-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1092000
+        },
+        {
+          "date": "2026-02-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1042000
+        },
+        {
+          "date": "2026-02-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 892000
+        },
+        {
+          "date": "2026-02-28",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 346000,
+          "balance": 546000
+        },
+        {
+          "date": "2026-03-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1656000
+        },
+        {
+          "date": "2026-03-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1206000
+        },
+        {
+          "date": "2026-03-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1106000
+        },
+        {
+          "date": "2026-03-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1056000
+        },
+        {
+          "date": "2026-03-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 906000
+        },
+        {
+          "date": "2026-03-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 344000,
+          "balance": 562000
+        },
+        {
+          "date": "2026-04-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1672000
+        },
+        {
+          "date": "2026-04-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1222000
+        },
+        {
+          "date": "2026-04-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1122000
+        },
+        {
+          "date": "2026-04-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1072000
+        },
+        {
+          "date": "2026-04-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 922000
+        },
+        {
+          "date": "2026-04-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 342000,
+          "balance": 580000
+        },
+        {
+          "date": "2026-05-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1690000
+        },
+        {
+          "date": "2026-05-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1240000
+        },
+        {
+          "date": "2026-05-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1140000
+        },
+        {
+          "date": "2026-05-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1090000
+        },
+        {
+          "date": "2026-05-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 940000
+        },
+        {
+          "date": "2026-05-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 340000,
+          "balance": 600000
+        },
+        {
+          "date": "2026-06-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1710000
+        },
+        {
+          "date": "2026-06-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1260000
+        },
+        {
+          "date": "2026-06-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1160000
+        },
+        {
+          "date": "2026-06-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1110000
+        },
+        {
+          "date": "2026-06-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 960000
+        },
+        {
+          "date": "2026-06-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 338000,
+          "balance": 622000
+        },
+        {
+          "date": "2026-07-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1732000
+        },
+        {
+          "date": "2026-07-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1282000
+        },
+        {
+          "date": "2026-07-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1182000
+        },
+        {
+          "date": "2026-07-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1132000
+        },
+        {
+          "date": "2026-07-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 982000
+        },
+        {
+          "date": "2026-07-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 336000,
+          "balance": 646000
+        },
+        {
+          "date": "2026-08-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1756000
+        },
+        {
+          "date": "2026-08-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1306000
+        },
+        {
+          "date": "2026-08-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1206000
+        },
+        {
+          "date": "2026-08-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1156000
+        },
+        {
+          "date": "2026-08-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 1006000
+        },
+        {
+          "date": "2026-08-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 334000,
+          "balance": 672000
+        },
+        {
+          "date": "2026-09-26",
+          "description": "본인 계좌이체",
+          "counterparty": "TEST-JIWOO-A-001",
+          "deposit": 1110000,
+          "withdrawal": 0,
+          "balance": 1782000
+        },
+        {
+          "date": "2026-09-27",
+          "description": "식비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 450000,
+          "balance": 1332000
+        },
+        {
+          "date": "2026-09-27",
+          "description": "교통비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 100000,
+          "balance": 1232000
+        },
+        {
+          "date": "2026-09-28",
+          "description": "의료비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 50000,
+          "balance": 1182000
+        },
+        {
+          "date": "2026-09-28",
+          "description": "기타 생활비",
+          "counterparty": "가상생활결제센터",
+          "deposit": 0,
+          "withdrawal": 150000,
+          "balance": 1032000
+        },
+        {
+          "date": "2026-09-29",
+          "description": "대출 원리금",
+          "counterparty": "가상디딤캐피탈",
+          "deposit": 0,
+          "withdrawal": 332000,
+          "balance": 700000
+        }
+      ],
+      "monthly": [
+        {
+          "month": "2025-10",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 354000,
+          "deposits": 1110000,
+          "withdrawals": 1104000,
+          "closing": 502000
+        },
+        {
+          "month": "2025-11",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 352000,
+          "deposits": 1110000,
+          "withdrawals": 1102000,
+          "closing": 510000
+        },
+        {
+          "month": "2025-12",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 350000,
+          "deposits": 1110000,
+          "withdrawals": 1100000,
+          "closing": 520000
+        },
+        {
+          "month": "2026-01",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 348000,
+          "deposits": 1110000,
+          "withdrawals": 1098000,
+          "closing": 532000
+        },
+        {
+          "month": "2026-02",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 346000,
+          "deposits": 1110000,
+          "withdrawals": 1096000,
+          "closing": 546000
+        },
+        {
+          "month": "2026-03",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 344000,
+          "deposits": 1110000,
+          "withdrawals": 1094000,
+          "closing": 562000
+        },
+        {
+          "month": "2026-04",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 342000,
+          "deposits": 1110000,
+          "withdrawals": 1092000,
+          "closing": 580000
+        },
+        {
+          "month": "2026-05",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 340000,
+          "deposits": 1110000,
+          "withdrawals": 1090000,
+          "closing": 600000
+        },
+        {
+          "month": "2026-06",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 338000,
+          "deposits": 1110000,
+          "withdrawals": 1088000,
+          "closing": 622000
+        },
+        {
+          "month": "2026-07",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 336000,
+          "deposits": 1110000,
+          "withdrawals": 1086000,
+          "closing": 646000
+        },
+        {
+          "month": "2026-08",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 334000,
+          "deposits": 1110000,
+          "withdrawals": 1084000,
+          "closing": 672000
+        },
+        {
+          "month": "2026-09",
+          "salary": 0,
+          "living": 750000,
+          "repayment": 332000,
+          "deposits": 1110000,
+          "withdrawals": 1082000,
+          "closing": 700000
+        }
+      ]
+    }
+  ],
+  "expense_items": {
+    "월세": 650000,
+    "식비": 450000,
+    "교통비": 100000,
+    "통신비": 60000,
+    "공과금": 110000,
+    "의료비": 50000,
+    "보험료": 80000,
+    "기타 생활비": 150000
+  },
+  "retirement": {
+    "gross": 17508189,
+    "service_days": 1675,
+    "last_three_month_wages": 11700000,
+    "average_wage_days": 92
+  }
+}

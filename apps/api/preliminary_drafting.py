@@ -12,7 +12,7 @@ from decimal import Decimal
 
 from . import drafting, store
 
-VERSION = 'preliminary-evidence-draft-v2'
+VERSION = 'preliminary-evidence-draft-v3'
 
 
 def render_case(case, ocr_check=None):
@@ -20,6 +20,11 @@ def render_case(case, ocr_check=None):
     from . import evidence_mapping
     packet = evidence_mapping.build(case)
     safe = copy.deepcopy(case)
+    # Keep bound review records available for an independent PDF reparse, away
+    # from the display candidates selected below. No value bypasses the mapper's
+    # original-file, fact and scope checks through this provenance collection.
+    safe['source_review_candidates'] = copy.deepcopy([
+        candidate for candidate in case.get('extraction_candidates', []) if candidate.get('source_edit')])
     documents = {doc['id']: doc for doc in case.get('documents', []) if doc.get('status') == 'verified'
                  and doc.get('text', '').strip() and doc.get('automated_check', {}).get('coverage_status') != 'identity_conflict'}
     checked = set((ocr_check or {}).get('checked_item_ids', []))
@@ -87,34 +92,89 @@ def _unavailable(prior, kind):
 
 
 async def create(case, pending_issues, review_required_stages, *, calculation=None,
-                 ocr_check=None, local_failure=None, narrative=None, progress=None):
+                 ocr_check=None, local_failure=None, narrative=None, progress=None, strategy_review=None, strategy=None):
     from . import automation, auto_documents, grounded_drafting, intake_workflow
     from .verification import run_local_verification_batched
     safe, omitted = render_case(case, ocr_check)
     case['evidence_mapping'] = copy.deepcopy(safe['evidence_mapping'])
     issues = [copy.deepcopy(issue) for issue in pending_issues]
     stages = set(review_required_stages)
+    legal_sources = None
+    def report(stage, index, message, batch_progress=None):
+        if progress:
+            progress(stage, index, message, **({'batch_progress': batch_progress} if batch_progress else {}))
+
     if safe['evidence_mapping']['facts']:
         from . import legal_calculator
         # Preserve a reproducible arithmetic/unknown-input report even when an
         # earlier semantic check was inconclusive. Missing judgments stay null.
         if calculation is None:
-            calculation = legal_calculator.calculate_legal(case, safe['evidence_mapping']['inputs'])
+            report('legal_analysis', 3, '보관된 추출값으로 계산·근거 검색을 진행하고 미확정 항목을 함께 표시합니다.')
+            calculation, legal_sources = await asyncio.gather(
+                asyncio.to_thread(legal_calculator.calculate_legal, case, safe['evidence_mapping']['inputs']),
+                asyncio.to_thread(automation._retrieve, safe))
             calculation.update(created_by='automation', created_at=store.now(), stale=False)
             case.setdefault('legal_calculations', []).append(calculation)
-        case.setdefault('structured_data', []).append({'id': store.uid('structured'),
+        structured = {'id': store.uid('structured'),
             'source_hash': safe['evidence_mapping']['source_signature'], 'input_revision': case['input_revision'],
             'created_at': store.now(), 'facts': safe['evidence_mapping']['facts'],
             'calculation_inputs': safe['evidence_mapping']['inputs'], 'mapping': safe['evidence_mapping'],
-            'verification_id': (ocr_check or {}).get('id')})
+            'verification_id': (ocr_check or {}).get('id'),
+            'semantic_verified': bool((ocr_check or {}).get('passed'))}
+        case.setdefault('structured_data', []).append(structured)
         issues.extend({'code': error['code'], 'stage': 'ocr', 'reason': '원문에 연결된 항목의 기간·계좌·금액을 대조해야 합니다.',
                        'field': error.get('key')} for error in safe['evidence_mapping']['errors'])
         issues.append({'code': 'PROPOSED_LEGAL_INPUTS', 'stage': 'analysis',
                        'reason': '서류 사실과 별도로 생계비 인정인원·기간·비용·면제재산 등 미확정 법률 입력을 검토해야 합니다.'})
-
-    def report(stage, index, message, batch_progress=None):
-        if progress:
-            progress(stage, index, message, **({'batch_progress': batch_progress} if batch_progress else {}))
+        gaps = safe['evidence_mapping'].get('review_gaps', [])
+        issues.extend(copy.deepcopy(gaps))
+        stages.add('analysis')
+        # A semantic outage blocks approval, not deterministic arithmetic or
+        # numeric-only issue analysis. Never send private prose to this callback.
+        # Only an analysis explicitly produced by this execution may be reused.
+        # Historical failures and prior law snapshots must not defeat a retry.
+        if strategy and strategy.get('calculation_id') != calculation['id']:
+            strategy = None
+        if strategy is None:
+            if legal_sources is None:
+                legal_sources = await asyncio.to_thread(automation._retrieve, safe)
+            strategy = automation._strategy(calculation, legal_sources, safe)
+            strategy.update(id=store.uid('strategy'), calculation_id=calculation['id'],
+                structured_data_id=structured['id'], created_at=store.now(), input_revision=case['input_revision'],
+                decision='review_required', evidence_status='verified' if (ocr_check or {}).get('passed') else 'semantic_review_pending',
+                review_gaps=copy.deepcopy(gaps), submission_ready=False)
+            for gap in gaps:
+                strategy['strategies'].append({'code':gap['code'], 'title':gap.get('title', '자료 보완'),
+                    'description':gap['reason'], 'required_evidence':gap.get('suggested_documents', []), 'source_refs':[]})
+            report('legal_analysis', 3, '확인된 금액과 미확정 계산항목을 전달해 쟁점·보완 방향을 검토합니다.')
+            reasoning = {'status':'not_attempted', 'passed':False, 'findings':[]}
+            if strategy_review:
+                try:
+                    reasoning = await strategy_review(
+                        {'court_id':case.get('court_id'), 'case_type':case.get('case_type', 'personal_rehabilitation'),
+                         'employment_type':safe['evidence_mapping']['inputs'].get('income', {}).get('kind', 'unknown'),
+                         'income_basis':safe['evidence_mapping']['inputs'].get('income', {}).get('basis', 'unknown'),
+                         'facts':{key:value for key,value in safe['evidence_mapping']['form_values'].items()
+                                  if type(value) in (int, float, bool)}, 'input_revision':case['input_revision']},
+                        calculation, legal_sources or strategy['source_refs'])
+                except Exception:
+                    # Supplementary inference must not discard the detached
+                    # extraction/calculation report or prevent a review draft.
+                    # Cancellation (BaseException) still aborts stale work.
+                    reasoning = {'status':'unavailable', 'passed':False, 'findings':[],
+                        'error':{'code':'STRATEGY_UNAVAILABLE', 'message':'전략 검증 연결을 완료하지 못했습니다. 계산 결과와 확인된 자료는 보존했습니다.'}}
+            strategy['verification'] = reasoning
+            strategy['reasons'].extend(copy.deepcopy(issues))
+            for finding in reasoning.get('findings', []):
+                strategy['strategies'].append({'code':finding.get('code'), 'title':'추가 전략 검토',
+                    'description':finding.get('strategy', ''), 'reason':finding.get('reason', ''),
+                    'source_refs':finding.get('source_refs', [])})
+            if not reasoning.get('passed'):
+                reason = {'code':'STRATEGY_VERIFICATION', 'stage':'analysis',
+                          'reason':'법률 쟁점·전략의 독립 검증이 완료되지 않았습니다.'}
+                strategy['reasons'].append(reason)
+                issues.append(reason)
+            case.setdefault('strategy_analyses', []).append(strategy)
 
     def draft_progress(value):
         report('document_verification', 5, '1차 초안의 작성 항목과 원문 근거를 대조하고 있습니다.',
@@ -125,20 +185,26 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                {key: value[key] for key in ('completed', 'total', 'label')})
 
     report('drafting', 4, '확인된 자료로 1차 검토 문서를 작성하고 미확정 항목은 비워 둡니다.')
-    sources = automation._sources(safe, verified_only=True)
-    items = automation._verification_items(safe, sources)
-    legal_sources = None
+    sources = automation._sources(safe, verified_only=True, packet=safe['evidence_mapping'])
+    items = automation._verification_items(safe, sources, packet=safe['evidence_mapping'])
     # This path does not authorize unresolved legal calculations for form fill.
     # Their existing full reports remain linked for human review instead.
     if narrative is None and not local_failure:
-        legal_sources = await asyncio.to_thread(automation._retrieve, safe)
+        if legal_sources is None:
+            legal_sources = await asyncio.to_thread(automation._retrieve, safe)
         consultation = safe.get('consultation', {})
-        narrative = await grounded_drafting.compose(items, legal_sources, automation.approved_examples(safe), {},
-            court_id=safe.get('court_id'), org_id=safe.get('org_id'), section_ids=['statement'],
-            consultation={'text': intake_workflow.record_text(safe), 'source_id': 'consultation:notes'}
-                if consultation.get('status') != 'quarantined' else None)
-        narrative.update(id=store.uid('narrative'), created_at=store.now())
-        case.setdefault('narrative_runs', []).append(narrative)
+        narrative_args = (items, legal_sources, automation.approved_examples(safe), {})
+        narrative_scope = {'court_id':safe.get('court_id'), 'org_id':safe.get('org_id'), 'section_ids':['statement'],
+            'consultation':{'text':intake_workflow.record_text(safe), 'source_id':'consultation:notes'}
+                if consultation.get('status') != 'quarantined' else None}
+        narrative_signature = grounded_drafting.signature(*narrative_args, **narrative_scope)
+        narrative = next((entry for entry in reversed(case.get('narrative_runs', []))
+            if entry.get('input_signature') == narrative_signature and entry.get('verification', {}).get('passed')
+            and entry.get('status') == 'completed' and entry.get('sections')), None)
+        if narrative is None:
+            narrative = await grounded_drafting.compose(*narrative_args, **narrative_scope)
+            narrative.update(id=store.uid('narrative'), created_at=store.now())
+            case.setdefault('narrative_runs', []).append(narrative)
     if narrative and narrative.get('status') == 'unavailable':
         local_failure = narrative
     if not narrative or not narrative.get('verification',{}).get('passed'):
@@ -160,6 +226,9 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                  analysis_calculation_id=(calculation or {}).get('id'),
                  review_pending=issues, scope='담당자 보완·승인이 필요한 1차 검토용 초안 · 법원 제출 승인 전')
     draft['evidence_mapping'] = copy.deepcopy(safe['evidence_mapping'])
+    if strategy:
+        draft.update(strategy_id=strategy['id'], structured_data_id=strategy['structured_data_id'],
+                     strategies=copy.deepcopy(strategy['strategies']))
     draft['proposed_decisions'] = copy.deepcopy(safe['evidence_mapping']['proposed_decisions'])
     draft['narrative_fact_ids'] = [item['id'] for item in items]
     draft['narrative_source_signature'] = safe['evidence_mapping']['source_signature']

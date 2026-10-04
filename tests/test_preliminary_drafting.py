@@ -83,10 +83,12 @@ class PreliminaryDraftTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(draft['status'], 'verification_required')
         self.assertIsNone(self.artifact_review.call_args.args[2])
 
-    async def test_ocr_outage_outputs_only_safe_identity_and_leaves_numbers_blank(self):
+    async def test_later_local_outage_preserves_confirmed_values_without_claiming_document_review_pass(self):
+        # advance() rejects incomplete OCR before reaching this builder. A later
+        # writing/review outage can still preserve facts whose OCR check finished.
         draft = await preliminary_drafting.create(self.case,
-            [{'code': 'OCR_VERIFICATION', 'reason': '원문 대조 시간 초과', 'stage': 'ocr'}], {'ocr', 'analysis'},
-            ocr_check={'passed': False, 'checked_item_ids': []},
+            [{'code': 'GROUNDED_WRITING_REQUIRED', 'reason': '본문 작성 시간 초과', 'stage': 'draft'}], {'draft'},
+            ocr_check=self.check,
             local_failure={'status': 'unavailable', 'error': {'code': 'MODEL_TIMEOUT'}})
         self.writer.assert_not_awaited()
         self.review.assert_not_called()
@@ -94,7 +96,8 @@ class PreliminaryDraftTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(draft['ai_review']['status'], 'unavailable')
         self.assertFalse(draft['ai_review']['passed'])
         self.assertTrue(self.case['court_documents'])
-        self.assertTrue(all(field['value'] is None for section in draft['sections'] for field in section['fields'] if field['key'] != 'client_name'))
+        self.assertIn(2800000, [field['value'] for section in draft['sections']
+                               for field in section['fields'] if field['key'] == 'monthly_income'])
         for record in self.case['court_documents']:
             self.assertFalse(record['ai_review']['passed'])
             self.assertTrue(record['human_review_required'])

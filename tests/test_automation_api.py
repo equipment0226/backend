@@ -13,7 +13,7 @@ from unittest.mock import patch
 os.environ.setdefault('DEBTOFF_DEMO_MODE', '1')
 from fastapi.testclient import TestClient
 from apps.api.main import app
-from apps.api import automation, domain, store
+from apps.api import automation, corpus, domain, store
 
 
 class AutomationApiTests(unittest.TestCase):
@@ -23,9 +23,11 @@ class AutomationApiTests(unittest.TestCase):
         root.mkdir(parents=True, exist_ok=True)
         cls.temp = tempfile.TemporaryDirectory(prefix='automation-api-', dir=root)
         cls.data_patch = patch.object(store, 'DATA_DIR', Path(cls.temp.name))
+        # Law snapshots and their assessment state belong to the same test store.
+        cls.corpus_patch = patch.object(corpus, 'CORPUS_DIR', Path(cls.temp.name) / 'corpus')
         cls.schedule_patch = patch('apps.api.ax_service.maybe_schedule', return_value=None)
         cls.env_patch = patch.dict(os.environ, {'DEBTOFF_DEMO_MODE': '1', 'DEBTOFF_AUTO_AX': '0'})
-        cls.data_patch.start(); cls.schedule_patch.start(); cls.env_patch.start()
+        cls.data_patch.start(); cls.corpus_patch.start(); cls.schedule_patch.start(); cls.env_patch.start()
         cls.context = TestClient(app, raise_server_exceptions=False)
         cls.client = cls.context.__enter__()
         cls.headers = {}
@@ -38,7 +40,7 @@ class AutomationApiTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.context.__exit__(None, None, None)
-        cls.schedule_patch.stop(); cls.data_patch.stop(); cls.env_patch.stop()
+        cls.schedule_patch.stop(); cls.corpus_patch.stop(); cls.data_patch.stop(); cls.env_patch.stop()
         cls.temp.cleanup()
 
     def setUp(self):

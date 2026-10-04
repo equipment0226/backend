@@ -1,0 +1,762 @@
+{
+  "synthetic": true,
+  "name": "박지우",
+  "as_of": "2026-10-04",
+  "court_id": "CT01",
+  "court_name": "서울회생법원",
+  "automatic_case_creation": false,
+  "period": "2025-10-01 ~ 2026-09-30",
+  "bank_period": "2025-10-04 ~ 2026-10-04",
+  "balance_date": "2026-09-30",
+  "bank_balance_date": "2026-10-04",
+  "expected": {
+    "client_name": "박지우",
+    "resident_id": "920415-1000007",
+    "address": "서울특별시 가상구 새출발로 120 가상빌라 301호",
+    "phone": "010-0000-0000",
+    "employer": "가상다온물류 주식회사",
+    "employer_address": "서울특별시 가상구 연습산업로 45 가상물류동 2층",
+    "employer_phone": "02-0000-0010",
+    "monthly_income": 3450000,
+    "monthly_net_income": 3450000,
+    "annual_income": 41400000,
+    "monthly_gross_income": 3900000,
+    "monthly_deductions": 450000,
+    "bank_balance": 2500000,
+    "principal_total": 67500000,
+    "interest_total": 1500000,
+    "total_debt": 69000000,
+    "insurance_surrender": 2400000,
+    "housing_deposit": 12000000,
+    "housing_cost": 650000,
+    "living_expenses": 1650000,
+    "household_size": 1,
+    "retirement_expected": 17508189,
+    "assets_total": 34408189,
+    "employment_type": "급여소득자",
+    "vehicle_value": 0,
+    "real_estate_value": 0,
+    "tax_arrears": 0,
+    "bank_name": "가상새봄은행",
+    "bank_account": "TEST-JIWOO-A-001",
+    "bank_balance_1": 1800000,
+    "bank_name_2": "가상온유은행",
+    "bank_account_2": "TEST-JIWOO-B-002",
+    "bank_balance_2": 700000,
+    "insurance_name": "가상온기생명",
+    "insurance_policy": "TEST-POLICY-JW-001",
+    "income_start_year": 2025,
+    "income_start_month": 10,
+    "income_start_day": 1,
+    "employment_start": "2022-03-01"
+  },
+  "expected_form_values": {
+    "client_name": "박지우",
+    "resident_id": "920415-1000007",
+    "address": "서울특별시 가상구 새출발로 120 가상빌라 301호",
+    "phone": "010-0000-0000",
+    "employer": "가상다온물류 주식회사",
+    "employer_address": "서울특별시 가상구 연습산업로 45 가상물류동 2층",
+    "employer_phone": "02-0000-0010",
+    "monthly_income": 3450000,
+    "annual_income": 41400000,
+    "bank_balance": 2500000,
+    "principal_total": 67500000,
+    "interest_total": 1500000,
+    "total_debt": 69000000,
+    "insurance_surrender": 2400000,
+    "housing_deposit": 12000000,
+    "housing_cost": 650000,
+    "living_expenses": 1650000,
+    "household_size": 1,
+    "retirement_expected": 17508189,
+    "assets_total": 34408189,
+    "employment_type": "급여소득자",
+    "vehicle_value": 0,
+    "real_estate_value": 0,
+    "tax_arrears": 0,
+    "bank_name": "가상새봄은행",
+    "bank_account": "TEST-JIWOO-A-001",
+    "bank_balance_1": 1800000,
+    "bank_name_2": "가상온유은행",
+    "bank_account_2": "TEST-JIWOO-B-002",
+    "bank_balance_2": 700000,
+    "insurance_name": "가상온기생명",
+    "insurance_policy": "TEST-POLICY-JW-001",
+    "income_start_year": 2025,
+    "income_start_month": 10,
+    "income_start_day": 1,
+    "employment_start": "2022-03-01"
+  },
+  "identity_safety": {
+    "resident_id": "920415-1000007",
+    "legacy_checksum_valid": false,
+    "phone": "010-0000-0000",
+    "all_addresses_fictional": true
+  },
+  "documents": [
+    {
+      "id": "FIX01",
+      "catalog_id": "D01",
+      "title": "주민등록표 등본",
+      "file": "documents/01_주민등록표 등본_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "resident_id",
+          "value": "920415-1000007"
+        },
+        {
+          "key": "address",
+          "value": "서울특별시 가상구 새출발로 120 가상빌라 301호"
+        },
+        {
+          "key": "household_size",
+          "value": 1
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "a97d075f16ca311117b0c16e1f791f14259d153caa072fc3a78ba2911de059a7"
+    },
+    {
+      "id": "FIX02",
+      "catalog_id": "D02",
+      "title": "주민등록표 초본",
+      "file": "documents/02_주민등록표 초본_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "c8d652b6fa405046674f2e275e281c1f99d93fba71d7cd76440b50c70b53b504"
+    },
+    {
+      "id": "FIX03",
+      "catalog_id": "D03",
+      "title": "가족관계증명서 상세",
+      "file": "documents/03_가족관계증명서 상세_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "children_count",
+          "value": 0
+        },
+        {
+          "key": "dependent_count",
+          "value": 0
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "c8b738c8c2ad3922711093bb4b4c8dda81c0699b0162fea73f0164b8d9accb88"
+    },
+    {
+      "id": "FIX04",
+      "catalog_id": "D04",
+      "title": "혼인관계증명서 상세",
+      "file": "documents/04_혼인관계증명서 상세_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "children_count",
+          "value": 0
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "d26270daadd5b54d285ad0f89563d56d4483cac441b73603012e68bfb8be40a0"
+    },
+    {
+      "id": "FIX05",
+      "catalog_id": "D35",
+      "title": "계좌통합조회 및 잔액확인",
+      "file": "documents/05_계좌통합조회 및 잔액확인_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "de2e0abcbb00c29f8697a48cd3dbe1f7c58688ed564a88ba3954e1b6879351d9"
+    },
+    {
+      "id": "FIX06",
+      "catalog_id": "D38",
+      "title": "부채증명서_가상새봄은행",
+      "file": "documents/06_부채증명서_가상새봄은행_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "creditor_name",
+          "value": "가상새봄은행"
+        },
+        {
+          "key": "creditor_principal",
+          "value": 31500000
+        },
+        {
+          "key": "creditor_interest",
+          "value": 700000
+        },
+        {
+          "key": "creditor_total",
+          "value": 32200000
+        }
+      ],
+      "synthetic": true,
+      "pages": 2,
+      "sha256": "85a6eaf7cc79c3cb3054b1d6911d395d73c974dfabe2355259e63a84a09ae84c"
+    },
+    {
+      "id": "FIX07",
+      "catalog_id": "D38",
+      "title": "부채증명서_가상한결저축은행",
+      "file": "documents/07_부채증명서_가상한결저축은행_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "creditor_name",
+          "value": "가상한결저축은행"
+        },
+        {
+          "key": "creditor_principal",
+          "value": 23000000
+        },
+        {
+          "key": "creditor_interest",
+          "value": 500000
+        },
+        {
+          "key": "creditor_total",
+          "value": 23500000
+        }
+      ],
+      "synthetic": true,
+      "pages": 2,
+      "sha256": "9d59cf5b027a964d7bc9c5509319c9dbc0576a8cc54cbfabe6c0a2418c0d552c"
+    },
+    {
+      "id": "FIX08",
+      "catalog_id": "D38",
+      "title": "부채증명서_가상디딤캐피탈",
+      "file": "documents/08_부채증명서_가상디딤캐피탈_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "creditor_name",
+          "value": "가상디딤캐피탈"
+        },
+        {
+          "key": "creditor_principal",
+          "value": 13000000
+        },
+        {
+          "key": "creditor_interest",
+          "value": 300000
+        },
+        {
+          "key": "creditor_total",
+          "value": 13300000
+        }
+      ],
+      "synthetic": true,
+      "pages": 2,
+      "sha256": "e873dae8be29cafaabcb7deccd1cd858b2170033aa5e07f35bf82a14be6c92af"
+    },
+    {
+      "id": "FIX09",
+      "catalog_id": "D06",
+      "title": "근로소득원천징수영수증",
+      "file": "documents/09_근로소득원천징수영수증_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "income_gross",
+          "value": 39900000,
+          "frequency": "annual"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "cf880455e8e8e53e35f88f2c5ab4178096837a2ddf6087edd2fb3bde39031229"
+    },
+    {
+      "id": "FIX10",
+      "catalog_id": "D05",
+      "title": "소득금액증명",
+      "file": "documents/10_소득금액증명_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "523b83fbd91418305e9ec5864e98894866032cb3c31f3b58aa8028b3b71b79e9"
+    },
+    {
+      "id": "FIX11",
+      "catalog_id": "D07",
+      "title": "급여명세서 12개월",
+      "file": "documents/11_급여명세서 12개월_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "income_gross",
+          "value": 3900000,
+          "frequency": "monthly"
+        },
+        {
+          "key": "income_deductions",
+          "value": 450000,
+          "frequency": "monthly"
+        },
+        {
+          "key": "income_net",
+          "value": 3450000,
+          "frequency": "monthly"
+        }
+      ],
+      "synthetic": true,
+      "pages": 12,
+      "sha256": "5c97c050f2df910b132e459a22fa301d8fd3ead97342d73564de03ab306273e4"
+    },
+    {
+      "id": "FIX12",
+      "catalog_id": "D08",
+      "title": "재직증명서 및 근로조건확인서",
+      "file": "documents/12_재직증명서 및 근로조건확인서_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "employer",
+          "value": "가상다온물류 주식회사"
+        },
+        {
+          "key": "employer_address",
+          "value": "서울특별시 가상구 연습산업로 45 가상물류동 2층"
+        },
+        {
+          "key": "employer_phone",
+          "value": "02-0000-0010"
+        },
+        {
+          "key": "employment_type",
+          "value": "급여소득자"
+        },
+        {
+          "key": "employment_start",
+          "value": "2022-03-01"
+        }
+      ],
+      "synthetic": true,
+      "pages": 2,
+      "sha256": "face0d5c40626a98b94281c268595c0af4bb5ee49841d160a610db52b2e49c27"
+    },
+    {
+      "id": "FIX13",
+      "catalog_id": "D09",
+      "title": "건강보험 자격득실 및 납부확인",
+      "file": "documents/13_건강보험 자격득실 및 납부확인_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "health_qualification",
+          "value": "직장가입자"
+        },
+        {
+          "key": "employer",
+          "value": "가상다온물류 주식회사"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "f4154de0d4b01554425b54c7c1c44f97979469627144a49470f8de2fba999901"
+    },
+    {
+      "id": "FIX14",
+      "catalog_id": "D11",
+      "title": "연금산정용 가입내역확인서",
+      "file": "documents/14_연금산정용 가입내역확인서_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "pension_assessed_income",
+          "value": 3700000
+        },
+        {
+          "key": "employer",
+          "value": "가상다온물류 주식회사"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "92fbc34fd4bd2b198c5b2e85e03253157660053c28f56cd5eb3de02dba54eb17"
+    },
+    {
+      "id": "FIX15",
+      "catalog_id": "D36",
+      "title": "입출금거래내역_가상새봄은행",
+      "file": "documents/15_입출금거래내역_가상새봄은행_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "cash_balance",
+          "value": 1800000
+        }
+      ],
+      "synthetic": true,
+      "pages": 5,
+      "sha256": "ef06213e6245f5674c695e9e88b9a105736a0d2774949144ba450a0656d69c5f"
+    },
+    {
+      "id": "FIX16",
+      "catalog_id": "D36",
+      "title": "입출금거래내역_가상온유은행",
+      "file": "documents/16_입출금거래내역_가상온유은행_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "cash_balance",
+          "value": 700000
+        }
+      ],
+      "synthetic": true,
+      "pages": 5,
+      "sha256": "7b8f1764c710fbe93f6d0d7e9580362d770f7f4ca805f4c52438ca61b5efc6f9"
+    },
+    {
+      "id": "FIX17",
+      "catalog_id": "D33",
+      "title": "주거용 임대차계약서",
+      "file": "documents/17_주거용 임대차계약서_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "housing_deposit",
+          "value": 12000000
+        },
+        {
+          "key": "housing_cost",
+          "value": 650000
+        },
+        {
+          "key": "housing_type",
+          "value": "월세"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "5e06c09bf5a4de351527abb4a301730b7a7346c4d04db46af4026fd65127d41d"
+    },
+    {
+      "id": "FIX18",
+      "catalog_id": "SUPPORT-HOUSING",
+      "title": "보증금 및 차임 납부확인",
+      "file": "documents/18_보증금 및 차임 납부확인_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "c197ff82f548ae9c97010e51062bcbb66ca3a348124caf180dcc0626ff75dc0f"
+    },
+    {
+      "id": "FIX19",
+      "catalog_id": "D39",
+      "title": "보험가입 조회결과",
+      "file": "documents/19_보험가입 조회결과_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "insurance_contracts",
+          "value": true
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "74114cdb4218200fb9d693895d7bb4fbcd7a4b76ef6ae567a9974d9c3261c7e0"
+    },
+    {
+      "id": "FIX20",
+      "catalog_id": "D39",
+      "title": "보험 해약환급금 확인서",
+      "file": "documents/20_보험 해약환급금 확인서_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "insurance_surrender",
+          "value": 2400000
+        },
+        {
+          "key": "insurance_name",
+          "value": "가상온기생명"
+        },
+        {
+          "key": "insurance_policy",
+          "value": "TEST-POLICY-JW-001"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "6c6ba92608c2c95671a56bffef974906c8528d54039555a5f688abd1e1df28aa"
+    },
+    {
+      "id": "FIX21",
+      "catalog_id": "SUPPORT-RETIREMENT",
+      "title": "예상퇴직금 확인서",
+      "file": "documents/21_예상퇴직금 확인서_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "retirement_expected",
+          "value": 17508189
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "9c5a7b7900bf066624ffa219742cee7bc90de844f4e474377b36e1077ea4d818"
+    },
+    {
+      "id": "FIX22",
+      "catalog_id": "D28",
+      "title": "지적전산자료 조회결과",
+      "file": "documents/22_지적전산자료 조회결과_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "real_estate_ownership",
+          "value": false
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "3cf915701bdc25c048de746013e5e8bd947693670821fe2ade3118de8c184b8d"
+    },
+    {
+      "id": "FIX23",
+      "catalog_id": "SUPPORT-VEHICLE",
+      "title": "자동차 소유 조회확인",
+      "file": "documents/23_자동차 소유 조회확인_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "vehicle_ownership",
+          "value": false
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "f21fdb5383dffa1698dbc1c5edff6e4880b82f542f3c62412422c75e99e459d2"
+    },
+    {
+      "id": "FIX24",
+      "catalog_id": "D29",
+      "title": "지방세 세목별 과세증명",
+      "file": "documents/24_지방세 세목별 과세증명_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "tax_arrears",
+          "value": 0
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "54bdaccd554f11404d15cdf31f96062edbc15a28ca8b14bf36e223a1c36aed6a"
+    },
+    {
+      "id": "FIX25",
+      "catalog_id": "SUPPORT-TAX",
+      "title": "국세 납세 및 사업등록 사실확인",
+      "file": "documents/25_국세 납세 및 사업등록 사실확인_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "tax_arrears",
+          "value": 0
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "43979dfbfab9623a58638bd132a4046caef4c3318fa801a96ec56f85269c9f20"
+    },
+    {
+      "id": "FIX26",
+      "catalog_id": "SUPPORT-HISTORY",
+      "title": "채무발생 경위 및 생활현황 진술",
+      "file": "documents/26_채무발생 경위 및 생활현황 진술_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "phone",
+          "value": "010-0000-0000"
+        },
+        {
+          "key": "living_expenses",
+          "value": 1650000,
+          "frequency": "monthly"
+        }
+      ],
+      "synthetic": true,
+      "pages": 2,
+      "sha256": "af3beb363a56dec0381a38ec3fa771616d9ddfa1735031b46d7767ca1b2a988a"
+    },
+    {
+      "id": "FIX27",
+      "catalog_id": "SUPPORT-EXPENSE",
+      "title": "월 생활지출 명세",
+      "file": "documents/27_월 생활지출 명세_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "living_expenses",
+          "value": 1650000
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "c7bc7fe9759a36f5067a0b87baf9b4837d7f6f0ce5b1cca6080f39632fdba206"
+    },
+    {
+      "id": "FIX28",
+      "catalog_id": "SUPPORT-EXPENSE-RECEIPTS",
+      "title": "생활지출 납부 및 결제내역",
+      "file": "documents/28_생활지출 납부 및 결제내역_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        },
+        {
+          "key": "housing_cost",
+          "value": 650000,
+          "frequency": "monthly"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "9e3da47418131932332bd861fa352b9f9744930d74255dfb36df92e10c4cd549"
+    },
+    {
+      "id": "FIX29",
+      "catalog_id": "SUPPORT-HISTORY-EVIDENCE",
+      "title": "과거 치료비 납입 및 차입금 사용내역",
+      "file": "documents/29_과거 치료비 납입 및 차입금 사용내역_연습용.pdf",
+      "expected_facts": [
+        {
+          "key": "client_name",
+          "value": "박지우"
+        }
+      ],
+      "synthetic": true,
+      "pages": 1,
+      "sha256": "880f641e250e28c8cade8a5205bc8db75467c75f171eefae526697f3603e1f2c"
+    }
+  ],
+  "limitations": [
+    "서명·날인·관인 없음",
+    "가상 주소·기관·식별자",
+    "법률판단 예시 자동 입력 금지",
+    "파서 지원 여부와 자료 존재 여부는 별도"
+  ],
+  "oracle_is_not_evidence": true,
+  "expected_court_form_values": {
+    "D5101": {
+      "bank_name": "가상새봄은행",
+      "bank_account": "TEST-JIWOO-A-001",
+      "bank_balance_1": 1800000,
+      "bank_name_2": "가상온유은행",
+      "bank_account_2": "TEST-JIWOO-B-002",
+      "bank_balance_2": 700000,
+      "insurance_name": "가상온기생명",
+      "insurance_policy": "TEST-POLICY-JW-001",
+      "insurance_surrender": 2400000
+    },
+    "D5115": {
+      "income_start_year": 2025,
+      "income_start_month": 10,
+      "income_start_day": 1
+    }
+  },
+  "income_certificate_period_note": "D5115의 소득 시작일은 확인된 급여기간2025-10-01입니다. 재직 입사일2022-03-01과 구분합니다."
+}
