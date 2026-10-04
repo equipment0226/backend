@@ -1,51 +1,57 @@
-# 실행 환경과 검증 자료
+# 실행 환경과 확인 기록
 
-현재 루트 앱은 `scripts/dev.py`가 동일 Python으로 API와 두 화면 서버를 실행합니다. `lawmaster`는 별도 프로젝트이며 루트 실행에서 그 가상환경을 사용하지 않습니다.
+고객 화면, 사무소 화면, 사건을 처리하는 서버가 함께 실행돼야 전체 과정을 사용할 수 있습니다. 개인정보가 포함된 자료를 읽고 검토하는 AI도 내부 환경에서 사용할 수 있어야 합니다.
 
-2026-10-04부터 이 작업 폴더는 [새 테스트 프로필](testing.md)을 사용합니다. 이전 사건을 백업 후 초기화했으며, `.local/start-profile.json`이 `fresh`이면 실행기가 새 계정과 빈 사건 시작을 선택합니다. 계정은 `accounts` 테이블에 비밀번호 해시로 보관하고 재시작 시 기존 비밀번호를 덮어쓰지 않습니다. 회귀시험 실행기는 별도 저장소에서 `DEBTOFF_START_PROFILE=demo`를 지정하고 fresh 시험만 프로필을 개별 전환합니다.
+현재 작업 폴더의 로컬 실행 환경과 GitHub의 분리 저장소는 같은 기능을 제공하지만 실행 방법이 다릅니다. 아래에서 사용하는 환경에 맞는 안내를 확인하면 됩니다.
 
-같은 날 고객이 직접 생성한 수임번호 `2026-000001`은 상담 접수 단계로 전환했습니다. 제출된 11개 원본과 기존 처리 이력을 보존하고 세부 상담 전 미제출 자동 요청 12건은 철회했습니다. 직원·변호사가 세부 상담을 요청한 뒤 상담 기록을 저장하면 추출이 시작됩니다. 이 변경 전 SQLite 백업은 `.local/backups/before-consultation-gate-20261004.sqlite3`에 보관합니다. 현재 상태는 [실행 중 API 검증](../reports/consultation-live-state.json)에 기록했습니다. 과거의 빈 사건 검증 결과는 초기화 당시의 스냅샷입니다.
+## 지금 작업 중인 PC에서 사용하기
 
-## 실행 구성
+현재 통합 작업 폴더에서는 `start-local.cmd`로 실행합니다. 고객 화면은 http://localhost:5173, 직원·변호사 화면은 http://localhost:5174 입니다. 실행 중인 서버가 있으면 같은 서버를 중복 실행하지 않습니다.
 
-Python 의존성은 `requirements.txt`, React 빌드는 `apps/frontend/package-lock.json`을 기준으로 설치합니다. 판독 설치·모델 준비는 [OCR 문서](ocr.md)를 따릅니다. 기존 `.local`과 `.env`를 개발 캐시처럼 삭제하지 않습니다.
+2026년 10월 4일 새 테스트 준비 과정에서 이전 가상 사건을 백업하고 삭제했습니다. 계정은 그대로 보존했으며, 초기화 직후 사건은 0건이었습니다. ‘이하늘’ 예시를 불러온 다음 고객이 직접 신청해야 새 사건이 생깁니다. 재시작만으로 예전 시연 사건을 다시 만들지 않도록 설정했습니다.
 
-원문 판독·서류/문서 점검·근거 서술은 로컬 llama3 경로를 사용합니다. 큰 JSON 하나를 계속 재작성하는 대신 문단 단위로 입력·출력 크기를 제한합니다. 작성 제한시간은 `DEBTOFF_LOCAL_WRITING_TIMEOUT`으로 조정하며 기본 240초, 허용 범위 30~600초입니다. 수동 진술서 화면의 요청 대기 한도는 10분입니다. 제한시간 확대가 CPU 처리량이나 작성 성공을 보장하지 않습니다.
+접속 계정과 신청 순서는 [테스트 안내](testing.md)에 있습니다. 예전 검사 보고서에 남아 있는 사건 수나 화면은 당시 기록이므로 현재 사건 목록과 구분해서 봐야 합니다.
 
-외부 검증은 익명화된 고급 판단에 한정합니다. API 키는 유효한 `.env`, 사용자 `.env.example`, 프로세스 환경 순서로 선택합니다. 다른 설정은 환경→`.env`→`.env.example` 순서입니다. 키·프롬프트 원문을 보고서나 UI에 출력하지 않습니다. 캐시·호출 한도와 공식 법령 갱신은 [자동 처리 문서](ax-automation.md)에 설명합니다.
+## 기능별로 필요한 준비
 
-## 검증 자료
+| 사용하려는 기능 | 필요한 준비 | 준비가 안 됐을 때 |
+| --- | --- | --- |
+| 로그인·상담·자료 제출 | 사건 서버와 해당 역할의 화면 | 접속 또는 저장을 할 수 없습니다. |
+| 스캔·사진에서 글자 읽기 | 한국어 문서 판독 도구 | 판독 준비가 필요하다는 상태를 확인하고 자료를 다시 검토합니다. |
+| 원문을 포함한 AI 검토·작성 | 내부 AI 서비스 | 확인된 사실은 보존하고 AI 확인이 필요한 부분을 남깁니다. |
+| 익명 사건 정보의 심화 검토 | 서버의 외부 AI 연결 설정 | 외부 검토 결과를 얻지 못했다는 사유를 남깁니다. |
+| 법률 근거 검색 | 수집한 공식 본문과 적용 기준 | 근거가 확보되지 않은 부분은 추가 확인이 필요합니다. |
+| 한글 PDF 출력 | 한국어 글꼴과 원본 법원 서식 | 글꼴·서식 준비 상태를 확인해야 합니다. |
 
-| 자료 | 확인 범위 |
+AI가 응답하는 데 시간이 걸릴 수 있어 화면에는 처리 중인 단계와 사유를 남깁니다. 응답 시간을 늘리는 설정만으로 문장의 정확성이나 처리 성공을 보장하지는 않습니다.
+
+## 이번 변경에서 무엇을 확인했나요?
+
+기존·신규 가상 사례의 원본 자료를 각각 15종씩 읽었습니다. 문서별 금액과 기간을 대조하고, 기존 119개·신규 123개 확인 항목이 관련 작성 칸과 근거별지에 이어지는지 확인했습니다. 7종 PDF는 글자 배치까지 살폈으며 DOCX·HTML도 내용을 대조했습니다.
+
+실제 AI 작성에서는 예금 금액을 생활비처럼 다루는 오류가 발견됐습니다. 금액의 의미까지 검사하도록 보완했고, 검증을 통과하지 못한 결과는 사실 요약과 보완 목록으로 남겼습니다. PDF 내용 보존 검사가 통과했다는 것과 AI 작성 문장이 모두 승인됐다는 것은 서로 다른 결과입니다.
+
+분리된 백엔드의 최종 회귀 검사에서는 551개가 통과했습니다. 고객·직원·변호사 실제 로그인과 새 상담 예시 불러오기도 확인했으며, 이 화면 검사에서는 신청을 제출하지 않았습니다.
+
+## 확인 기록을 찾아보려면
+
+다음 파일은 로컬 검사 결과입니다. 고객 자료와 실행 흔적이 저장소에 섞이지 않도록 Git에는 포함하지 않습니다.
+
+| 확인할 내용 | 로컬 기록 위치 |
 | --- | --- |
-| `reports/test-results.json` | 격리 저장소의 현재 회귀시험 결과; 모델 대역 포함 |
-| `reports/ax-live-verification.json` | 합성 원문 로컬 호출·익명 외부 호출의 실제 결과 |
-| `reports/statement-authoring-live.json` | 최신 근거 진술 작성의 실제 상태·소요시간·실패 사유 |
-| [실제 포털 상담](../reports/portal-chat-live.json) | 합성 질문의 실제 로컬 안내 연결·외부 미전송 확인 |
-| `reports/court-form-typography.json` | 원본 PDF 폰트·대체 글꼴·작성칸 배치와 출력 검사 |
-| `reports/legal-watch-validation.json` | 공식 출처 감시·적용 제한의 검증 |
-| `reports/browser-runtime-readonly.json` | 실행 중인 화면의 실제 저장 원문·문서 배치·다운로드 조회 |
-| `reports/ui-automation/` | 격리된 합성 응답으로 확인한 화면·알림·입력 |
-| `reports/portal-experience/` | 공개/본인 사건 경계·후기 동의 철회·상담 상태·모바일/동작 줄이기 화면 검사 |
-| `reports/browser-fresh-start.json` | 실제 새 계정 3개 로그인·예시 불러오기·자료 다운로드, 사건 생성 없이 빈 상태 유지 |
-| `reports/fresh-start-state.json` | 새 계정과 사건·분석·생성·법원 결과 원장의 0건 상태 |
-| `reports/browser-portal-application.json` | 격리된 고객 신청·동의·중복 방지·알림·카드 높이 검증 |
-| `reports/office-readability.json` | 격리된 업무 화면의 한국어 표시·알림·사이드바 정렬 검증 |
-| `reports/office-consultation.json` | 격리된 상담 신청 원문·세부 상담 요청·기록 저장·수정 흐름 |
-| `reports/consultation-live-state.json` | 실제 세 역할 로그인·상담 대기 상태·기존 11개 파일 보존·요청 철회 |
+| 기존·신규 서류 추출 | `reports/ocr-audit/fresh_start-extraction.json`, `ocr_retest-extraction.json` |
+| 작성 문서의 내용 연결 | 같은 폴더의 `fresh_start-generated-documents.json`, `ocr_retest-generated-documents.json` |
+| PDF 배치 확인 | `reports/ocr-audit/generated-visual-review.json` |
+| 세 계정 로그인·새 예시 | `reports/browser-fresh-start.json` |
+| 가상 사건 정리와 백업 | `reports/test-case-reset.json` |
+| 최종 551개 회귀 검사 | `.work/repository-split/backend/reports/test-results.json` |
+| 독립 실행·파일 일치 확인 | `.work/repository-split/validation.json` |
+| 세 저장소 업로드 확인 | `reports/git-publication.json` |
 
-```powershell
-python scripts/run_tests.py
-python scripts/browser_ax_automation.py
-python scripts/browser_fresh_start.py
-```
+통합 작업 폴더의 `reports/test-results.json`은 그곳에서 마지막으로 실행한 검사 기록입니다. 최종 분리 백엔드 검사와 실행 시점이 다를 수 있습니다. 가상 응답으로 검사한 기능과 실제 AI를 호출해 확인한 기능도 나눠 해석해야 합니다.
 
-실제 작성에서 형식·메타데이터·근거 불일치로 보류된 실행은 실패로 남깁니다. 이전 작성 버전의 성공, 대역 시험 성공, 파일 생성 여부만으로 새 작성 버전의 실제 검증 성공을 추정하지 않습니다. 과거 `llama-*-benchmark.json`의 GPU/CPU 관측은 해당 시점의 환경 기록이며 현재 장치 성능이나 실문서 SLA가 아닙니다.
+## 설치 담당자 참고
 
-현재 `reports/statement-authoring-live.json`은 `local-grounded-statement-v3`의 세 문단 작성 완료와 독립 원문 검증 통과를 기록합니다. 합성 사건으로 실제 로컬 호출을 확인한 결과이며, 작성 PDF는 `.work/court_typography/D5105-grounded-v3.pdf`에 보존합니다. 이 한 사례의 통과를 모든 실문서의 작성 성공률로 일반화하지 않습니다.
+Python 의존성과 한국어 판독 설치는 각 저장소 README 및 [서류 읽기 안내](ocr.md)를 따릅니다. 통합 작업 폴더의 실행기는 로컬 환경 파일을 읽지만, 분리 저장소의 직접 실행은 운영체제나 배포 환경에 설정을 전달해야 합니다.
 
-## 보존과 정리
-
-초기 설계 묶음·임시 출력·사용하지 않는 `lawmaster/.venv`와 웹 의존성은 정리했습니다. 재설치는 [별도 프로젝트 안내](../lawmaster/README.md)를 따릅니다. 실행 소스·테스트·원본 법원 서식·공식 원문·사건 데이터·기존 출력·보고서·고유 설계 변경은 보존했습니다. 삭제 대상과 보존 이동의 SHA-256은 [정리 기록](../reports/workspace-cleanup.json)에 있습니다.
-
-추가로 오래된 `.work` 합성 시험 데이터·수집 임시 파일·일회성 도구를 정리했습니다. 정리 당시 최종 PDF 비교 자료와 `ax-final-tests.log`, 진행 중인 `portal-live-*`를 보존했습니다. 이후 회귀시험의 격리 데이터와 로그는 다시 생성되며, 검증 결과는 `reports`에 보존합니다.
+환경 파일에는 실제 키가 있을 수 있으므로 문서나 Git에 내용을 복사하지 않습니다. 사건 데이터가 들어 있는 `.local`도 임시 파일처럼 지우지 않습니다. 보관과 복원은 [운영 환경 준비](deployment.md)를 참고하세요.
