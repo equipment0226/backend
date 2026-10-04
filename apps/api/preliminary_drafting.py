@@ -13,7 +13,7 @@ from decimal import Decimal
 
 from . import drafting, store
 
-VERSION = 'preliminary-evidence-draft-v5-provisional-repayment'
+VERSION = 'preliminary-evidence-draft-v6-current-source-gaps'
 
 
 def attach_provisional_calculation(draft, calculation):
@@ -40,6 +40,19 @@ def attach_provisional_calculation(draft, calculation):
     draft['sections'] = [section for section in draft['sections'] if section['id'] != 'repayment_projection'] + [section]
 
 
+def attach_source_reading_history(draft, safe_case):
+    """Separate old readings/scope differences from genuinely missing facts."""
+    history = copy.deepcopy(safe_case.get('source_reading_exclusions', []))
+    draft['source_reading_exclusions'] = history
+    summaries = list(dict.fromkeys(row['label'] + ': ' + row['reason'] for row in history))
+    draft['sections'] = [section for section in draft['sections'] if section['id'] != 'source_reading_history']
+    if summaries:
+        draft['sections'].append({'id': 'source_reading_history', 'title': '이전 판독과 현재 작성 기준',
+            'content': '아래 내용은 이전 후보를 그대로 사용하지 않은 이유입니다. 현재 원문에서 확인한 값은 본문과 서식에 반영했습니다. '
+                '기간·범위가 다른 후보나 근거 불일치는 검토 이력에 남기며, 해당 후보가 검증을 통과했다는 뜻은 아닙니다.\n\n' +
+                '\n'.join(summaries), 'fields': []})
+
+
 def render_case(case, ocr_check=None):
     from .verification import _numbers
     from . import evidence_mapping, extraction_readiness
@@ -61,7 +74,7 @@ def render_case(case, ocr_check=None):
     supported = {row.get('item_id') for row in (ocr_check or {}).get('findings', []) if row.get('status') == 'supported'}
     if (ocr_check or {}).get('passed'):
         supported |= checked
-    retained, omitted = [], []
+    retained, omitted_candidates = [], []
     for candidate in case.get('extraction_candidates', []):
         if candidate.get('status') in {'rejected', 'quarantined', 'superseded'}:
             continue
@@ -77,7 +90,7 @@ def render_case(case, ocr_check=None):
         if grounded and candidate.get('id') in supported and candidate.get('id') in checked:
             retained.append(copy.deepcopy(candidate))
         else:
-            omitted.append(candidate.get('label') or candidate.get('key') or '추출 항목')
+            omitted_candidates.append(candidate)
     values = {}
     for row in retained:
         values.setdefault(row['key'], set()).add(store.dumps(row['value']))
@@ -90,7 +103,47 @@ def render_case(case, ocr_check=None):
     mapped_keys = {row['key'] for row in mapped}
     safe['extraction_candidates'] = [row for row in safe['extraction_candidates'] if row['key'] not in mapped_keys] + mapped
     safe['evidence_mapping'] = packet
-    omitted = [label for label in omitted if label not in mapped_keys]
+    # A discarded historical reading is not a missing report field when the
+    # current source mapper has recovered that field. Compare semantic keys,
+    # never Korean labels against English keys. Detailed observations may live
+    # in source annexes rather than a single form_value (e.g. monthly vs annual
+    # gross pay); only an exact source/meaning/value match clears those gaps.
+    def representation(candidate):
+        if candidate.get('key') in mapped_keys:
+            return 'recovered'
+        matching_observation = False
+        for fact in packet['facts']:
+            if (fact['key'] != candidate.get('key') or fact['document_id'] != candidate.get('document_id')
+                    or store.dumps(fact['value']) != store.dumps(candidate.get('value'))):
+                continue
+            quote = candidate.get('quote') or ''
+            if not quote or not (fact['quote'] in quote or quote in fact['quote']):
+                continue
+            matching_observation = True
+            # Legacy candidates use amount_basis; current typed rows use basis.
+            qualifiers = {'page': candidate.get('page'), 'basis': candidate.get('basis', candidate.get('amount_basis')),
+                **{key: candidate.get(key) for key in ('frequency', 'period_start', 'period_end', 'account_key', 'loan_key')}}
+            if all(value is None or value == fact.get(key) for key, value in qualifiers.items()):
+                return 'recovered'
+        if matching_observation:
+            return 'changed_scope'
+        return 'unresolved' if candidate.get('document_id') in active_ids else 'historical_source'
+    omitted, history = [], []
+    reasons = {'changed_scope': '현재 원문에서 금액과 기재 내용은 확인했습니다. 이전 후보의 기간·쪽수·범위가 달라 현재 원문 기준으로 작성했으며, 그 차이는 별도 대조가 필요합니다.',
+        'historical_source': '상담 또는 이전 자료의 후보입니다. 현재 제출서류의 확인값과 구분해 보존하며, 이 후보가 빠졌다는 이유로 자료 누락으로 표시하지 않습니다.',
+        'unresolved': '현재 제출자료와 이전 판독값을 대조하지 못했습니다. 원문과 판독 내용을 확인해야 합니다.'}
+    for row in omitted_candidates:
+        state = representation(row)
+        if state == 'recovered':
+            continue
+        label = row.get('label') or row.get('key') or '추출 항목'
+        history.append({'candidate_id': row.get('id'), 'key': row.get('key'), 'label': label,
+            'document_id': row.get('document_id'), 'status': state,
+            'requires_review': state in {'changed_scope', 'unresolved'}, 'reason': reasons[state]})
+        if state == 'unresolved':
+            omitted.append(label)
+    safe['source_reading_exclusions'] = history
+    conflicts -= mapped_keys
     safe['facts'] = []
     for fact in case.get('facts', []):
         refs = fact.get('evidence_ids', [])
@@ -260,6 +313,7 @@ async def create(case, pending_issues, review_required_stages, *, calculation=No
                  analysis_calculation_id=(calculation or {}).get('id'),
                  review_pending=issues, scope='담당자 보완·승인이 필요한 1차 검토용 초안 · 법원 제출 승인 전')
     draft['evidence_mapping'] = copy.deepcopy(safe['evidence_mapping'])
+    attach_source_reading_history(draft, safe)
     attach_provisional_calculation(draft, projection)
     if strategy:
         draft.update(strategy_id=strategy['id'], structured_data_id=strategy['structured_data_id'],
