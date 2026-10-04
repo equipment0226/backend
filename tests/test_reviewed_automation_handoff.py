@@ -54,6 +54,39 @@ class ReviewedAutomationHandoffTests(unittest.TestCase):
         self.assertTrue(mapped['mapping']['human_review_sources'])
         self.assertFalse(case['ax_pipeline']['submission_ready'])
 
+    def test_merged_equal_values_keep_each_original_quote(self):
+        sources = [{'id':'pay','text':'당월 실수령액 3,200,000원'},
+                   {'id':'certificate','text':'월 평균 급여 실수령 3,200,000원'}]
+        facts = [{'id':str(index), 'document_id':source['id'], 'key':'income_net',
+                  'value':3200000, 'quote':source['text'], 'frequency':'monthly', 'basis':'net'}
+                 for index, source in enumerate(sources)]
+        items = automation._verification_items({}, sources, packet={'facts':facts})
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]['source_ids'], ['pay','certificate'])
+        self.assertEqual(items[0]['covered_fact_ids'], ['0','1'])
+        self.assertEqual(items[0]['source_quotes'], {source['id']:[source['text']] for source in sources})
+
+    def test_verification_retains_page_and_period_for_repeated_monthly_values(self):
+        pages = [{'page':1, 'text':'2026년 1월\n실수령 3,200,000원'},
+                 {'page':2, 'text':'2026년 2월\n실수령 3,200,000원'}]
+        text = '\n'.join(page['text'] for page in pages)
+        case = {'documents':[{'id':'pay', 'text':text, 'page_texts':pages, 'status':'verified'}]}
+        facts = [{'id':f'fact-{page["page"]}', 'document_id':'pay', 'key':'income_net',
+                  'value':3200000, 'quote':'실수령 3,200,000원', 'page':page['page'],
+                  'line_start':2, 'line_end':2, 'period_start':f'2026-0{page["page"]}-01',
+                  'period_quote':page['text'].split('\n')[0]} for page in pages]
+        packet = {'facts':facts}
+        sources = automation._sources(case, verified_only=True, packet=packet)
+        self.assertEqual(len(sources[0]['page_ranges']), 2)
+        for source_page, page in zip(sources[0]['page_ranges'], pages):
+            self.assertEqual(text[source_page['start']:source_page['end']], page['text'])
+        items = automation._verification_items(case, sources, packet=packet)
+        self.assertEqual(len(items), 2)
+        for item, fact in zip(items, facts):
+            self.assertEqual(item['source_evidence']['pay'][0]['page'], fact['page'])
+            self.assertEqual(item['period_start'], fact['period_start'])
+            self.assertEqual(item['period_quote'], fact['period_quote'])
+
 
 if __name__ == '__main__':
     unittest.main()

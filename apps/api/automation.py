@@ -92,8 +92,24 @@ def sync_request_notifications(case):
 
 def _sources(case, verified_only=False, packet=None):
     from .extraction_readiness import active_documents
+    def page_ranges(document):
+        ranges, cursor = [], 0
+        text = document.get('text', '')
+        for index, page in enumerate(document.get('page_texts', []), 1):
+            page_text = page.get('text')
+            number = page.get('page', index)
+            if not isinstance(page_text, str) or not page_text or type(number) is not int:
+                continue
+            start = text.find(page_text, cursor)
+            if start < 0:
+                continue
+            end = start + len(page_text)
+            ranges.append({'page':number, 'start':start, 'end':end})
+            cursor = end
+        return ranges
     sources = [{'id': d['id'], 'text': d.get('text', ''), 'version': d.get('version', 1),
-             'kind': 'reviewed_decision' if d.get('source_type') == 'reviewed_decision' and d.get('verified_by') else 'case_document'}
+             'kind': 'reviewed_decision' if d.get('source_type') == 'reviewed_decision' and d.get('verified_by') else 'case_document',
+             'page_ranges': page_ranges(d)}
             for d in active_documents(case) if d.get('status') not in
             {'rejected', 'quarantined', 'superseded'} and (not verified_only or d.get('status') == 'verified')
             and d.get('source_type') != 'meeting' and d.get('text', '').strip()]
@@ -122,13 +138,26 @@ def _verification_items(case, sources, packet=None):
                                row.get('period_start'), row.get('period_end'), row.get('account_key'),
                                source_id if row.get('source_type') == 'human_review' else None])
             item = result.setdefault(key, {'id': row['id'], 'key': row['key'], 'value': row['value'],
-                'source_ids': [], 'quote': row['quote'], 'covered_fact_ids': [],
+                'source_ids': [], 'quote': row['quote'], 'source_quotes': {}, 'source_evidence': {}, 'covered_fact_ids': [],
                 'basis': row.get('basis'), 'frequency': row.get('frequency'), 'unit': row.get('unit'),
+                'period_start': row.get('period_start'), 'period_end': row.get('period_end'),
+                'period_quote': row.get('period_quote'),
                 'source_type': row.get('source_type', 'case_document'),
                 'original_source_id': row.get('original_source_id'),
                 'source_unit_quote': row.get('source_unit_quote'), 'unit_multiplier':row.get('unit_multiplier',1)})
             if source_id not in item['source_ids']:
                 item['source_ids'].append(source_id)
+            # Merged equal values can have different wording in each original.
+            # Keep every exact quotation for bounded per-source AI checks.
+            quotes = item['source_quotes'].setdefault(source_id, [])
+            if row['quote'] not in quotes:
+                quotes.append(row['quote'])
+            evidence = item['source_evidence'].setdefault(source_id, [])
+            position = {name:row[name] for name in ('quote','page','line_start','line_end',
+                'source_unit_quote','unit_multiplier','unit','basis','frequency',
+                'period_start','period_end','period_quote') if name in row}
+            if position not in evidence:
+                evidence.append(position)
             item['covered_fact_ids'].append(row['id'])
         if result:
             return list(result.values())
