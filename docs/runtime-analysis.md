@@ -52,6 +52,7 @@ ZIP 접수는 파일명을 무작위로 바꾼 PDF 29개를 실제 비동기 처
 | 세 계정 로그인·사건 0건 시작 | `reports/browser-fresh-start.json` |
 | 가상 사건 정리·백업 | `reports/test-case-reset.json` |
 | 대시보드·법률쟁점 화면 | `reports/case-dashboard/result.json` |
+| 뒤로·앞으로 이동, 상세 주소, 목록 위치 복원 | `reports/navigation-history/result.json` |
 | 복수 원본·ZIP 제출 화면 | `reports/upload-batch/result.json`, `reports/archive-upload/result.json` |
 | 실제 익명 심화 검토 | `reports/dashboard-real-review.json` |
 | 최신 회귀 검사 | `reports/test-results.json` |
